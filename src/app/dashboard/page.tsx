@@ -17,6 +17,7 @@ import {
 import { LayoutDashboard, Wallet, PiggyBank, Users, CalendarDays, FileText, Bell, TrendingUp, AlertCircle } from 'lucide-react';
 import { useAuth } from '@/lib/auth-context';
 import {
+  API_BASE,
   caisseApi,
   contributionsApi,
   activitiesApi,
@@ -174,7 +175,7 @@ export default function DashboardPage() {
           <div className="flex items-center gap-3 rounded-2xl border border-slate-200 bg-white px-4 py-3 shadow-md min-w-[200px] ring-1 ring-slate-100">
             {user?.profilePhotoUrl ? (
               <img
-                src={user.profilePhotoUrl.startsWith('http') ? user.profilePhotoUrl : `${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3000'}${user.profilePhotoUrl}`}
+                src={user.profilePhotoUrl.startsWith('http') ? user.profilePhotoUrl : `${API_BASE}${user.profilePhotoUrl}`}
                 alt=""
                 className="h-11 w-11 shrink-0 rounded-full object-cover bg-slate-100"
               />

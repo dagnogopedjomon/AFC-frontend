@@ -1,4 +1,5 @@
-const API_BASE = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3000';
+/** URL de l'API sans espace ni slash final */
+export const API_BASE = (process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3000').trim().replace(/\/$/, '');
 
 function getToken(): string | null {
   if (typeof window === 'undefined') return null;
@@ -464,7 +465,7 @@ export const reportsApi = {
     return api<AnnualReport>(`/reports/annual?year=${y}`);
   },
   downloadCsv: (year?: number, month?: number) => {
-    const base = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3000';
+    const base = API_BASE;
     const token = typeof window !== 'undefined' ? localStorage.getItem('afc_token') : null;
     let url = `${base}/reports/export/csv`;
     if (year != null) url += `?year=${year}`;
@@ -482,7 +483,7 @@ export const reportsApi = {
     }
   },
   downloadPdf: (year?: number, month?: number) => {
-    const base = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3000';
+    const base = API_BASE;
     const token = typeof window !== 'undefined' ? localStorage.getItem('afc_token') : null;
     let url = `${base}/reports/export/pdf`;
     if (year != null) url += `?year=${year}`;

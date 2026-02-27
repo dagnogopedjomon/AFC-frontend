@@ -7,7 +7,7 @@ import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
 import { useAuth } from '@/lib/auth-context';
-import { membersApi, type Member, type MemberAuditLogEntry } from '@/lib/api';
+import { API_BASE, membersApi, type Member, type MemberAuditLogEntry } from '@/lib/api';
 import { roleLabelFr, memberRoleLabel } from '@/lib/utils';
 import { ConfirmModal } from '@/components/ConfirmModal';
 
@@ -288,7 +288,7 @@ export default function MemberDetailPage() {
           <div className="flex flex-col sm:flex-row sm:items-start gap-6">
             {member.profilePhotoUrl ? (
               <img
-                src={member.profilePhotoUrl.startsWith('http') ? member.profilePhotoUrl : `${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3000'}${member.profilePhotoUrl}`}
+                src={member.profilePhotoUrl.startsWith('http') ? member.profilePhotoUrl : `${API_BASE}${member.profilePhotoUrl}`}
                 alt=""
                 className="h-24 w-24 rounded-full object-cover bg-gray-100"
               />

@@ -4,7 +4,7 @@ import { useEffect, useState, useMemo } from 'react';
 import Link from 'next/link';
 import { useSearchParams } from 'next/navigation';
 import { Search } from 'lucide-react';
-import { membersApi, type Member } from '@/lib/api';
+import { API_BASE, membersApi, type Member } from '@/lib/api';
 import { useAuth } from '@/lib/auth-context';
 import { memberRoleLabel } from '@/lib/utils';
 
@@ -41,7 +41,7 @@ function MemberRow({ m }: { m: Member }) {
         <div className="flex items-center gap-3">
           {m.profilePhotoUrl ? (
             <img
-              src={m.profilePhotoUrl.startsWith('http') ? m.profilePhotoUrl : `${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3000'}${m.profilePhotoUrl}`}
+              src={m.profilePhotoUrl.startsWith('http') ? m.profilePhotoUrl : `${API_BASE}${m.profilePhotoUrl}`}
               alt=""
               className="h-10 w-10 rounded-full object-cover bg-gray-100"
             />

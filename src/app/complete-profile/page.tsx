@@ -7,10 +7,8 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
 import Cropper, { type Area } from 'react-easy-crop';
 import { useAuth } from '@/lib/auth-context';
-import { membersApi } from '@/lib/api';
+import { API_BASE, membersApi } from '@/lib/api';
 import { getCroppedImg, type PixelCrop } from '@/lib/crop';
-
-const API_BASE = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3000';
 
 const schema = z.object({
   firstName: z.string().min(1, 'Le prénom est requis'),
