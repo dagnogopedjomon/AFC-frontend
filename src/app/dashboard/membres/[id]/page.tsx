@@ -307,7 +307,7 @@ export default function MemberDetailPage() {
               </p>
               <p>
                 <span className={`inline-flex items-center rounded-full px-2.5 py-0.5 text-sm font-medium ${member.isSuspended ? 'bg-amber-100 text-amber-800' : 'bg-[var(--sky-blue-soft)] text-[var(--sky-blue-dark)]'}`}>
-                  {memberRoleLabel(member.role, member.isSuspended)}
+                  {memberRoleLabel(member.role, !!member.isSuspended)}
                 </span>
               </p>
               {member.email && (

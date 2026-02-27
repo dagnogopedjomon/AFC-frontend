@@ -62,7 +62,7 @@ function MemberRow({ m }: { m: Member }) {
       <td className="px-6 py-4 text-gray-600">{m.phone}</td>
       <td className="px-6 py-4">
         <span className={`inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-medium ${m.isSuspended ? 'bg-amber-100 text-amber-800' : 'bg-[var(--sky-blue-soft)] text-[var(--sky-blue-dark)]'}`}>
-          {memberRoleLabel(m.role, m.isSuspended)}
+          {memberRoleLabel(m.role, !!m.isSuspended)}
         </span>
       </td>
       <td className="px-6 py-4">

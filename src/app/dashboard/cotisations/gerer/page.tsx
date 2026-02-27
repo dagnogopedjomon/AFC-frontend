@@ -40,8 +40,8 @@ export default function GererCotisationsPage() {
 
   const canAccess = user && ROLES.includes(user.role);
 
-  const load = () => {
-    if (!canAccess) return;
+  const load = (): Promise<unknown> => {
+    if (!canAccess) return Promise.resolve();
     return Promise.all([
       contributionsApi.list().then(setContributions).catch(() => setError('Impossible de charger les cotisations')),
       contributionsApi.monthly().then(setMonthly).catch(() => setMonthly(null)),

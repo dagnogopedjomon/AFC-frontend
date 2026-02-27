@@ -271,7 +271,7 @@ export default function CotisationsPage() {
                       <XAxis dataKey="mois" tick={{ fontSize: 12 }} />
                       <YAxis tick={{ fontSize: 12 }} tickFormatter={(v) => `${(v / 1000).toFixed(0)}k`} />
                       <Tooltip
-                        formatter={(value: number) => [Number(value).toLocaleString('fr-FR') + ' FCFA', 'Collecté']}
+                        formatter={(value: number | undefined) => [(value ?? 0).toLocaleString('fr-FR') + ' FCFA', 'Collecté']}
                         labelFormatter={(_, payload) => payload?.[0]?.payload?.mois}
                       />
                       <Bar dataKey="total" name="Collecté" fill="var(--sky-blue)" radius={[4, 4, 0, 0]} />

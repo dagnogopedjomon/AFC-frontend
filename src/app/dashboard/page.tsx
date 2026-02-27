@@ -453,7 +453,7 @@ export default function DashboardPage() {
                     <YAxis yAxisId="left" tick={{ fontSize: 11 }} tickFormatter={(v) => `${(v / 1000).toFixed(0)}k`} />
                     <YAxis yAxisId="right" orientation="right" tick={{ fontSize: 11 }} tickFormatter={(v) => `${(v / 1000).toFixed(0)}k`} />
                     <Tooltip
-                      formatter={(value: number) => [Number(value).toLocaleString('fr-FR') + ' FCFA', '']}
+                      formatter={(value: number | undefined) => [(value ?? 0).toLocaleString('fr-FR') + ' FCFA', '']}
                       contentStyle={{ fontSize: 12 }}
                     />
                     <Legend />

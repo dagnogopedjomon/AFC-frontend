@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useRef, useState } from 'react';
+import { Suspense, useEffect, useRef, useState } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -28,7 +28,7 @@ type PasswordFormData = z.infer<typeof passwordSchema>;
 
 type Step = 'otp' | 'code' | 'password';
 
-export default function ActivatePage() {
+function ActivateContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const { login } = useAuth();
@@ -325,5 +325,21 @@ export default function ActivatePage() {
         </p>
       </div>
     </div>
+  );
+}
+
+export default function ActivatePage() {
+  return (
+    <Suspense fallback={
+      <div className="min-h-screen flex items-center justify-center bg-cover bg-center px-4 relative" style={{ backgroundImage: 'url(/images/Foot.jpg)' }}>
+        <div className="absolute inset-0 bg-[var(--sky-blue-soft-lighter)]/75" aria-hidden />
+        <div className="card w-full max-w-md relative z-10 shadow-lg animate-pulse">
+          <div className="h-8 bg-gray-200 rounded w-3/4 mb-4" />
+          <div className="h-4 bg-gray-200 rounded w-full" />
+        </div>
+      </div>
+    }>
+      <ActivateContent />
+    </Suspense>
   );
 }
