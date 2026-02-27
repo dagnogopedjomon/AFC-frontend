@@ -2,25 +2,79 @@
 
 :root {
   --background: #ffffff;
-  --foreground: #171717;
+  --foreground: #1e293b;
+  --sky-blue: #0ea5e9;
+  --sky-blue-light: #38bdf8;
+  --sky-blue-dark: #0284c7;
+  --sky-blue-soft: #e0f2fe;
+  /* Bleu de fond plus clair pour les pages d’accueil / login (meilleure visibilité de l’image) */
+  --sky-blue-soft-lighter: #f0f9ff;
+  --sidebar-bg: #0f172a;
+  --sidebar-accent: #1e293b;
+  --sidebar-text: #f1f5f9;
+  --sidebar-text-muted: #94a3b8;
 }
 
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
+  --color-sky-blue: var(--sky-blue);
+  --color-sky-blue-light: var(--sky-blue-light);
+  --color-sky-blue-dark: var(--sky-blue-dark);
+  --color-sky-blue-soft: var(--sky-blue-soft);
+  --color-sky-blue-soft-lighter: var(--sky-blue-soft-lighter);
   --font-sans: var(--font-geist-sans);
   --font-mono: var(--font-geist-mono);
-}
-
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
 }
 
 body {
   background: var(--background);
   color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  font-family: var(--font-sans), system-ui, sans-serif;
+}
+
+.btn-primary {
+  @apply bg-[var(--sky-blue)] text-white font-semibold px-5 py-2.5 rounded-xl shadow-md shadow-sky-500/25 hover:bg-[var(--sky-blue-dark)] hover:shadow-lg focus:ring-2 focus:ring-[var(--sky-blue)] focus:ring-offset-2 transition-all duration-200;
+}
+
+.input-field,
+.input {
+  @apply w-full rounded-xl border border-gray-200 px-4 py-3 text-[var(--foreground)] placeholder:text-gray-400 focus:border-[var(--sky-blue)] focus:ring-2 focus:ring-[var(--sky-blue-soft)] outline-none transition;
+}
+
+.card {
+  @apply bg-white rounded-2xl shadow-md border border-slate-100 p-6 transition-all duration-200;
+}
+.card-hover:hover {
+  @apply shadow-lg -translate-y-0.5 border-slate-200;
+}
+.link-accent {
+  @apply text-[var(--sky-blue-dark)] font-medium hover:text-[var(--sky-blue)] transition;
+}
+
+/* Toasts (Sonner) — style unifié : fond vert clair, coche, bouton fermer */
+[data-rich-colors='true'][data-sonner-toast][data-type='success'] {
+  background: #f0fdf4 !important;
+  border: 1px solid #bbf7d0 !important;
+  border-radius: 1rem !important;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08) !important;
+  color: #166534 !important;
+}
+[data-rich-colors='true'][data-sonner-toast][data-type='success'] [data-close-button] {
+  background: #f0fdf4 !important;
+  border-color: #bbf7d0 !important;
+  color: #166534 !important;
+  border-radius: 9999px !important;
+}
+[data-rich-colors='true'][data-sonner-toast][data-type='error'] {
+  border-radius: 1rem !important;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08) !important;
+}
+[data-rich-colors='true'][data-sonner-toast][data-type='warning'] {
+  border-radius: 1rem !important;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08) !important;
+}
+[data-rich-colors='true'][data-sonner-toast][data-type='info'] {
+  border-radius: 1rem !important;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08) !important;
 }
