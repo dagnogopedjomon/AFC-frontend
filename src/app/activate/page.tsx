@@ -43,6 +43,7 @@ function ActivateContent() {
   const [sendingOtp, setSendingOtp] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirm, setShowConfirm] = useState(false);
+  const [phoneFetchedFromToken, setPhoneFetchedFromToken] = useState(!!phoneFromUrl);
   const autoSentOtpRef = useRef(false);
 
   useEffect(() => {
@@ -66,6 +67,30 @@ function ActivateContent() {
     setActivationToken(tokenFromUrl);
     setStep('password');
   }, [tokenFromUrl]);
+
+  // Lien sans ?phone= : récupérer le numéro via l'API pour que le formulaire mot de passe fonctionne.
+  useEffect(() => {
+    if (!tokenFromUrl || phoneFromUrl) {
+      if (phoneFromUrl) setPhoneFetchedFromToken(true);
+      return;
+    }
+    let cancelled = false;
+    authApi
+      .getActivationInfo(tokenFromUrl)
+      .then((res) => {
+        if (!cancelled) {
+          setPhone(res.phone);
+          setPhoneFetchedFromToken(true);
+        }
+      })
+      .catch(() => {
+        if (!cancelled) {
+          setError('Lien expiré ou invalide. Utilisez à nouveau le lien d\'activation.');
+          setPhoneFetchedFromToken(true);
+        }
+      });
+    return () => { cancelled = true; };
+  }, [tokenFromUrl, phoneFromUrl]);
 
   // Si l'utilisateur vient du lien d'invitation (avec ?phone=...), on envoie le code automatiquement
   // pour que le parcours soit "clic sur le lien → recevoir le code → définir le mot de passe".
@@ -246,7 +271,10 @@ function ActivateContent() {
         )}
 
         {/* Étape 3 : Définir le mot de passe */}
-        {step === 'password' && (
+        {step === 'password' && !phoneFetchedFromToken && (
+          <p className="text-gray-600 text-sm">Chargement…</p>
+        )}
+        {step === 'password' && phoneFetchedFromToken && (
           <form onSubmit={passwordForm.handleSubmit(onPasswordSubmit)} className="space-y-4">
             <p className="text-gray-600 text-sm">
               Choisissez un mot de passe pour vous connecter à l’application.

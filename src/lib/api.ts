@@ -68,6 +68,8 @@ export const authApi = {
       method: 'POST',
       body: JSON.stringify({ phone, code }),
     }),
+  getActivationInfo: (token: string) =>
+    api<{ phone: string }>(`/auth/activation-info?token=${encodeURIComponent(token)}`),
   setPassword: (activationToken: string, password: string) =>
     api<{ ok: boolean; message?: string }>('/auth/set-password', {
       method: 'POST',
