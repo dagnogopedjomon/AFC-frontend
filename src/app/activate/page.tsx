@@ -133,13 +133,10 @@ function ActivateContent() {
 
   if (!phoneFromUrl && step === 'otp') {
     return (
-      <div
-        className="min-h-screen flex items-center justify-center bg-cover bg-center px-4 relative"
-        style={{ backgroundImage: 'url(/images/Foot.jpg)' }}
-      >
-        <div className="absolute inset-0 bg-[var(--sky-blue-soft-lighter)]/75" aria-hidden />
-        <div className="card w-full max-w-md relative z-10 shadow-lg">
-          <h1 className="text-xl font-bold text-[var(--sky-blue-dark)] mb-2">Activation AFC</h1>
+      <div className="min-h-screen flex items-center justify-center bg-neutral-800 px-4">
+        <div className="card w-full max-w-md shadow-xl border border-neutral-600/30">
+          <img src="/images/afcimage.jpeg" alt="AFC" className="h-14 w-14 object-cover rounded-xl mx-auto mb-3" />
+          <h1 className="text-xl font-bold text-[var(--sky-blue-dark)] mb-2">Activation</h1>
           <p className="text-gray-600 mb-4">
             Utilisez le lien reçu par SMS ou WhatsApp pour activer votre compte. Le lien doit contenir votre numéro de téléphone.
           </p>
@@ -152,14 +149,10 @@ function ActivateContent() {
   }
 
   return (
-    <div
-      className="min-h-screen flex items-center justify-center bg-cover bg-center px-4 relative"
-      style={{ backgroundImage: 'url(/images/Foot.jpg)' }}
-    >
-      <div className="absolute inset-0 bg-[var(--sky-blue-soft-lighter)]/75" aria-hidden />
-      <div className="card w-full max-w-md relative z-10 shadow-lg">
-        <div className="text-center mb-6">
-          <h1 className="text-2xl font-bold text-[var(--sky-blue-dark)]">AFC</h1>
+    <div className="min-h-screen flex items-center justify-center bg-neutral-800 px-4">
+      <div className="card w-full max-w-md shadow-xl border border-neutral-600/30">
+        <div className="flex flex-col items-center mb-6">
+          <img src="/images/afcimage.jpeg" alt="AFC" className="h-16 w-16 object-cover rounded-xl mb-3" />
           <p className="text-gray-600 mt-1">Activation de votre compte</p>
         </div>
 
@@ -331,9 +324,8 @@ function ActivateContent() {
 export default function ActivatePage() {
   return (
     <Suspense fallback={
-      <div className="min-h-screen flex items-center justify-center bg-cover bg-center px-4 relative" style={{ backgroundImage: 'url(/images/Foot.jpg)' }}>
-        <div className="absolute inset-0 bg-[var(--sky-blue-soft-lighter)]/75" aria-hidden />
-        <div className="card w-full max-w-md relative z-10 shadow-lg animate-pulse">
+      <div className="min-h-screen flex items-center justify-center bg-neutral-800 px-4">
+        <div className="card w-full max-w-md shadow-xl border border-neutral-600/30 animate-pulse">
           <div className="h-8 bg-gray-200 rounded w-3/4 mb-4" />
           <div className="h-4 bg-gray-200 rounded w-full" />
         </div>

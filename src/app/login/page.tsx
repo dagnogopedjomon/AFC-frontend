@@ -58,8 +58,8 @@ export default function LoginPage() {
   return (
     <div className="min-h-screen flex items-center justify-center bg-neutral-800 px-4">
       <div className="card w-full max-w-md shadow-xl border border-neutral-600/30">
-        <div className="text-center mb-8">
-          <h1 className="text-2xl font-bold text-[var(--sky-blue-dark)]">AFC</h1>
+        <div className="flex flex-col items-center mb-8">
+          <img src="/images/afcimage.jpeg" alt="AFC" className="h-16 w-16 object-cover rounded-xl mb-3" />
           <p className="text-gray-600 mt-1">Amicale Football – Connexion</p>
         </div>
 
