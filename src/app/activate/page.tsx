@@ -120,14 +120,18 @@ function ActivateContent() {
   }
 
   async function onPasswordSubmit(data: PasswordFormData) {
-    if (!activationToken || !phone.trim()) return;
+    if (!activationToken || !phone.trim()) {
+      setError('Session invalide. Utilisez à nouveau le lien d’activation reçu par SMS ou WhatsApp.');
+      return;
+    }
     setError(null);
     try {
       await authApi.setPassword(activationToken, data.password);
       await login(phone.trim(), data.password);
       // login() redirige vers /complete-profile ou /dashboard selon profileCompleted
     } catch (e) {
-      setError(e instanceof Error ? e.message : 'Erreur lors de la création du mot de passe.');
+      const message = e instanceof Error ? e.message : 'Erreur réseau ou serveur. Réessayez.';
+      setError(message);
     }
   }
 
@@ -135,7 +139,7 @@ function ActivateContent() {
     return (
       <div className="min-h-screen flex items-center justify-center bg-neutral-800 px-4">
         <div className="card w-full max-w-md shadow-xl border border-neutral-600/30">
-          <img src="/images/afcimage.jpeg" alt="AFC" className="h-14 w-14 object-cover rounded-xl mx-auto mb-3" />
+          <img src="/images/afcimage.jpeg" alt="AFC" className="h-20 w-20 object-cover rounded-xl mx-auto mb-3" />
           <h1 className="text-xl font-bold text-[var(--sky-blue-dark)] mb-2">Activation</h1>
           <p className="text-gray-600 mb-4">
             Utilisez le lien reçu par SMS ou WhatsApp pour activer votre compte. Le lien doit contenir votre numéro de téléphone.
@@ -152,7 +156,7 @@ function ActivateContent() {
     <div className="min-h-screen flex items-center justify-center bg-neutral-800 px-4">
       <div className="card w-full max-w-md shadow-xl border border-neutral-600/30">
         <div className="flex flex-col items-center mb-6">
-          <img src="/images/afcimage.jpeg" alt="AFC" className="h-16 w-16 object-cover rounded-xl mb-3" />
+          <img src="/images/afcimage.jpeg" alt="AFC" className="h-20 w-20 object-cover rounded-xl mb-3" />
           <p className="text-gray-600 mt-1">Activation de votre compte</p>
         </div>
 

@@ -59,7 +59,7 @@ export default function LoginPage() {
     <div className="min-h-screen flex items-center justify-center bg-neutral-800 px-4">
       <div className="card w-full max-w-md shadow-xl border border-neutral-600/30">
         <div className="flex flex-col items-center mb-8">
-          <img src="/images/afcimage.jpeg" alt="AFC" className="h-16 w-16 object-cover rounded-xl mb-3" />
+          <img src="/images/afcimage.jpeg" alt="AFC" className="h-20 w-20 object-cover rounded-xl mb-3" />
           <p className="text-gray-600 mt-1">Amicale Football – Connexion</p>
         </div>
 
