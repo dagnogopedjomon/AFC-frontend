@@ -32,6 +32,7 @@ export default function CompleteProfilePage() {
   const [zoom, setZoom] = useState(1);
   const [croppedAreaPixels, setCroppedAreaPixels] = useState<PixelCrop | null>(null);
   const [uploading, setUploading] = useState(false);
+  const [photoLoadError, setPhotoLoadError] = useState(false);
 
   const {
     register,
@@ -61,6 +62,7 @@ export default function CompleteProfilePage() {
   const handleFileChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file || !file.type.startsWith('image/')) return;
+    setPhotoLoadError(false);
     const url = URL.createObjectURL(file);
     setImageSrc(url);
     setCroppedAreaPixels(null);
@@ -83,8 +85,9 @@ export default function CompleteProfilePage() {
     try {
       const blob = await getCroppedImg(imageSrc, croppedAreaPixels);
       const { url } = await membersApi.uploadAvatar(blob);
-      const fullUrl = url.startsWith('http') ? url : `${API_BASE}${url}`;
+      const fullUrl = url.startsWith('http') ? url : `${API_BASE.replace(/\/$/, '')}${url.startsWith('/') ? url : `/${url}`}`;
       setValue('profilePhotoUrl', fullUrl, { shouldValidate: true });
+      setPhotoLoadError(false);
       closeCropModal();
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Erreur lors de l’upload');
@@ -128,23 +131,15 @@ export default function CompleteProfilePage() {
 
   if (loading || !token) {
     return (
-      <div
-        className="min-h-screen flex items-center justify-center relative bg-cover bg-center"
-        style={{ backgroundImage: 'url(/images/Foot.jpg)' }}
-      >
-        <div className="absolute inset-0 bg-[var(--sky-blue-soft-lighter)]/75" aria-hidden />
-        <div className="relative z-10 inline-block h-10 w-10 animate-spin rounded-full border-4 border-[var(--sky-blue)] border-r-transparent" />
+      <div className="min-h-screen flex items-center justify-center bg-neutral-800">
+        <div className="inline-block h-10 w-10 animate-spin rounded-full border-4 border-[var(--sky-blue)] border-r-transparent" />
       </div>
     );
   }
 
   return (
-    <div
-      className="min-h-screen relative bg-cover bg-center py-8 px-4"
-      style={{ backgroundImage: 'url(/images/Foot.jpg)' }}
-    >
-      <div className="absolute inset-0 bg-[var(--sky-blue-soft-lighter)]/75" aria-hidden />
-      <div className="max-w-lg mx-auto card relative z-10 shadow-lg">
+    <div className="min-h-screen bg-neutral-800 py-8 px-4">
+      <div className="max-w-lg mx-auto card shadow-xl border border-neutral-600/30">
         <h1 className="text-xl font-bold text-[var(--sky-blue-dark)] mb-6">
           Compléter mon profil
         </h1>
@@ -180,11 +175,13 @@ export default function CompleteProfilePage() {
               Photo de profil <span className="text-red-500">*</span>
             </label>
             <div className="flex items-center gap-4 flex-wrap">
-              {profilePhotoUrl ? (
+              {profilePhotoUrl && !photoLoadError ? (
                 <img
-                  src={profilePhotoUrl.startsWith('http') ? profilePhotoUrl : `${API_BASE}${profilePhotoUrl}`}
-                  alt=""
-                  className="h-20 w-20 rounded-full object-cover border-2 border-gray-200"
+                  key={profilePhotoUrl}
+                  src={profilePhotoUrl.startsWith('http') ? profilePhotoUrl : `${API_BASE.replace(/\/$/, '')}${profilePhotoUrl.startsWith('/') ? profilePhotoUrl : `/${profilePhotoUrl}`}`}
+                  alt="Photo de profil"
+                  className="h-20 w-20 rounded-full object-cover object-center border-2 border-gray-200 bg-gray-100"
+                  onError={() => setPhotoLoadError(true)}
                 />
               ) : (
                 <div className="h-20 w-20 rounded-full bg-gray-100 border-2 border-dashed border-gray-300 flex items-center justify-center text-gray-400 text-xs text-center px-1">

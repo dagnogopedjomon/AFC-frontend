@@ -49,18 +49,47 @@ export default function LoginPage() {
 
   if (loading) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-neutral-800">
-        <div className="inline-block h-10 w-10 animate-spin rounded-full border-4 border-neutral-500 border-t-neutral-200" />
+      <div
+        className="flex min-h-screen items-center justify-center"
+        style={{ backgroundColor: '#ffffff' }}
+      >
+        <div className="inline-block h-10 w-10 animate-spin rounded-full border-4 border-neutral-300 border-t-neutral-700" />
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-neutral-800 px-4">
-      <div className="card w-full max-w-md shadow-xl border border-neutral-600/30">
-        <div className="flex flex-col items-center mb-8">
-          <img src="/images/afcimage.jpeg" alt="AFC" className="h-20 w-20 object-cover rounded-xl mb-3" />
-          <p className="text-gray-600 mt-1">Amicale Football – Connexion</p>
+    <div
+      className="flex min-h-screen items-center justify-center px-4"
+      style={{ backgroundColor: '#ffffff' }}
+    >
+      <div
+        data-login-dark
+        className="w-full max-w-md rounded-2xl border p-6 shadow-xl"
+        style={{
+          backgroundColor: '#262626',
+          borderColor: 'rgba(229, 231, 235, 0.35)',
+          boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.15)',
+        }}
+      >
+        <div className="mb-8 flex flex-col items-center">
+          <div
+            className="mb-3 shrink-0 overflow-hidden ring-2 ring-neutral-500"
+            style={{
+              width: 80,
+              height: 80,
+              borderRadius: '50%',
+            }}
+          >
+            <img
+              src="/images/afcimage.jpeg"
+              alt="AFC"
+              className="h-full w-full object-cover object-center"
+              width={80}
+              height={80}
+            />
+          </div>
+          <p className="mt-1 text-neutral-100">Amicale Football – Connexion</p>
         </div>
 
         <form onSubmit={handleSubmit(onSubmit)} className="space-y-5">
@@ -68,51 +97,53 @@ export default function LoginPage() {
             <div
               className={
                 error.toLowerCase().includes('suspendu')
-                  ? 'rounded-xl bg-amber-50 border border-amber-200 text-amber-800 px-4 py-3 text-sm font-medium'
-                  : 'rounded-xl bg-red-50 text-red-700 px-4 py-3 text-sm'
+                  ? 'rounded-xl border border-amber-500/40 bg-amber-950/40 px-4 py-3 text-sm font-medium text-amber-200'
+                  : 'rounded-xl border border-red-500/30 bg-red-950/40 px-4 py-3 text-sm text-red-200'
               }
             >
               {error}
             </div>
           )}
           <div>
-            <label htmlFor="phone" className="block text-sm font-medium text-gray-700 mb-1.5">
-              Téléphone <span className="text-red-500">*</span>
+            <label htmlFor="phone" className="mb-1.5 block text-sm font-medium text-neutral-200">
+              Téléphone <span className="text-red-400">*</span>
             </label>
             <input
               id="phone"
               type="tel"
               placeholder="06 12 34 56 78"
-              className="input-field"
+              autoComplete="tel"
+              className="login-dark-input w-full rounded-xl border border-neutral-600 bg-neutral-700/50 px-4 py-3 text-neutral-100 caret-sky-400 placeholder:text-neutral-500 outline-none transition focus:border-sky-500 focus:ring-2 focus:ring-sky-500/25"
               {...register('phone')}
             />
             {errors.phone && (
-              <p className="mt-1 text-sm text-red-600">{errors.phone.message}</p>
+              <p className="mt-1 text-sm text-red-400">{errors.phone.message}</p>
             )}
           </div>
           <div>
-            <label htmlFor="password" className="block text-sm font-medium text-gray-700 mb-1.5">
-              Mot de passe <span className="text-red-500">*</span>
+            <label htmlFor="password" className="mb-1.5 block text-sm font-medium text-neutral-200">
+              Mot de passe <span className="text-red-400">*</span>
             </label>
             <div className="relative">
               <input
                 id="password"
                 type={showPassword ? 'text' : 'password'}
                 placeholder="••••••••"
-                className="input-field pr-10"
+                autoComplete="current-password"
+                className="login-dark-input w-full rounded-xl border border-neutral-600 bg-neutral-700/50 px-4 py-3 pr-10 text-neutral-100 caret-sky-400 placeholder:text-neutral-500 outline-none transition focus:border-sky-500 focus:ring-2 focus:ring-sky-500/25"
                 {...register('password')}
               />
               <button
                 type="button"
                 onClick={() => setShowPassword((v) => !v)}
-                className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 hover:text-gray-700"
+                className="absolute right-3 top-1/2 -translate-y-1/2 text-neutral-400 hover:text-neutral-200"
                 aria-label={showPassword ? 'Masquer le mot de passe' : 'Afficher le mot de passe'}
               >
                 {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
               </button>
             </div>
             {errors.password && (
-              <p className="mt-1 text-sm text-red-600">{errors.password.message}</p>
+              <p className="mt-1 text-sm text-red-400">{errors.password.message}</p>
             )}
           </div>
           <button
@@ -124,7 +155,7 @@ export default function LoginPage() {
           </button>
         </form>
 
-        <p className="mt-6 text-center text-sm text-gray-500">
+        <p className="mt-6 text-center text-sm text-neutral-400">
           Utilisez vos identifiants fournis par le bureau du club.
         </p>
       </div>
