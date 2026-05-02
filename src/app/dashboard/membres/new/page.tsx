@@ -21,6 +21,7 @@ export default function NewMemberPage() {
   const router = useRouter();
   const [error, setError] = useState<string | null>(null);
   const [demoLink, setDemoLink] = useState<string | null>(null);
+  const [whatsappSent, setWhatsappSent] = useState<boolean | null>(null);
 
   const canCreate = user?.role === 'ADMIN';
 
@@ -47,6 +48,7 @@ export default function NewMemberPage() {
       } else {
         toast.success('Invitation envoyée.');
       }
+      setWhatsappSent(result.whatsappSent ?? null);
       if (result.activationLink) {
         setDemoLink(result.activationLink);
       } else {
@@ -134,9 +136,15 @@ export default function NewMemberPage() {
       </div>
 
       {demoLink && (
-        <div className="card max-w-xl border-2 border-amber-200 bg-amber-50">
-          <p className="font-medium text-amber-800 mb-2">Lien d’activation (pour test ou envoi manuel)</p>
-          <p className="text-sm text-amber-700 mb-2">L’invitation a été envoyée par WhatsApp si configuré. Vous pouvez aussi copier ce lien pour l’envoyer autrement ou tester :</p>
+        <div className={`card max-w-xl border-2 ${whatsappSent ? 'border-green-200 bg-green-50' : 'border-amber-200 bg-amber-50'}`}>
+          <p className={`font-medium mb-2 ${whatsappSent ? 'text-green-800' : 'text-amber-800'}`}>
+            {whatsappSent ? 'Invitation envoyée par WhatsApp' : 'Lien d\'activation (envoi manuel)'}
+          </p>
+          <p className={`text-sm mb-2 ${whatsappSent ? 'text-green-700' : 'text-amber-700'}`}>
+            {whatsappSent
+              ? 'Le membre a reçu un message WhatsApp avec le lien d\'activation. Vous pouvez aussi copier le lien ci-dessous :'
+              : 'Le message WhatsApp n\'a pas pu être envoyé. Copiez ce lien et envoyez-le manuellement au membre :'}
+          </p>
           <div className="flex flex-wrap items-center gap-2">
             <a
               href={demoLink}
