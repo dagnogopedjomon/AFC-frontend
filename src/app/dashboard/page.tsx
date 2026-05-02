@@ -91,7 +91,7 @@ export default function DashboardPage() {
     }
     if (canSeeMembersCount || canSeeArrears) {
       promises.push(
-        membersApi.list().then((list) => setTotalMembers(list.length)).catch(() => setTotalMembers(null)),
+        membersApi.count().then((r) => setTotalMembers(r.count)).catch(() => setTotalMembers(null)),
       );
     }
     if (user) {

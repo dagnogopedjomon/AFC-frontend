@@ -79,6 +79,7 @@ export const authApi = {
 
 export const membersApi = {
   list: () => api<Member[]>('/members'),
+  count: () => api<{ count: number }>('/members/count'),
   one: (id: string) => api<Member>(`/members/${id}`),
   me: () => api<Member>('/members/me'),
   completeProfile: (data: CompleteProfileInput) =>
