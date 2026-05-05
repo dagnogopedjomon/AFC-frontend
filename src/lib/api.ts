@@ -286,22 +286,6 @@ export const contributionsApi = {
       method: 'POST',
       body: JSON.stringify(data),
     }),
-  /** Init paiement CinetPay : retourne paymentUrl et transactionId. */
-  initCinetPay: (data: {
-    contributionId: string;
-    amount: number;
-    periodYear?: number;
-    periodMonth?: number;
-  }) =>
-    api<{ paymentUrl: string; transactionId: string }>(
-      '/contributions/payments/cinetpay/init',
-      { method: 'POST', body: JSON.stringify(data) },
-    ),
-  /** Vérification manuelle après retour CinetPay (page success). Retourne les mois encore impayés. */
-  verifyCinetPayTransaction: (transactionId: string) =>
-    api<{ status: string; completed?: boolean; remainingUnpaidMonths?: { year: number; month: number }[] }>(
-      `/contributions/payments/cinetpay/verify/${encodeURIComponent(transactionId)}`,
-    ),
   historySummary: (year?: number, month?: number) =>
     api<HistorySummary>(
       year != null && month != null

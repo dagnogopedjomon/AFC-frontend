@@ -402,90 +402,31 @@ export default function CotisationsPage() {
 }
 
 function ExceptionalPaymentCard({ contributions }: { contributions: Contribution[] }) {
-  const [selectedId, setSelectedId] = useState(contributions[0]?.id ?? '');
-  const [amount, setAmount] = useState(100);
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState<string | null>(null);
-
-  const selected = contributions.find((c) => c.id === selectedId);
-  const suggestedAmount = selected?.amount != null ? Number(selected.amount) : null;
-
-  async function handlePay(e: React.FormEvent) {
-    e.preventDefault();
-    setError(null);
-    if (amount < 100) {
-      setError('Le montant minimum CinetPay est de 100 FCFA.');
-      return;
-    }
-    if (!selectedId) return;
-    setLoading(true);
-    try {
-      const { paymentUrl } = await contributionsApi.initCinetPay({
-        contributionId: selectedId,
-        amount,
-      });
-      window.location.href = paymentUrl;
-    } catch (err) {
-      setError(err instanceof Error ? err.message : 'Erreur');
-    } finally {
-      setLoading(false);
-    }
-  }
-
   return (
     <div className="card border-l-4 border-l-amber-500">
       <h2 className="text-sm font-medium text-gray-500 uppercase tracking-wide mb-3">Cotisations exceptionnelles (événements, etc.)</h2>
       <p className="text-gray-600 text-sm mb-4">
-        Vous pouvez payer à tout moment et autant de fois que vous voulez, n’importe quel montant (min. 100 FCFA). Une fois la date de fin passée, la cotisation est clôturée et reste dans l’historique.
+        Vous pouvez payer à tout moment et autant de fois que vous voulez, n&apos;importe quel montant. Une fois la date de fin passée, la cotisation est clôturée et reste dans l&apos;historique.
       </p>
-      <form onSubmit={handlePay} className="space-y-4">
-        <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1.5">Choisir la cotisation</label>
-          <select
-            className="input-field w-full max-w-md"
-            value={selectedId}
-            onChange={(e) => setSelectedId(e.target.value)}
-          >
-            {contributions.map((c) => (
-              <option key={c.id} value={c.id}>
-                {c.name}
-                {c.endDate && ` — clôture ${new Date(c.endDate).toLocaleDateString('fr-FR')}`}
-              </option>
-            ))}
-          </select>
-        </div>
-        <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1.5">Montant (FCFA) <span className="text-red-500">*</span></label>
-          <input
-            type="number"
-            min="100"
-            step="1"
-            className="input-field w-40"
-            value={amount}
-            onChange={(e) => setAmount(Number(e.target.value) || 0)}
-          />
-          {suggestedAmount != null && (
-            <p className="text-xs text-gray-500 mt-1">Montant suggéré : {suggestedAmount.toLocaleString('fr-FR')} FCFA</p>
-          )}
-        </div>
-        {error && <div className="rounded-xl bg-red-50 text-red-700 px-4 py-2 text-sm">{error}</div>}
-        <button type="submit" disabled={loading} className="btn-primary disabled:opacity-60">
-          {loading ? 'Redirection…' : 'Payer avec CinetPay'}
-        </button>
-      </form>
+      <ul className="space-y-2 mb-4">
+        {contributions.map((c) => (
+          <li key={c.id} className="text-sm text-[var(--foreground)]">
+            <strong>{c.name}</strong>
+            {c.amount != null && ` — ${Number(c.amount).toLocaleString('fr-FR')} FCFA`}
+            {c.endDate && ` — clôture ${new Date(c.endDate).toLocaleDateString('fr-FR')}`}
+          </li>
+        ))}
+      </ul>
+      <div className="rounded-xl bg-blue-50 border border-blue-200 text-blue-800 px-4 py-3 text-sm">
+        Le paiement en ligne sera bientôt disponible. En attendant, contactez le trésorier pour régler vos cotisations.
+      </div>
     </div>
   );
 }
 
 function SelfPaymentForm({
   monthly,
-  currentYear,
-  currentMonth,
-  paidMonths,
   unpaidMonths,
-  error,
-  onSuccess,
-  onError,
 }: {
   monthly: Contribution;
   currentYear: number;
@@ -496,40 +437,6 @@ function SelfPaymentForm({
   onSuccess: () => void;
   onError: (msg: string | null) => void;
 }) {
-  const [amount, setAmount] = useState(monthly.amount != null ? Number(monthly.amount) : 5000);
-  const [periodYear, setPeriodYear] = useState(currentYear);
-  const [periodMonth, setPeriodMonth] = useState(currentMonth);
-  const [cinetPayLoading, setCinetPayLoading] = useState(false);
-
-  const isPaid = paidMonths.some((m) => m.year === periodYear && m.month === periodMonth);
-
-  useEffect(() => {
-    if (monthly.amount != null) setAmount(Number(monthly.amount));
-  }, [monthly.amount]);
-
-  async function handleCinetPay(e: React.FormEvent) {
-    e.preventDefault();
-    onError(null);
-    if (isPaid) {
-      onError('Ce mois est déjà payé.');
-      return;
-    }
-    setCinetPayLoading(true);
-    try {
-      const { paymentUrl } = await contributionsApi.initCinetPay({
-        contributionId: monthly.id,
-        amount,
-        periodYear,
-        periodMonth,
-      });
-      window.location.href = paymentUrl;
-    } catch (err) {
-      onError(err instanceof Error ? err.message : 'CinetPay indisponible.');
-    } finally {
-      setCinetPayLoading(false);
-    }
-  }
-
   const now = new Date();
   const isCurrentMonth = (y: number, m: number) => y === now.getFullYear() && m === now.getMonth() + 1;
 
@@ -537,11 +444,12 @@ function SelfPaymentForm({
     <div className="card border-l-4 border-l-emerald-500">
       <h2 className="text-sm font-medium text-gray-500 uppercase tracking-wide mb-3">Payer ma cotisation (mensuelle)</h2>
       <p className="text-gray-600 text-sm mb-2">
-        Pour être à jour, vous devez régler <strong>tous</strong> les mois impayés (mois passés + mois en cours). Un paiement par mois ; après chaque paiement, revenez ici pour régler le suivant si besoin.
+        Cotisation : <strong>{monthly.name}</strong>
+        {monthly.amount != null && ` — ${Number(monthly.amount).toLocaleString('fr-FR')} FCFA / mois`}
       </p>
       {unpaidMonths.length > 0 && (
         <div className="mb-4 p-3 rounded-xl bg-amber-50 border border-amber-200 text-sm text-amber-800">
-          <p className="font-semibold mb-1">Mois à régler — tous obligatoires ({unpaidMonths.length}) :</p>
+          <p className="font-semibold mb-1">Mois à régler ({unpaidMonths.length}) :</p>
           <ul className="list-disc list-inside space-y-0.5">
             {unpaidMonths.slice(0, 12).map((m) => (
               <li key={`${m.year}-${m.month}`}>
@@ -552,64 +460,9 @@ function SelfPaymentForm({
           </ul>
         </div>
       )}
-      {error && (
-        <div className="rounded-xl bg-red-50 text-red-700 px-4 py-3 text-sm mb-4">{error}</div>
-      )}
-      <form onSubmit={handleCinetPay} className="space-y-4">
-        <input type="hidden" value={monthly.id} readOnly />
-        <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1.5">Cotisation</label>
-          <p className="text-[var(--foreground)] font-medium">{monthly.name}</p>
-        </div>
-        <div className="grid grid-cols-2 gap-4">
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1.5">Période <span className="text-red-500">*</span></label>
-            <div className="flex gap-2">
-              <select
-                className="input-field"
-                value={periodYear}
-                onChange={(e) => setPeriodYear(parseInt(e.target.value, 10))}
-              >
-                {[currentYear - 1, currentYear, currentYear + 1].map((y) => (
-                  <option key={y} value={y}>{y}</option>
-                ))}
-              </select>
-              <select
-                className="input-field"
-                value={periodMonth}
-                onChange={(e) => setPeriodMonth(parseInt(e.target.value, 10))}
-              >
-                {[1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12].map((m) => (
-                  <option key={m} value={m}>
-                    {new Date(2000, m - 1).toLocaleString('fr-FR', { month: 'long' })}
-                  </option>
-                ))}
-              </select>
-            </div>
-          </div>
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1.5">Montant (FCFA) <span className="text-red-500">*</span></label>
-            <input
-              type="number"
-              min="1"
-              step="1"
-              className="input-field"
-              value={amount}
-              onChange={(e) => setAmount(Number(e.target.value) || 0)}
-            />
-          </div>
-        </div>
-        {isPaid && (
-          <p className="text-amber-700 text-sm font-medium">Vous avez déjà payé ce mois.</p>
-        )}
-        <button
-          type="submit"
-          disabled={cinetPayLoading || isPaid}
-          className="btn-primary disabled:opacity-60 w-full"
-        >
-          {cinetPayLoading ? 'Redirection vers CinetPay…' : 'Payer avec CinetPay'}
-        </button>
-      </form>
+      <div className="rounded-xl bg-blue-50 border border-blue-200 text-blue-800 px-4 py-3 text-sm">
+        Le paiement en ligne sera bientôt disponible. En attendant, contactez le trésorier pour régler vos cotisations.
+      </div>
     </div>
   );
 }

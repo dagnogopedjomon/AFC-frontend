@@ -99,7 +99,7 @@ export default function GererCotisationsPage() {
                       {monthly.amount != null ? `${Number(monthly.amount).toLocaleString('fr-FR')} FCFA / mois` : 'Montant non défini'}
                     </p>
                     <p className="text-sm text-gray-500 mt-1">
-                      Les membres doivent payer au moins ce montant via CinetPay. Un paiement manuel (montant différent) peut être enregistré par l’admin/trésorier.
+                      Les membres doivent payer au moins ce montant. Un paiement manuel (montant différent) peut être enregistré par l'admin/trésorier.
                     </p>
                   </div>
                   <button
@@ -273,7 +273,7 @@ function EditMonthlyForm({
           value={amount}
           onChange={(e) => setAmount(Number(e.target.value) || 0)}
         />
-        <p className="text-xs text-gray-500 mt-1">Montant minimum exigé via CinetPay. Un enregistrement manuel permet un montant différent.</p>
+        <p className="text-xs text-gray-500 mt-1">Montant minimum exigé. Un enregistrement manuel permet un montant différent.</p>
       </div>
       <div className="flex gap-3">
         <button type="submit" disabled={submitting} className="btn-primary disabled:opacity-60">
