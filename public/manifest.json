@@ -1,0 +1,21 @@
+{
+  "name": "AFC – Amicale Football",
+  "short_name": "AFC",
+  "description": "Gestion des cotisations et de la vie du club",
+  "start_url": "/dashboard",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#0f172a",
+  "theme_color": "#0ea5e9",
+  "lang": "fr",
+  "icons": [
+    {
+      "src": "/images/afcimage.jpeg",
+      "sizes": "any",
+      "type": "image/jpeg",
+      "purpose": "any maskable"
+    }
+  ],
+  "screenshots": [],
+  "categories": ["sports", "utilities"]
+}
