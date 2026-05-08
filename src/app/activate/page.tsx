@@ -37,6 +37,7 @@ function ActivateContent() {
   const codeFromUrl = searchParams.get('c')?.trim() || '';
 
   const [step, setStep] = useState<Step>('otp');
+  const [verifying, setVerifying] = useState(!!(codeFromUrl && phoneFromUrl));
   const [phone, setPhone] = useState(phoneFromUrl);
   const [activationToken, setActivationToken] = useState<string | null>(null);
   const [demoCode, setDemoCode] = useState<string | null>(null);
@@ -71,16 +72,15 @@ function ActivateContent() {
   // Si on arrive avec ?p=phone&c=code (nouveaux liens SMS courts) : auto-vérifier le code.
   useEffect(() => {
     if (!codeFromUrl || !phoneFromUrl) return;
-    const num = phoneFromUrl;
-    authApi.verifyActivationOtp(num, codeFromUrl)
+    authApi.verifyActivationOtp(phoneFromUrl, codeFromUrl)
       .then(({ activationToken: token }) => {
         setActivationToken(token);
         setStep('password');
       })
       .catch((e) => {
         setError(e instanceof Error ? e.message : 'Lien invalide ou expiré.');
-        setStep('otp');
-      });
+      })
+      .finally(() => setVerifying(false));
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
@@ -186,6 +186,18 @@ function ActivateContent() {
           <a href="/login" className="text-[var(--sky-blue-dark)] hover:underline font-medium">
             ← Retour à la connexion
           </a>
+        </div>
+      </div>
+    );
+  }
+
+  if (verifying) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-neutral-800 px-4">
+        <div className="card w-full max-w-md shadow-xl border border-neutral-600/30 flex flex-col items-center py-10">
+          <img src="/images/afcimage.jpeg" alt="AFC" className="h-20 w-20 object-cover rounded-xl mb-4" />
+          <div className="inline-block h-8 w-8 animate-spin rounded-full border-4 border-[var(--sky-blue)] border-r-transparent mb-3" />
+          <p className="text-gray-600 text-sm">Vérification en cours…</p>
         </div>
       </div>
     );
