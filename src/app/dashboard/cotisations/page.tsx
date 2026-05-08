@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useCallback } from 'react';
 import Link from 'next/link';
 import { useSearchParams } from 'next/navigation';
 import {
@@ -25,6 +25,7 @@ import {
   type MemberHistory,
   type HistorySummary,
 } from '@/lib/api';
+import { CreditCard, Loader2, CheckCircle } from 'lucide-react';
 import { ConfirmModal } from '@/components/ConfirmModal';
 import { toast } from 'sonner';
 
@@ -402,6 +403,28 @@ export default function CotisationsPage() {
 }
 
 function ExceptionalPaymentCard({ contributions }: { contributions: Contribution[] }) {
+  const [selectedId, setSelectedId] = useState<string>(contributions[0]?.id ?? '');
+  const [jekoLoading, setJekoLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const selected = contributions.find((c) => c.id === selectedId);
+
+  async function handleJekoPay() {
+    if (!selected) return;
+    setJekoLoading(true);
+    setError(null);
+    try {
+      const res = await contributionsApi.jekoInit({
+        contributionId: selected.id,
+        amount: Number(selected.amount),
+      });
+      window.location.href = res.paymentUrl;
+    } catch (e) {
+      setError(e instanceof Error ? e.message : 'Erreur lors du paiement.');
+    } finally {
+      setJekoLoading(false);
+    }
+  }
+
   return (
     <div className="card border-l-4 border-l-amber-500">
       <h2 className="text-sm font-medium text-gray-500 uppercase tracking-wide mb-3">Cotisations exceptionnelles (événements, etc.)</h2>
@@ -417,8 +440,32 @@ function ExceptionalPaymentCard({ contributions }: { contributions: Contribution
           </li>
         ))}
       </ul>
-      <div className="rounded-xl bg-blue-50 border border-blue-200 text-blue-800 px-4 py-3 text-sm">
-        Le paiement en ligne sera bientôt disponible. En attendant, contactez le trésorier pour régler vos cotisations.
+      {contributions.length > 1 && (
+        <select
+          value={selectedId}
+          onChange={(e) => setSelectedId(e.target.value)}
+          className="input-field mb-3 w-full"
+        >
+          {contributions.map((c) => (
+            <option key={c.id} value={c.id}>{c.name}{c.amount != null ? ` — ${Number(c.amount).toLocaleString('fr-FR')} FCFA` : ''}</option>
+          ))}
+        </select>
+      )}
+      {error && <p className="text-red-600 text-sm mb-2">{error}</p>}
+      <div className="space-y-2">
+        <button
+          type="button"
+          onClick={handleJekoPay}
+          disabled={jekoLoading || !selected}
+          className="btn-primary w-full flex items-center justify-center gap-2 disabled:opacity-60"
+        >
+          {jekoLoading ? (
+            <><Loader2 size={18} className="animate-spin" /> Redirection…</>
+          ) : (
+            <><CreditCard size={18} /> Payer {selected?.amount != null ? `${Number(selected.amount).toLocaleString('fr-FR')} FCFA` : ''} en ligne</>
+          )}
+        </button>
+        <p className="text-xs text-gray-400 text-center">Wave · Orange Money · MTN · Moov · Djamo</p>
       </div>
     </div>
   );
@@ -427,6 +474,8 @@ function ExceptionalPaymentCard({ contributions }: { contributions: Contribution
 function SelfPaymentForm({
   monthly,
   unpaidMonths,
+  onSuccess,
+  onError,
 }: {
   monthly: Contribution;
   currentYear: number;
@@ -439,6 +488,28 @@ function SelfPaymentForm({
 }) {
   const now = new Date();
   const isCurrentMonth = (y: number, m: number) => y === now.getFullYear() && m === now.getMonth() + 1;
+  const [jekoLoading, setJekoLoading] = useState(false);
+  const [paymentDone, setPaymentDone] = useState(false);
+
+  const handleJekoPay = useCallback(async () => {
+    if (!monthly.id || unpaidMonths.length === 0) return;
+    setJekoLoading(true);
+    onError(null);
+    try {
+      const firstUnpaid = unpaidMonths[0];
+      const res = await contributionsApi.jekoInit({
+        contributionId: monthly.id,
+        amount: Number(monthly.amount),
+        periodYear: firstUnpaid.year,
+        periodMonth: firstUnpaid.month,
+      });
+      window.location.href = res.paymentUrl;
+    } catch (e) {
+      onError(e instanceof Error ? e.message : 'Erreur lors du paiement.');
+    } finally {
+      setJekoLoading(false);
+    }
+  }, [monthly, unpaidMonths, onError]);
 
   return (
     <div className="card border-l-4 border-l-emerald-500">
@@ -460,9 +531,28 @@ function SelfPaymentForm({
           </ul>
         </div>
       )}
-      <div className="rounded-xl bg-blue-50 border border-blue-200 text-blue-800 px-4 py-3 text-sm">
-        Le paiement en ligne sera bientôt disponible. En attendant, contactez le trésorier pour régler vos cotisations.
-      </div>
+      {paymentDone ? (
+        <div className="flex items-center gap-2 text-green-700 text-sm font-medium">
+          <CheckCircle size={18} />
+          Paiement enregistré !
+        </div>
+      ) : (
+        <div className="space-y-2">
+          <button
+            type="button"
+            onClick={handleJekoPay}
+            disabled={jekoLoading || unpaidMonths.length === 0}
+            className="btn-primary w-full flex items-center justify-center gap-2 disabled:opacity-60"
+          >
+            {jekoLoading ? (
+              <><Loader2 size={18} className="animate-spin" /> Redirection…</>
+            ) : (
+              <><CreditCard size={18} /> Payer {monthly.amount != null ? `${Number(monthly.amount).toLocaleString('fr-FR')} FCFA` : ''} en ligne</>
+            )}
+          </button>
+          <p className="text-xs text-gray-400 text-center">Wave · Orange Money · MTN · Moov · Djamo</p>
+        </div>
+      )}
     </div>
   );
 }
