@@ -32,8 +32,9 @@ function ActivateContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const { login } = useAuth();
-  const phoneFromUrl = searchParams.get('phone')?.trim() || '';
+  const phoneFromUrl = (searchParams.get('p') || searchParams.get('phone'))?.trim() || '';
   const tokenFromUrl = searchParams.get('token')?.trim() || '';
+  const codeFromUrl = searchParams.get('c')?.trim() || '';
 
   const [step, setStep] = useState<Step>('otp');
   const [phone, setPhone] = useState(phoneFromUrl);
@@ -60,13 +61,28 @@ function ActivateContent() {
     defaultValues: { password: '', confirm: '' },
   });
 
-  // Si on arrive avec un token dans l'URL (lien d'invitation "1 clic"),
-  // on saute directement les étapes OTP / code et on passe à la création du mot de passe.
+  // Si on arrive avec un token JWT dans l'URL (anciens liens), aller direct au mot de passe.
   useEffect(() => {
     if (!tokenFromUrl) return;
     setActivationToken(tokenFromUrl);
     setStep('password');
   }, [tokenFromUrl]);
+
+  // Si on arrive avec ?p=phone&c=code (nouveaux liens SMS courts) : auto-vérifier le code.
+  useEffect(() => {
+    if (!codeFromUrl || !phoneFromUrl) return;
+    const num = phoneFromUrl;
+    authApi.verifyActivationOtp(num, codeFromUrl)
+      .then(({ activationToken: token }) => {
+        setActivationToken(token);
+        setStep('password');
+      })
+      .catch((e) => {
+        setError(e instanceof Error ? e.message : 'Lien invalide ou expiré.');
+        setStep('otp');
+      });
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   // Lien sans ?phone= : récupérer le numéro via l'API pour que le formulaire mot de passe fonctionne.
   useEffect(() => {
@@ -92,15 +108,13 @@ function ActivateContent() {
     return () => { cancelled = true; };
   }, [tokenFromUrl, phoneFromUrl]);
 
-  // Si l'utilisateur vient du lien d'invitation (avec ?phone=...), on envoie le code automatiquement
-  // pour que le parcours soit "clic sur le lien → recevoir le code → définir le mot de passe".
+  // Si l'utilisateur vient du lien sans token ni code (ancienne URL ?phone=), on envoie le code automatiquement.
   useEffect(() => {
-    // Si un token est présent, on est en mode "1 clic" : pas d'OTP à envoyer.
-    if (tokenFromUrl) return;
+    if (tokenFromUrl) return;  // mode JWT 1-clic
+    if (codeFromUrl) return;   // mode code court : géré par l'effet ci-dessus
     if (!phoneFromUrl) return;
     if (autoSentOtpRef.current) return;
     autoSentOtpRef.current = true;
-    // Ne pas bloquer le rendu si l'appel échoue : l'erreur est affichée et l'utilisateur peut réessayer.
     void handleSendOtp();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [phoneFromUrl]);
