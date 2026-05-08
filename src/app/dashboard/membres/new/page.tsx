@@ -21,7 +21,7 @@ export default function NewMemberPage() {
   const router = useRouter();
   const [error, setError] = useState<string | null>(null);
   const [demoLink, setDemoLink] = useState<string | null>(null);
-  const [whatsappSent, setWhatsappSent] = useState<boolean | null>(null);
+  const [smsSent, setSmsSent] = useState<boolean | null>(null);
 
   const canCreate = user?.role === 'ADMIN';
 
@@ -39,16 +39,16 @@ export default function NewMemberPage() {
       const result = await membersApi.invite({
         phone: data.phone.trim(),
       });
-      if (result.whatsappSent === true) {
-        toast.success('Invitation envoyée. Message WhatsApp envoyé.');
-      } else if (result.whatsappError) {
+      if (result.smsSent === true) {
+        toast.success('Invitation envoyée par SMS.');
+      } else if (result.smsError) {
         toast.warning(
-          `Invitation créée mais le message WhatsApp n'a pas été envoyé : ${result.whatsappError}`,
+          `Invitation créée mais le SMS n'a pas été envoyé : ${result.smsError}`,
         );
       } else {
         toast.success('Invitation envoyée.');
       }
-      setWhatsappSent(result.whatsappSent ?? null);
+      setSmsSent(result.smsSent ?? null);
       if (result.activationLink) {
         setDemoLink(result.activationLink);
       } else {
@@ -136,14 +136,14 @@ export default function NewMemberPage() {
       </div>
 
       {demoLink && (
-        <div className={`card max-w-xl border-2 ${whatsappSent ? 'border-green-200 bg-green-50' : 'border-amber-200 bg-amber-50'}`}>
-          <p className={`font-medium mb-2 ${whatsappSent ? 'text-green-800' : 'text-amber-800'}`}>
-            {whatsappSent ? 'Invitation envoyée par WhatsApp' : 'Lien d\'activation (envoi manuel)'}
+        <div className={`card max-w-xl border-2 ${smsSent ? 'border-green-200 bg-green-50' : 'border-amber-200 bg-amber-50'}`}>
+          <p className={`font-medium mb-2 ${smsSent ? 'text-green-800' : 'text-amber-800'}`}>
+            {smsSent ? 'Invitation envoyée par SMS' : 'Lien d\'activation (envoi manuel)'}
           </p>
-          <p className={`text-sm mb-2 ${whatsappSent ? 'text-green-700' : 'text-amber-700'}`}>
-            {whatsappSent
-              ? 'Le membre a reçu un message WhatsApp avec le lien d\'activation. Vous pouvez aussi copier le lien ci-dessous :'
-              : 'Le message WhatsApp n\'a pas pu être envoyé. Copiez ce lien et envoyez-le manuellement au membre :'}
+          <p className={`text-sm mb-2 ${smsSent ? 'text-green-700' : 'text-amber-700'}`}>
+            {smsSent
+              ? 'Le membre a reçu un SMS avec le lien d\'activation. Vous pouvez aussi copier le lien ci-dessous :'
+              : 'Le SMS n\'a pas pu être envoyé. Copiez ce lien et envoyez-le manuellement au membre :'}
           </p>
           <div className="flex flex-wrap items-center gap-2">
             <a
@@ -162,7 +162,7 @@ export default function NewMemberPage() {
               Copier
             </button>
           </div>
-          <p className="text-xs text-amber-600 mt-2">Sur la page d’activation, le membre clique sur « Envoyer le code » : il reçoit le code par WhatsApp (ou il s’affiche à l’écran si WhatsApp n’est pas configuré).</p>
+          <p className="text-xs text-amber-600 mt-2">Le membre clique sur le lien reçu par SMS pour activer son compte et définir son mot de passe.</p>
           <Link
             href="/dashboard/membres"
             className="mt-4 inline-block text-[var(--sky-blue-dark)] hover:underline font-medium"

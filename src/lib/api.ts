@@ -116,8 +116,8 @@ export const membersApi = {
     api<
       Member & {
         activationLink?: string;
-        whatsappSent?: boolean;
-        whatsappError?: string;
+        smsSent?: boolean;
+        smsError?: string;
       }
     >('/members/invite', { method: 'POST', body: JSON.stringify(data) }),
   create: (data: CreateMemberInput) =>
