@@ -105,6 +105,29 @@ export default function CotisationsPage() {
     contributionsApi.meUnpaidMonths().then((d) => setUnpaidMonthsForSelf(d.unpaidMonths)).catch(() => setUnpaidMonthsForSelf([]));
   }, [user, myStatus]);
 
+  // Vérification automatique d'un paiement Jeko en attente (au retour de la page de paiement)
+  useEffect(() => {
+    if (!user) return;
+    let pendingLinkId: string | null = null;
+    try { pendingLinkId = localStorage.getItem('jeko_pending_link'); } catch {}
+    if (!pendingLinkId) return;
+    contributionsApi.jekoVerify(pendingLinkId)
+      .then((res) => {
+        if (res.paid) {
+          toast.success('Paiement confirmé ! Votre cotisation a été enregistrée.');
+          try { localStorage.removeItem('jeko_pending_link'); } catch {}
+          // Rafraîchir les données
+          contributionsApi.me().then(setMyStatus).catch(() => {});
+          contributionsApi.meUnpaidMonths().then((d) => setUnpaidMonthsForSelf(d.unpaidMonths)).catch(() => {});
+        }
+        // Si pas encore payé, on garde le linkId pour réessayer plus tard
+      })
+      .catch(() => {
+        // Erreur de vérif → on supprime le linkId pour éviter de bloquer
+        try { localStorage.removeItem('jeko_pending_link'); } catch {}
+      });
+  }, [user]);
+
   const now = new Date();
   const currentYear = now.getFullYear();
   const currentMonth = now.getMonth() + 1;
@@ -417,6 +440,7 @@ function ExceptionalPaymentCard({ contributions }: { contributions: Contribution
         contributionId: selected.id,
         amount: Number(selected.amount),
       });
+      try { localStorage.setItem('jeko_pending_link', res.linkId); } catch {}
       window.location.href = res.paymentUrl;
     } catch (e) {
       setError(e instanceof Error ? e.message : 'Erreur lors du paiement.');
@@ -503,6 +527,7 @@ function SelfPaymentForm({
         periodYear: firstUnpaid.year,
         periodMonth: firstUnpaid.month,
       });
+      try { localStorage.setItem('jeko_pending_link', res.linkId); } catch {}
       window.location.href = res.paymentUrl;
     } catch (e) {
       onError(e instanceof Error ? e.message : 'Erreur lors du paiement.');
