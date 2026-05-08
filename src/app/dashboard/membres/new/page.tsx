@@ -20,8 +20,6 @@ export default function NewMemberPage() {
   const { user } = useAuth();
   const router = useRouter();
   const [error, setError] = useState<string | null>(null);
-  const [demoLink, setDemoLink] = useState<string | null>(null);
-  const [smsSent, setSmsSent] = useState<boolean | null>(null);
 
   const canCreate = user?.role === 'ADMIN';
 
@@ -48,12 +46,7 @@ export default function NewMemberPage() {
       } else {
         toast.success('Invitation envoyée.');
       }
-      setSmsSent(result.smsSent ?? null);
-      if (result.activationLink) {
-        setDemoLink(result.activationLink);
-      } else {
-        router.push('/dashboard/membres?invited=1');
-      }
+      router.push('/dashboard/membres?invited=1');
     } catch (e) {
       setError(e instanceof Error ? e.message : 'Erreur lors de l’invitation');
     }
@@ -135,42 +128,6 @@ export default function NewMemberPage() {
         </form>
       </div>
 
-      {demoLink && (
-        <div className={`card max-w-xl border-2 ${smsSent ? 'border-green-200 bg-green-50' : 'border-amber-200 bg-amber-50'}`}>
-          <p className={`font-medium mb-2 ${smsSent ? 'text-green-800' : 'text-amber-800'}`}>
-            {smsSent ? 'Invitation envoyée par SMS' : 'Lien d\'activation (envoi manuel)'}
-          </p>
-          <p className={`text-sm mb-2 ${smsSent ? 'text-green-700' : 'text-amber-700'}`}>
-            {smsSent
-              ? 'Le membre a reçu un SMS avec le lien d\'activation. Vous pouvez aussi copier le lien ci-dessous :'
-              : 'Le SMS n\'a pas pu être envoyé. Copiez ce lien et envoyez-le manuellement au membre :'}
-          </p>
-          <div className="flex flex-wrap items-center gap-2">
-            <a
-              href={demoLink}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="text-[var(--sky-blue-dark)] underline break-all"
-            >
-              {demoLink}
-            </a>
-            <button
-              type="button"
-              onClick={() => navigator.clipboard.writeText(demoLink)}
-              className="px-3 py-1.5 rounded-lg border border-amber-300 text-amber-800 text-sm font-medium hover:bg-amber-100"
-            >
-              Copier
-            </button>
-          </div>
-          <p className="text-xs text-amber-600 mt-2">Le membre clique sur le lien reçu par SMS pour activer son compte et définir son mot de passe.</p>
-          <Link
-            href="/dashboard/membres"
-            className="mt-4 inline-block text-[var(--sky-blue-dark)] hover:underline font-medium"
-          >
-            ← Retour à la liste des membres
-          </Link>
-        </div>
-      )}
     </div>
   );
 }
