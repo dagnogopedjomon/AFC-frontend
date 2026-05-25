@@ -79,15 +79,17 @@ export default function RegulariserPage() {
     setJekoLoading(true);
     setError(null);
     try {
+      const amountPerMonth = Number(monthly.amount);
+      const totalAmount = amountPerMonth * unpaidMonths.length;
       const firstUnpaid = unpaidMonths[0];
-      const amount = Number(monthly.amount);
       const res = await contributionsApi.jekoInit({
         contributionId: monthlyContributionId,
-        amount,
+        amount: totalAmount,
         periodYear: firstUnpaid.year,
         periodMonth: firstUnpaid.month,
       });
       setJekoLinkId(res.linkId);
+      try { localStorage.setItem('jeko_pending_link', res.linkId); } catch {}
       window.location.href = res.paymentUrl;
     } catch (e) {
       setError(e instanceof Error ? e.message : 'Erreur lors de l\'initialisation du paiement.');
@@ -177,7 +179,7 @@ export default function RegulariserPage() {
               {jekoLoading ? (
                 <><Loader2 size={18} className="animate-spin" /> Redirection…</>
               ) : (
-                <><CreditCard size={18} /> Payer {monthly?.amount != null ? `${Number(monthly.amount).toLocaleString('fr-FR')} FCFA` : ''} en ligne</>
+                <><CreditCard size={18} /> Payer {monthly?.amount != null ? `${(Number(monthly.amount) * unpaidMonths.length).toLocaleString('fr-FR')} FCFA` : ''} en ligne ({unpaidMonths.length} mois)</>
               )}
             </button>
           )}

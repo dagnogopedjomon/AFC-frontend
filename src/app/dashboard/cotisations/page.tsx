@@ -521,9 +521,10 @@ function SelfPaymentForm({
     onError(null);
     try {
       const firstUnpaid = unpaidMonths[0];
+      const totalAmount = Number(monthly.amount) * unpaidMonths.length;
       const res = await contributionsApi.jekoInit({
         contributionId: monthly.id,
-        amount: Number(monthly.amount),
+        amount: totalAmount,
         periodYear: firstUnpaid.year,
         periodMonth: firstUnpaid.month,
       });
@@ -572,7 +573,7 @@ function SelfPaymentForm({
             {jekoLoading ? (
               <><Loader2 size={18} className="animate-spin" /> Redirection…</>
             ) : (
-              <><CreditCard size={18} /> Payer {monthly.amount != null ? `${Number(monthly.amount).toLocaleString('fr-FR')} FCFA` : ''} en ligne</>
+              <><CreditCard size={18} /> Payer {monthly.amount != null ? `${(Number(monthly.amount) * unpaidMonths.length).toLocaleString('fr-FR')} FCFA` : ''} en ligne ({unpaidMonths.length} mois)</>
             )}
           </button>
           <p className="text-xs text-gray-400 text-center">Wave · Orange Money · MTN · Moov · Djamo</p>
