@@ -9,7 +9,7 @@ import { toast } from 'sonner';
 export default function PaymentSuccessPage() {
   const searchParams = useSearchParams();
   const router = useRouter();
-  const linkId = searchParams.get('jeko_link');
+  const linkId = searchParams.get('ref');
   const [status, setStatus] = useState<'verifying' | 'paid' | 'pending' | 'error'>('verifying');
 
   useEffect(() => {

@@ -301,15 +301,15 @@ export const contributionsApi = {
     api<{ unpaidMonths: Array<{ year: number; month: number }>; monthlyContributionId: string | null }>(
       '/contributions/me/unpaid-months',
     ),
-  /** Initialise un paiement Jeko → retourne le lien de paiement. */
-  jekoInit: (data: { contributionId: string; amount: number; periodYear?: number; periodMonth?: number }) =>
-    api<{ linkId: string; paymentUrl: string }>('/contributions/payments/jeko/init', {
+  /** Initialise un paiement Jeko (redirect) → retourne reference + redirectUrl. */
+  jekoInit: (data: { contributionId: string; amount: number; periodYear?: number; periodMonth?: number; paymentMethod: string; payerPhone?: string }) =>
+    api<{ reference: string; redirectUrl: string }>('/contributions/payments/jeko/init', {
       method: 'POST',
       body: JSON.stringify(data),
     }),
-  /** Vérifie si le paiement Jeko a été effectué et l'enregistre. */
-  jekoVerify: (linkId: string) =>
-    api<{ paid: boolean; payment?: object }>(`/contributions/payments/jeko/verify/${linkId}`),
+  /** Vérifie si le paiement Jeko a été effectué et l'enregistre (par reference UUID). */
+  jekoVerify: (reference: string) =>
+    api<{ paid: boolean; payment?: object }>(`/contributions/payments/jeko/verify/${reference}`),
 };
 
 export type HistorySummary = {
