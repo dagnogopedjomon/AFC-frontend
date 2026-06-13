@@ -1,5 +1,9 @@
 /** URL de l'API sans espace ni slash final */
-export const API_BASE = (process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3000').trim().replace(/\/$/, '');
+export const API_BASE = (
+  process.env.NEXT_PUBLIC_API_URL ||
+  process.env.NEXT_PUBLIC_API_PUBLIC_SUIVANTE ||
+  'http://localhost:3000'
+).trim().replace(/\/$/, '');
 
 function getToken(): string | null {
   if (typeof window === 'undefined') return null;
