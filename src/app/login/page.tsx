@@ -2,11 +2,12 @@
 
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { useForm } from 'react-hook-form';
+import { useForm, Controller } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
 import { useAuth } from '@/lib/auth-context';
 import { Eye, EyeOff } from 'lucide-react';
+import { PhoneInput } from '@/components/PhoneInput';
 
 const schema = z.object({
   phone: z.string().min(1, 'Le numéro de téléphone est requis'),
@@ -108,13 +109,17 @@ export default function LoginPage() {
             <label htmlFor="phone" className="mb-1.5 block text-sm font-medium text-neutral-200">
               Téléphone <span className="text-red-400">*</span>
             </label>
-            <input
-              id="phone"
-              type="tel"
-              placeholder="06 12 34 56 78"
-              autoComplete="tel"
-              className="login-dark-input w-full rounded-xl border border-neutral-600 bg-neutral-700/50 px-4 py-3 text-neutral-100 caret-sky-400 placeholder:text-neutral-500 outline-none transition focus:border-sky-500 focus:ring-2 focus:ring-sky-500/25"
-              {...register('phone')}
+            <Controller
+              name="phone"
+              control={control}
+              render={({ field }) => (
+                <PhoneInput
+                  {...field}
+                  variant="dark"
+                  placeholder="07 12 34 56 78"
+                  className="w-full"
+                />
+              )}
             />
             {errors.phone && (
               <p className="mt-1 text-sm text-red-400">{errors.phone.message}</p>

@@ -3,11 +3,12 @@
 import { useState } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
-import { useForm } from 'react-hook-form';
+import { useForm, Controller } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
 import { useAuth } from '@/lib/auth-context';
 import { membersApi } from '@/lib/api';
+import { PhoneInput } from '@/components/PhoneInput';
 import { toast } from 'sonner';
 
 const schema = z.object({
@@ -99,11 +100,17 @@ export default function NewMemberPage() {
             <label className="block text-sm font-medium text-gray-700 mb-1.5">
               Téléphone <span className="text-red-500">*</span>
             </label>
-            <input
-              type="tel"
-              className="input-field"
-              {...register('phone')}
-              placeholder="06 12 34 56 78"
+            <Controller
+              name="phone"
+              control={control}
+              render={({ field }) => (
+                <PhoneInput
+                  {...field}
+                  variant="light"
+                  placeholder="07 12 34 56 78"
+                  className="w-full"
+                />
+              )}
             />
             {errors.phone && (
               <p className="mt-1 text-sm text-red-600">{errors.phone.message}</p>
