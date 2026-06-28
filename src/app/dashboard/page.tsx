@@ -65,20 +65,15 @@ function ArrearsBanner({
 }) {
   if (!unpaidMonths || unpaidMonths.length === 0) return null;
 
-  const monthsText = unpaidMonths
-    .map((m) => new Date(m.year, m.month - 1).toLocaleDateString('fr-FR', { month: 'short', year: 'numeric' }))
-    .join(' • ');
-
   const fullText = `${user?.firstName ?? 'Vous'}, vous êtes en retard de ${unpaidMonths.length} mois de cotisation. Cliquez pour régulariser.`;
-  const detailText = `Mois concernés : ${monthsText}`;
-  const duplicatedText = `${fullText}   •   ${detailText}   •   ${fullText}   •   ${detailText}`;
+  const duplicatedText = `${fullText}   •   ${fullText}`;
 
   return (
     <Link href="/dashboard/regulariser">
       <motion.div
         initial={{ opacity: 0, y: -8 }}
         animate={{ opacity: 1, y: 0 }}
-        className="mt-4 overflow-hidden rounded-xl border border-red-200 bg-red-50 shadow-sm cursor-pointer hover:bg-red-100 transition-colors"
+        className="mt-4 mb-4 overflow-hidden rounded-xl border border-red-200 bg-red-50 shadow-sm cursor-pointer hover:bg-red-100 transition-colors"
       >
         <div className="flex items-center gap-3 px-4 py-2.5">
           <AlertTriangle className="h-5 w-5 shrink-0 text-red-600" />
