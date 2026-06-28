@@ -311,6 +311,12 @@ export const contributionsApi = {
       method: 'POST',
       body: JSON.stringify(data),
     }),
+  /** Crée un lien de paiement Jeko (checkout avec carte bancaire + mobile money). */
+  jekoLink: (data: { contributionId: string; amount: number; periodYear?: number; periodMonth?: number; title: string }) =>
+    api<{ reference: string; link: string }>('/contributions/payments/jeko/link', {
+      method: 'POST',
+      body: JSON.stringify(data),
+    }),
   /** Vérifie si le paiement Jeko a été effectué et l'enregistre (par reference UUID). */
   jekoVerify: (reference: string) =>
     api<{ paid: boolean; payment?: object }>(`/contributions/payments/jeko/verify/${reference}`),

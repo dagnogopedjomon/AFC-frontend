@@ -10,6 +10,7 @@ const PAYMENT_METHODS = [
   { id: 'mtn',    label: 'MTN' },
   { id: 'moov',   label: 'Moov' },
   { id: 'djamo',  label: 'Djamo' },
+  { id: 'card',   label: 'Carte bancaire' },
 ] as const;
 
 type Props = {
@@ -31,15 +32,28 @@ export function JekoPayButton({ contributionId, amount, periodYear, periodMonth,
     if (!method) return;
     setLoading(true);
     try {
-      const res = await contributionsApi.jekoInit({
-        contributionId,
-        amount,
-        periodYear,
-        periodMonth,
-        paymentMethod: method,
-        payerPhone: phone || undefined,
-      });
-      window.location.href = res.redirectUrl;
+      if (method === 'card') {
+        const res = await contributionsApi.jekoLink({
+          contributionId,
+          amount,
+          periodYear,
+          periodMonth,
+          title: label ?? `Cotisation AFC`,
+        });
+        localStorage.setItem('jeko_pending_link', res.reference);
+        window.location.href = res.link;
+      } else {
+        const res = await contributionsApi.jekoInit({
+          contributionId,
+          amount,
+          periodYear,
+          periodMonth,
+          paymentMethod: method,
+          payerPhone: phone || undefined,
+        });
+        localStorage.setItem('jeko_pending_link', res.reference);
+        window.location.href = res.redirectUrl;
+      }
     } catch (e) {
       const msg = e instanceof Error ? e.message : 'Erreur lors du paiement.';
       onError?.(msg);
@@ -72,22 +86,24 @@ export function JekoPayButton({ contributionId, amount, periodYear, periodMonth,
         </div>
       </div>
 
-      <div>
-        <p className="text-xs font-medium text-gray-500 uppercase tracking-wide mb-1">Numéro de téléphone</p>
-        <input
-          type="tel"
-          value={phone}
-          onChange={(e) => setPhone(e.target.value)}
-          placeholder="+2250700000000"
-          className="input-field w-full"
-        />
-        <p className="text-xs text-gray-400 mt-1">Format international ex: +2250701234567</p>
-      </div>
+      {method !== 'card' && (
+        <div>
+          <p className="text-xs font-medium text-gray-500 uppercase tracking-wide mb-1">Numéro de téléphone</p>
+          <input
+            type="tel"
+            value={phone}
+            onChange={(e) => setPhone(e.target.value)}
+            placeholder="+2250700000000"
+            className="input-field w-full"
+          />
+          <p className="text-xs text-gray-400 mt-1">Format international ex: +2250701234567</p>
+        </div>
+      )}
 
       <button
         type="button"
         onClick={handlePay}
-        disabled={loading || !method || !phone}
+        disabled={loading || !method || (method !== 'card' && !phone)}
         className="btn-primary w-full flex items-center justify-center gap-2 disabled:opacity-60"
       >
         {loading ? (
@@ -96,7 +112,7 @@ export function JekoPayButton({ contributionId, amount, periodYear, periodMonth,
           <><CreditCard size={18} /> Payer {amountLabel} en ligne</>
         )}
       </button>
-      <p className="text-xs text-gray-400 text-center">Wave · Orange Money · MTN · Moov · Djamo</p>
+      <p className="text-xs text-gray-400 text-center">Wave · Orange Money · MTN · Moov · Djamo · Carte bancaire</p>
     </div>
   );
 }
