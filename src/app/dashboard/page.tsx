@@ -66,13 +66,12 @@ function ArrearsBanner({
   if (!unpaidMonths || unpaidMonths.length === 0) return null;
 
   const monthsText = unpaidMonths
-    .slice(0, 6)
-    .map((m) => new Date(m.year, m.month - 1).toLocaleDateString('fr-FR', { month: 'long', year: 'numeric' }))
+    .map((m) => new Date(m.year, m.month - 1).toLocaleDateString('fr-FR', { month: 'short', year: 'numeric' }))
     .join(' • ');
 
-  const suffix = unpaidMonths.length > 6 ? ` et ${unpaidMonths.length - 6} autre${unpaidMonths.length - 6 > 1 ? 's' : ''}` : '';
-  const fullText = `${user?.firstName ?? 'Vous'}, vous êtes en retard de ${unpaidMonths.length} mois de cotisation : ${monthsText}${suffix} — Cliquez sur "Régulariser" pour payer.`;
-  const duplicatedText = `${fullText}   •   ${fullText}`;
+  const fullText = `${user?.firstName ?? 'Vous'}, vous êtes en retard de ${unpaidMonths.length} mois de cotisation. Cliquez pour régulariser.`;
+  const detailText = `Mois concernés : ${monthsText}`;
+  const duplicatedText = `${fullText}   •   ${detailText}   •   ${fullText}   •   ${detailText}`;
 
   return (
     <Link href="/dashboard/regulariser">
