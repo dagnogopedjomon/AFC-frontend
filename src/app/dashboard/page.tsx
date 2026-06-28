@@ -65,11 +65,11 @@ function ArrearsBanner({
 }) {
   if (!unpaidMonths || unpaidMonths.length === 0) return null;
 
-  const fullText = `${user?.firstName ?? 'Vous'}, vous êtes en retard de ${unpaidMonths.length} mois de cotisation. Cliquez pour régulariser.`;
+  const fullText = `${user?.firstName ?? 'Vous'}, vous êtes en retard de ${unpaidMonths.length} mois de cotisation. Cliquez pour régulariser dans Cotisations.`;
   const duplicatedText = `${fullText}   •   ${fullText}`;
 
   return (
-    <Link href="/dashboard/regulariser">
+    <Link href="/dashboard/cotisations">
       <motion.div
         initial={{ opacity: 0, y: -8 }}
         animate={{ opacity: 1, y: 0 }}
