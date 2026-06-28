@@ -56,37 +56,41 @@ const cardMotion = {
   transition: { duration: 0.25 },
 };
 
-function ArrearsBanner({ arrears }: { arrears: ArrearsResult | null }) {
-  if (!arrears || arrears.total === 0) return null;
+function ArrearsBanner({
+  user,
+  unpaidMonths,
+}: {
+  user: { firstName: string } | null;
+  unpaidMonths: Array<{ year: number; month: number }> | null;
+}) {
+  if (!unpaidMonths || unpaidMonths.length === 0) return null;
 
-  const periodLabel = new Date(arrears.periodYear, arrears.periodMonth - 1).toLocaleDateString('fr-FR', {
-    month: 'long',
-    year: 'numeric',
-  });
-
-  const membersText = arrears.members
-    .map((m) => `${m.firstName} ${m.lastName}`)
+  const monthsText = unpaidMonths
+    .slice(0, 6)
+    .map((m) => new Date(m.year, m.month - 1).toLocaleDateString('fr-FR', { month: 'long', year: 'numeric' }))
     .join(' • ');
 
-  const fullText = `${arrears.total} membre${arrears.total > 1 ? 's' : ''} en retard pour ${periodLabel} : ${membersText}`;
-  // Dupliquer le texte pour créer une boucle fluide
-  const duplicatedText = `${fullText}   •   ${fullText}   •   ${fullText}`;
+  const suffix = unpaidMonths.length > 6 ? ` et ${unpaidMonths.length - 6} autre${unpaidMonths.length - 6 > 1 ? 's' : ''}` : '';
+  const fullText = `${user?.firstName ?? 'Vous'}, vous êtes en retard de ${unpaidMonths.length} mois de cotisation : ${monthsText}${suffix} — Cliquez sur "Régulariser" pour payer.`;
+  const duplicatedText = `${fullText}   •   ${fullText}`;
 
   return (
-    <motion.div
-      initial={{ opacity: 0, y: -8 }}
-      animate={{ opacity: 1, y: 0 }}
-      className="mt-4 overflow-hidden rounded-xl border border-amber-200 bg-amber-50 shadow-sm"
-    >
-      <div className="flex items-center gap-3 px-4 py-2.5">
-        <AlertTriangle className="h-5 w-5 shrink-0 text-amber-600" />
-        <div className="overflow-hidden">
-          <div className="animate-marquee text-sm font-medium text-amber-800 whitespace-nowrap">
-            {duplicatedText}
+    <Link href="/dashboard/regulariser">
+      <motion.div
+        initial={{ opacity: 0, y: -8 }}
+        animate={{ opacity: 1, y: 0 }}
+        className="mt-4 overflow-hidden rounded-xl border border-red-200 bg-red-50 shadow-sm cursor-pointer hover:bg-red-100 transition-colors"
+      >
+        <div className="flex items-center gap-3 px-4 py-2.5">
+          <AlertTriangle className="h-5 w-5 shrink-0 text-red-600" />
+          <div className="overflow-hidden">
+            <div className="animate-marquee text-sm font-medium text-red-800 whitespace-nowrap">
+              {duplicatedText}
+            </div>
           </div>
         </div>
-      </div>
-    </motion.div>
+      </motion.div>
+    </Link>
   );
 }
 
@@ -96,6 +100,7 @@ export default function DashboardPage() {
   const [arrears, setArrears] = useState<ArrearsResult | null>(null);
   const [totalMembers, setTotalMembers] = useState<number | null>(null);
   const [myStatus, setMyStatus] = useState<MemberHistory | null>(null);
+  const [myUnpaidMonths, setMyUnpaidMonths] = useState<Array<{ year: number; month: number }> | null>(null);
   const [expenses, setExpenses] = useState<Expense[]>([]);
   const [activities, setActivities] = useState<Activity[]>([]);
   const [annualReport, setAnnualReport] = useState<AnnualReport | null>(null);
@@ -131,6 +136,7 @@ export default function DashboardPage() {
     if (user) {
       promises.push(
         contributionsApi.me().then(setMyStatus).catch(() => setMyStatus(null)),
+        contributionsApi.meUnpaidMonths().then((d) => setMyUnpaidMonths(d.unpaidMonths)).catch(() => setMyUnpaidMonths([])),
       );
     }
     promises.push(
@@ -229,7 +235,7 @@ export default function DashboardPage() {
         </div>
       </motion.header>
 
-      <ArrearsBanner arrears={arrears} />
+      <ArrearsBanner user={user} unpaidMonths={myUnpaidMonths} />
 
       {error && (
         <motion.div
