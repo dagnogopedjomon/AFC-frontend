@@ -15,8 +15,9 @@ export async function api<T>(
   options: RequestInit = {},
 ): Promise<T> {
   const token = getToken();
+  const isFormData = options.body instanceof FormData;
   const headers: HeadersInit = {
-    'Content-Type': 'application/json',
+    ...(!isFormData && { 'Content-Type': 'application/json' }),
     ...(options.headers as Record<string, string>),
   };
   if (token) headers['Authorization'] = `Bearer ${token}`;
@@ -581,12 +582,23 @@ export const activitiesApi = {
   one: (id: string) => api<Activity & { photos: Photo[] }>(`/activities/${id}`),
   create: (data: { type: string; title: string; description?: string; date: string; endDate?: string; result?: string }) =>
     api<Activity>('/activities', { method: 'POST', body: JSON.stringify(data) }),
+  update: (id: string, data: { type?: string; title?: string; description?: string; date?: string; endDate?: string; result?: string }) =>
+    api<Activity & { photos: Photo[] }>(`/activities/${id}`, { method: 'PATCH', body: JSON.stringify(data) }),
+  delete: (id: string) => api<{ success: boolean }>(`/activities/${id}`, { method: 'DELETE' }),
   announcements: () => api<Announcement[]>('/activities/announcements'),
   createAnnouncement: (data: { title: string; content: string }) =>
     api<Announcement>('/activities/announcements', { method: 'POST', body: JSON.stringify(data) }),
   photos: (activityId: string) => api<Photo[]>(`/activities/${activityId}/photos`),
   createPhoto: (data: { url: string; caption?: string; activityId?: string }) =>
     api<Photo>('/activities/photos', { method: 'POST', body: JSON.stringify(data) }),
+  uploadPhoto: (file: File, activityId: string, caption?: string) => {
+    const form = new FormData();
+    form.append('file', file);
+    form.append('activityId', activityId);
+    if (caption) form.append('caption', caption);
+    return api<Photo>('/activities/photos/upload', { method: 'POST', body: form });
+  },
+  deletePhoto: (id: string) => api<{ success: boolean }>(`/activities/photos/${id}`, { method: 'DELETE' }),
 };
 
 export const caisseApi = {

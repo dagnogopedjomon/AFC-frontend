@@ -96,47 +96,25 @@ export default function ActivitesPage() {
             {activities.length === 0 ? (
               <p className="text-gray-500">Aucune activité.</p>
             ) : (
-              <div className="overflow-x-auto">
-                <table className="w-full text-left text-sm">
-                  <thead>
-                    <tr className="border-b border-gray-100 bg-[var(--sky-blue-soft)]">
-                      <th className="px-4 py-3 text-[var(--sky-blue-dark)]">Type</th>
-                      <th className="px-4 py-3 text-gray-600">Titre</th>
-                      <th className="px-4 py-3 text-gray-600">Date</th>
-                      <th className="px-4 py-3 text-gray-600">Résultat</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {activities.map((a) => (
-                      <tr
-                        key={a.id}
-                        role="button"
-                        tabIndex={0}
-                        onClick={() => router.push(`/dashboard/activites/${a.id}`)}
-                        onKeyDown={(e) => {
-                          if (e.key === 'Enter' || e.key === ' ') {
-                            e.preventDefault();
-                            router.push(`/dashboard/activites/${a.id}`);
-                          }
-                        }}
-                        className="border-b border-gray-50 hover:bg-[var(--sky-blue-soft)]/50 cursor-pointer transition-colors"
-                      >
-                        <td className="px-4 py-3">
-                          <span className="inline-flex rounded-full bg-[var(--sky-blue-soft)] px-2 py-0.5 text-xs font-medium text-[var(--sky-blue-dark)]">
-                            {activityTypeLabel(a.type)}
-                          </span>
-                        </td>
-                        <td className="px-4 py-3 font-medium text-[var(--foreground)]">
-                          {a.title}
-                        </td>
-                        <td className="px-4 py-3 text-gray-600">
-                          {new Date(a.date).toLocaleDateString('fr-FR')}
-                        </td>
-                        <td className="px-4 py-3 text-gray-600">{a.result ?? '—'}</td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
+              <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
+                {activities.map((a) => (
+                  <button
+                    key={a.id}
+                    type="button"
+                    onClick={() => router.push(`/dashboard/activites/${a.id}`)}
+                    className="text-left rounded-xl border border-gray-100 p-4 hover:bg-[var(--sky-blue-soft)]/50 transition-colors focus:outline-none focus:ring-2 focus:ring-[var(--sky-blue)]"
+                  >
+                    <span className="inline-flex rounded-full bg-[var(--sky-blue-soft)] px-2 py-0.5 text-xs font-medium text-[var(--sky-blue-dark)]">
+                      {activityTypeLabel(a.type)}
+                    </span>
+                    <p className="font-medium text-[var(--foreground)] mt-2 line-clamp-2">{a.title}</p>
+                    <p className="text-sm text-gray-600 mt-1">{new Date(a.date).toLocaleDateString('fr-FR')}</p>
+                    {a.result && <p className="text-sm text-gray-600 mt-1">Résultat : {a.result}</p>}
+                    {a._count && a._count.photos > 0 && (
+                      <p className="text-xs text-gray-500 mt-2">{a._count.photos} photo{a._count.photos > 1 ? 's' : ''}</p>
+                    )}
+                  </button>
+                ))}
               </div>
             )}
           </div>

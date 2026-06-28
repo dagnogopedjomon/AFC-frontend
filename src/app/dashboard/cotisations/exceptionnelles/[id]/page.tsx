@@ -4,7 +4,7 @@ import { useEffect, useState } from 'react';
 import Link from 'next/link';
 import { useParams } from 'next/navigation';
 import { useAuth } from '@/lib/auth-context';
-import { contributionsApi, type Contribution } from '@/lib/api';
+import { contributionsApi, caisseApi, type Contribution } from '@/lib/api';
 import { toast } from 'sonner';
 import { Loader2 } from 'lucide-react';
 import { JekoPayButton } from '@/components/JekoPayButton';
@@ -28,7 +28,7 @@ export default function CotisationExceptionnelleDetailPage() {
     totalFromCashBox: number;
     total: number;
   } | null>(null);
-  const [cashBoxes] = useState<{ id: string; name: string }[]>([]);
+  const [cashBoxes, setCashBoxes] = useState<{ id: string; name: string }[]>([]);
   const [loading, setLoading] = useState(true);
   const [canAct, setCanAct] = useState(false);
   const [allocationAmount, setAllocationAmount] = useState('');
@@ -39,6 +39,7 @@ export default function CotisationExceptionnelleDetailPage() {
     if (!user) return;
     setCanAct(user.role === 'ADMIN' || user.role === 'TREASURER');
     load();
+    caisseApi.boxes().then((boxes) => setCashBoxes(boxes)).catch(() => setCashBoxes([]));
   }, [user, id]);
 
   async function load() {
