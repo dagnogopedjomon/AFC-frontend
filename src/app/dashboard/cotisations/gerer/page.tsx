@@ -2,13 +2,15 @@
 
 import { useEffect, useState } from 'react';
 import Link from 'next/link';
-import { useForm } from 'react-hook-form';
+import { useForm, Controller } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
 import { toast } from 'sonner';
 import { useAuth } from '@/lib/auth-context';
 import {
   contributionsApi,
+  membersApi,
+  type Member,
   type Contribution,
   type CreateContributionInput,
 } from '@/lib/api';
@@ -23,8 +25,12 @@ const TYPE_LABELS: Record<string, string> = {
 const schemaExceptional = z.object({
   name: z.string().min(1, 'Nom requis'),
   amount: z.number().min(0).optional(),
-  startDate: z.string().min(1, 'Date de début requise'),
-  endDate: z.string().min(1, 'Date de fin requise'),
+  isOpenAmount: z.boolean().optional(),
+  deadline: z.string().optional(),
+  targetMemberIds: z.array(z.string()).optional(),
+  beneficiaryMemberId: z.string().optional(),
+  startDate: z.string().optional(),
+  endDate: z.string().optional(),
 });
 
 type FormExceptional = z.infer<typeof schemaExceptional>;
@@ -297,24 +303,53 @@ function ExceptionalForm({
   const {
     register,
     handleSubmit,
+    watch,
+    setValue,
+    control,
     formState: { errors, isSubmitting },
   } = useForm<FormExceptional>({
     resolver: zodResolver(schemaExceptional),
     defaultValues: {
       amount: 0,
+      isOpenAmount: false,
+      targetMemberIds: [],
       startDate: new Date().toISOString().slice(0, 10),
       endDate: new Date(Date.now() + 90 * 24 * 60 * 60 * 1000).toISOString().slice(0, 10),
     },
   });
 
+  const [members, setMembers] = useState<Member[]>([]);
+  const isOpenAmount = watch('isOpenAmount');
+  const targetMemberIds = watch('targetMemberIds');
+
+  useEffect(() => {
+    membersApi.list().then(setMembers).catch(() => setMembers([]));
+  }, []);
+
+  useEffect(() => {
+    if (isOpenAmount) setValue('amount', 0);
+  }, [isOpenAmount, setValue]);
+
+  function toggleMember(id: string) {
+    const ids = targetMemberIds ?? [];
+    setValue(
+      'targetMemberIds',
+      ids.includes(id) ? ids.filter((m) => m !== id) : [...ids, id],
+    );
+  }
+
   async function onSubmit(data: FormExceptional) {
     const payload: CreateContributionInput = {
       name: data.name,
       type: 'EXCEPTIONAL',
+      isOpenAmount: data.isOpenAmount ?? false,
+      deadline: data.deadline || undefined,
+      targetMemberIds: (data.targetMemberIds ?? []).length > 0 ? data.targetMemberIds : undefined,
+      beneficiaryMemberId: data.beneficiaryMemberId || undefined,
       startDate: data.startDate,
       endDate: data.endDate,
     };
-    if (data.amount != null && data.amount > 0) payload.amount = data.amount;
+    if (!payload.isOpenAmount && data.amount != null && data.amount > 0) payload.amount = data.amount;
     await contributionsApi.create(payload);
     onSuccess();
   }
@@ -325,23 +360,62 @@ function ExceptionalForm({
       <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
         <div>
           <label className="block text-sm font-medium text-gray-700 mb-1.5">Nom <span className="text-red-500">*</span></label>
-          <input className="input-field w-full" placeholder="Ex. Équipement 2025" {...register('name')} />
+          <input className="input-field w-full" placeholder="Ex. Cadeau naissance" {...register('name')} />
           {errors.name && <p className="mt-1 text-sm text-red-600">{errors.name.message}</p>}
-        </div>
-        <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1.5">Montant suggéré (FCFA)</label>
-          <input type="number" min="0" step="1" className="input-field w-full" {...register('amount', { valueAsNumber: true })} />
         </div>
         <div className="grid grid-cols-2 gap-4">
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1.5">Date de début <span className="text-red-500">*</span></label>
-            <input type="date" className="input-field w-full" {...register('startDate')} />
-            {errors.startDate && <p className="mt-1 text-sm text-red-600">{errors.startDate.message}</p>}
+            <label className="block text-sm font-medium text-gray-700 mb-1.5">Montant suggéré (FCFA)</label>
+            <input type="number" min="0" step="1" disabled={isOpenAmount} className="input-field w-full disabled:opacity-50" {...register('amount', { valueAsNumber: true })} />
           </div>
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1.5">Date de fin <span className="text-red-500">*</span></label>
+            <label className="block text-sm font-medium text-gray-700 mb-1.5">Date de clôture</label>
+            <input type="datetime-local" className="input-field w-full" {...register('deadline')} />
+          </div>
+        </div>
+        <label className="flex items-center gap-2 text-sm text-gray-700">
+          <input type="checkbox" {...register('isOpenAmount')} className="h-4 w-4" />
+          Montant libre (chaque membre donne ce qu'il veut)
+        </label>
+        <div>
+          <label className="block text-sm font-medium text-gray-700 mb-1.5">Bénéficiaire (optionnel)</label>
+          <Controller
+            name="beneficiaryMemberId"
+            control={control}
+            render={({ field }) => (
+              <select className="input-field w-full" {...field}>
+                <option value="">Aucun / Ouvert à tous</option>
+                {members.map((m) => (
+                  <option key={m.id} value={m.id}>{m.firstName} {m.lastName}</option>
+                ))}
+              </select>
+            )}
+          />
+        </div>
+        <div>
+          <label className="block text-sm font-medium text-gray-700 mb-1.5">Membres concernés (laisser vide = ouvert à tous)</label>
+          <div className="max-h-40 overflow-auto border border-gray-200 rounded-xl p-2 space-y-1">
+            {members.map((m) => (
+              <label key={m.id} className="flex items-center gap-2 text-sm text-gray-700">
+                <input
+                  type="checkbox"
+                  checked={(targetMemberIds ?? []).includes(m.id)}
+                  onChange={() => toggleMember(m.id)}
+                  className="h-4 w-4"
+                />
+                {m.firstName} {m.lastName}
+              </label>
+            ))}
+          </div>
+        </div>
+        <div className="grid grid-cols-2 gap-4">
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-1.5">Date de début</label>
+            <input type="date" className="input-field w-full" {...register('startDate')} />
+          </div>
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-1.5">Date de fin</label>
             <input type="date" className="input-field w-full" {...register('endDate')} />
-            {errors.endDate && <p className="mt-1 text-sm text-red-600">{errors.endDate.message}</p>}
           </div>
         </div>
         <div className="flex gap-3 pt-2">

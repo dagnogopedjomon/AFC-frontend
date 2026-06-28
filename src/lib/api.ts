@@ -193,6 +193,12 @@ export type Contribution = {
   name: string;
   type: string;
   amount: number | null;
+  isOpenAmount: boolean;
+  deadline: string | null;
+  targetMemberIds: string | null;
+  beneficiaryMemberId: string | null;
+  beneficiary: { id: string; firstName: string; lastName: string } | null;
+  status: 'OPEN' | 'CLOSED_PENDING' | 'CLOSED_DELIVERED';
   startDate: string | null;
   endDate: string | null;
   targetAmount: number | null;
@@ -233,6 +239,11 @@ export type CreateContributionInput = {
   name: string;
   type: 'MONTHLY' | 'EXCEPTIONAL' | 'PROJECT';
   amount?: number;
+  isOpenAmount?: boolean;
+  deadline?: string;
+  targetMemberIds?: string[];
+  beneficiaryMemberId?: string;
+  status?: 'OPEN' | 'CLOSED_PENDING' | 'CLOSED_DELIVERED';
   startDate?: string;
   endDate?: string;
   targetAmount?: number;
@@ -242,6 +253,7 @@ export type CreateContributionInput = {
 export const contributionsApi = {
   list: () => api<Contribution[]>('/contributions'),
   one: (id: string) => api<Contribution>(`/contributions/${id}`),
+  exceptional: () => api<Contribution[]>('/contributions/exceptional'),
   create: (data: CreateContributionInput) =>
     api<Contribution>('/contributions', { method: 'POST', body: JSON.stringify(data) }),
   update: (id: string, data: { name?: string; amount?: number; startDate?: string; endDate?: string }) =>
@@ -258,6 +270,29 @@ export const contributionsApi = {
       '/contributions/apply-suspensions',
       { method: 'POST' },
     ),
+  /** Contributeurs d'une cotisation exceptionnelle (nom + montant) + allocations caisse. */
+  getContributors: (id: string) =>
+    api<{
+      payments: Array<{
+        id: string;
+        memberId: string;
+        firstName: string;
+        lastName: string;
+        profilePhotoUrl: string | null;
+        amount: number;
+        paidAt: string;
+      }>;
+      allocations: object[];
+      totalFromMembers: number;
+      totalFromCashBox: number;
+      total: number;
+    }>(`/contributions/${id}/contributors`),
+  /** Allouer des fonds depuis une caisse vers une cotisation exceptionnelle. */
+  allocate: (id: string, data: { amount: number; fromCashBoxId?: string; description?: string }) =>
+    api<{ id: string }>(`/contributions/${id}/allocate`, { method: 'POST', body: JSON.stringify(data) }),
+  /** Clôturer / remettre une cotisation exceptionnelle. */
+  close: (id: string, status: 'CLOSED_PENDING' | 'CLOSED_DELIVERED') =>
+    api<Contribution>(`/contributions/${id}/close`, { method: 'POST', body: JSON.stringify({ status }) }),
   payments: (params?: { memberId?: string; contributionId?: string; year?: number; month?: number; limit?: number }) => {
     const search = new URLSearchParams();
     if (params?.memberId) search.set('memberId', params.memberId);

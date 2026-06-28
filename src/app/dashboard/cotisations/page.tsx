@@ -214,6 +214,27 @@ export default function CotisationsPage() {
         </p>
       </div>
 
+      <div className="flex flex-wrap gap-2 border-b border-gray-200 pb-2">
+        <Link
+          href="/dashboard/cotisations"
+          className="px-4 py-2 rounded-xl text-sm font-medium bg-[var(--sky-blue)] text-white"
+        >
+          Vue d'ensemble
+        </Link>
+        <Link
+          href="/dashboard/cotisations/mensuelle"
+          className="px-4 py-2 rounded-xl text-sm font-medium text-gray-600 hover:bg-gray-50 border border-gray-200"
+        >
+          Cotisation mensuelle
+        </Link>
+        <Link
+          href="/dashboard/cotisations/exceptionnelles"
+          className="px-4 py-2 rounded-xl text-sm font-medium text-gray-600 hover:bg-gray-50 border border-gray-200"
+        >
+          Cotisations exceptionnelles
+        </Link>
+      </div>
+
       {user && (
         <div className="card border-l-4 border-l-[var(--sky-blue)]">
           <h2 className="text-sm font-medium text-gray-500 uppercase tracking-wide">Mon statut</h2>
