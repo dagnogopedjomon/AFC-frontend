@@ -64,6 +64,7 @@ export default function CaissePage() {
   const [transferAmount, setTransferAmount] = useState('');
   const [transferDescription, setTransferDescription] = useState('');
   const [transferSubmitting, setTransferSubmitting] = useState(false);
+  const [expenseDetail, setExpenseDetail] = useState<Expense | null>(null);
   const created = searchParams.get('created') === '1';
 
   const canAct = user && CAISSE_ROLES.includes(user.role);
@@ -905,7 +906,16 @@ export default function CaissePage() {
                         <td className="px-6 py-4 text-gray-600 text-sm">
                           {e.cashBox?.name ?? 'Caisse par défaut'}
                         </td>
-                        <td className="px-6 py-4 font-medium text-[var(--foreground)]">{e.description}</td>
+                        <td className="px-6 py-4 font-medium text-[var(--foreground)]">
+                          <button
+                            type="button"
+                            onClick={() => setExpenseDetail(e)}
+                            className="text-left truncate max-w-[200px] hover:text-[var(--sky-blue-dark)] hover:underline"
+                            title="Cliquer pour voir la description complète"
+                          >
+                            {e.description}
+                          </button>
+                        </td>
                         <td className="px-6 py-4 text-gray-600 text-sm">
                           {e.beneficiary ?? '—'}
                         </td>
@@ -995,6 +1005,27 @@ export default function CaissePage() {
             )}
           </div>
         </>
+      )}
+
+      {expenseDetail && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4">
+          <div className="bg-white rounded-2xl max-w-lg w-full p-6 shadow-xl space-y-4">
+            <div className="flex items-center justify-between">
+              <h3 className="text-lg font-bold text-[var(--foreground)]">Détail de la dépense</h3>
+              <button type="button" onClick={() => setExpenseDetail(null)} className="text-gray-400 hover:text-gray-600 text-2xl leading-none">&times;</button>
+            </div>
+            <div className="space-y-2 text-sm">
+              <p><span className="font-medium text-gray-700">Description :</span> {expenseDetail.description}</p>
+              <p><span className="font-medium text-gray-700">Montant :</span> {Number(expenseDetail.amount).toLocaleString('fr-FR')} FCFA</p>
+              <p><span className="font-medium text-gray-700">Date :</span> {new Date(expenseDetail.expenseDate).toLocaleDateString('fr-FR')}</p>
+              <p><span className="font-medium text-gray-700">Caisse :</span> {expenseDetail.cashBox?.name ?? 'Caisse par défaut'}</p>
+              <p><span className="font-medium text-gray-700">Bénéficiaire :</span> {expenseDetail.beneficiary ?? '—'}</p>
+              <p><span className="font-medium text-gray-700">Demandé par :</span> {expenseDetail.requestedBy.firstName} {expenseDetail.requestedBy.lastName}</p>
+              <p><span className="font-medium text-gray-700">Statut :</span> {statusLabel(expenseDetail.status).text}</p>
+            </div>
+            <button type="button" onClick={() => setExpenseDetail(null)} className="btn-primary w-full">Fermer</button>
+          </div>
+        </div>
       )}
     </div>
   );

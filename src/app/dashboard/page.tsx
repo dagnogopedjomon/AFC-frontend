@@ -561,45 +561,6 @@ export default function DashboardPage() {
         </>
       )}
 
-      <motion.div
-        className="card"
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        transition={{ delay: 0.15 }}
-      >
-        <h2 className="text-lg font-bold text-[var(--foreground)] mb-4 pb-2 border-b border-slate-100">
-          Accès rapide
-        </h2>
-        <ul className="grid gap-2 sm:grid-cols-2 text-slate-600">
-          <li>
-            <Link href="/dashboard/membres" className="font-medium link-accent inline-flex items-center gap-1.5">
-              → Membres
-            </Link>
-          </li>
-          <li>
-            <Link href="/dashboard/cotisations" className="font-medium link-accent inline-flex items-center gap-1.5">
-              → Cotisations
-            </Link>
-          </li>
-          <li>
-            <Link href="/dashboard/caisse" className="font-medium link-accent inline-flex items-center gap-1.5">
-              → Caisse
-            </Link>
-          </li>
-          {canSeeRapports && (
-            <li>
-              <Link href="/dashboard/rapports" className="font-medium link-accent inline-flex items-center gap-1.5">
-                → Rapports
-              </Link>
-            </li>
-          )}
-          <li>
-            <Link href="/dashboard/activites" className="font-medium link-accent inline-flex items-center gap-1.5">
-              → Activités
-            </Link>
-          </li>
-        </ul>
-      </motion.div>
     </div>
   );
 }

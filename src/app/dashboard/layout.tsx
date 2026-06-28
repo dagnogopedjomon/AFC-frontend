@@ -256,7 +256,18 @@ export default function DashboardLayout({
           <img src="/images/afcimage.jpeg" alt="" className="h-9 w-9 shrink-0 object-cover rounded-lg" />
           <span className="text-base font-bold text-[var(--sky-blue)] truncate">AFC</span>
         </Link>
-        <div className="w-10" />
+        <Link
+          href="/dashboard/notifications"
+          className="relative p-2 rounded-lg text-[var(--sidebar-text-muted)] hover:bg-white/10 hover:text-white transition"
+          aria-label="Notifications"
+        >
+          <Bell size={22} />
+          {inAppUnreadCount > 0 && (
+            <span className="absolute -top-0.5 -right-0.5 flex h-5 min-w-[1.25rem] items-center justify-center rounded-full bg-red-500 px-1.5 text-[10px] font-bold text-white">
+              {inAppUnreadCount > 99 ? '99+' : inAppUnreadCount}
+            </span>
+          )}
+        </Link>
       </header>
 
       {/* Drawer mobile */}
