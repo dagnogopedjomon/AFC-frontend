@@ -45,6 +45,8 @@ export default function CotisationsPage() {
   const [myStatusLoading, setMyStatusLoading] = useState(true);
   const [reactivatingId, setReactivatingId] = useState<string | null>(null);
   const [remindingId, setRemindingId] = useState<string | null>(null);
+  const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set());
+  const [remindingBulk, setRemindingBulk] = useState(false);
   const [reactivateModalMember, setReactivateModalMember] = useState<{ id: string; firstName: string; lastName: string } | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [selfPaymentError, setSelfPaymentError] = useState<string | null>(null);
@@ -108,6 +110,10 @@ export default function CotisationsPage() {
     contributionsApi.meUnpaidMonths().then((d) => setUnpaidMonthsForSelf(d.unpaidMonths)).catch(() => setUnpaidMonthsForSelf([]));
   }, [user, myStatus]);
 
+  useEffect(() => {
+    setSelectedIds(new Set());
+  }, [arrears?.periodYear, arrears?.periodMonth]);
+
   // Vérification automatique d'un paiement Jeko en attente (au retour de la page de paiement)
   useEffect(() => {
     if (!user) return;
@@ -149,6 +155,50 @@ export default function CotisationsPage() {
         toast.error(msg);
       })
       .finally(() => setRemindingId(null));
+  };
+
+  const toggleSelection = (id: string) => {
+    setSelectedIds((prev) => {
+      const next = new Set(prev);
+      if (next.has(id)) next.delete(id);
+      else next.add(id);
+      return next;
+    });
+  };
+
+  const toggleAll = () => {
+    if (!arrears) return;
+    if (selectedIds.size === arrears.members.length) {
+      setSelectedIds(new Set());
+    } else {
+      setSelectedIds(new Set(arrears.members.map((m) => m.id)));
+    }
+  };
+
+  const handleRemindSelected = async () => {
+    if (selectedIds.size === 0) return;
+    setRemindingBulk(true);
+    let success = 0;
+    let failed = 0;
+    const members = arrears?.members.filter((m) => selectedIds.has(m.id)) ?? [];
+    for (const m of members) {
+      try {
+        const res = await notificationsApi.remindCotisation(m.id, monthLabel);
+        if (res.ok) success++;
+        else failed++;
+      } catch {
+        failed++;
+      }
+    }
+    setRemindingBulk(false);
+    setSelectedIds(new Set());
+    if (success > 0 && failed === 0) {
+      toast.success(`${success} rappel(s) SMS envoyé(s).`);
+    } else if (success > 0 && failed > 0) {
+      toast.warning(`${success} envoyé(s), ${failed} échec(s).`);
+    } else {
+      toast.error('Aucun rappel n\'a pu être envoyé.');
+    }
   };
 
   return (
@@ -330,7 +380,17 @@ export default function CotisationsPage() {
           <h2 className="text-lg font-semibold text-[var(--foreground)]">
             Membres en retard — {monthLabel}
           </h2>
-          <div className="flex gap-2">
+          <div className="flex flex-wrap items-center gap-2">
+            {isAdmin && arrears && arrears.members.length > 0 && (
+              <button
+                type="button"
+                onClick={handleRemindSelected}
+                disabled={selectedIds.size === 0 || remindingBulk}
+                className="px-4 py-2 rounded-xl bg-[var(--sky-blue)] text-white hover:bg-[var(--sky-blue-dark)] disabled:opacity-50 disabled:cursor-not-allowed text-sm font-medium transition-colors"
+              >
+                {remindingBulk ? 'Envoi…' : `Relancer (${selectedIds.size})`}
+              </button>
+            )}
             <Link
               href="/dashboard/cotisations/historique"
               className="px-4 py-2 rounded-xl border border-gray-200 text-gray-700 hover:bg-gray-50 text-sm font-medium"
@@ -362,6 +422,17 @@ export default function CotisationsPage() {
                 <table className="w-full text-left">
                   <thead>
                     <tr className="border-b border-gray-100 bg-[var(--sky-blue-soft)]">
+                      {isAdmin && (
+                        <th className="px-4 py-3 text-sm font-semibold text-[var(--sky-blue-dark)] w-10">
+                          <input
+                            type="checkbox"
+                            checked={arrears ? selectedIds.size === arrears.members.length && arrears.members.length > 0 : false}
+                            onChange={toggleAll}
+                            className="h-4 w-4 cursor-pointer accent-[var(--sky-blue-dark)]"
+                            title="Tout sélectionner"
+                          />
+                        </th>
+                      )}
                       <th className="px-4 py-3 text-sm font-semibold text-[var(--sky-blue-dark)]">Membre</th>
                       <th className="px-4 py-3 text-sm font-semibold text-gray-600">Téléphone</th>
                       <th className="px-4 py-3 text-sm font-semibold text-gray-600">Statut</th>
@@ -373,6 +444,16 @@ export default function CotisationsPage() {
                   <tbody>
                     {arrears.members.map((m) => (
                       <tr key={m.id} className="border-b border-gray-50">
+                        {isAdmin && (
+                          <td className="px-4 py-3">
+                            <input
+                              type="checkbox"
+                              checked={selectedIds.has(m.id)}
+                              onChange={() => toggleSelection(m.id)}
+                              className="h-4 w-4 cursor-pointer accent-[var(--sky-blue-dark)]"
+                            />
+                          </td>
+                        )}
                         <td className="px-4 py-3 font-medium text-[var(--foreground)]">
                           <Link href={`/dashboard/membres/${m.id}`} className="text-[var(--sky-blue-dark)] hover:underline">
                             {m.firstName} {m.lastName}
