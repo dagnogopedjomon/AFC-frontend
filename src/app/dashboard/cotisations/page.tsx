@@ -20,6 +20,7 @@ import { useAuth } from '@/lib/auth-context';
 import {
   contributionsApi,
   membersApi,
+  notificationsApi,
   type Contribution,
   type ArrearsResult,
   type MemberHistory,
@@ -43,6 +44,7 @@ export default function CotisationsPage() {
   const [myStatus, setMyStatus] = useState<MemberHistory | null>(null);
   const [myStatusLoading, setMyStatusLoading] = useState(true);
   const [reactivatingId, setReactivatingId] = useState<string | null>(null);
+  const [remindingId, setRemindingId] = useState<string | null>(null);
   const [reactivateModalMember, setReactivateModalMember] = useState<{ id: string; firstName: string; lastName: string } | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [selfPaymentError, setSelfPaymentError] = useState<string | null>(null);
@@ -134,6 +136,20 @@ export default function CotisationsPage() {
   const currentMonth = now.getMonth() + 1;
   const monthLabel = new Date(currentYear, currentMonth - 1).toLocaleString('fr-FR', { month: 'long', year: 'numeric' });
   const paidThisMonth = myStatus?.byMonth?.some((m) => m.year === currentYear && m.month === currentMonth) ?? false;
+
+  const handleRemind = (memberId: string, firstName: string) => {
+    setRemindingId(memberId);
+    notificationsApi
+      .remindCotisation(memberId, monthLabel)
+      .then((res) => {
+        toast.success(res.message || `Rappel SMS envoyé à ${firstName}.`);
+      })
+      .catch((e) => {
+        const msg = e instanceof Error ? e.message : 'Erreur envoi SMS';
+        toast.error(msg);
+      })
+      .finally(() => setRemindingId(null));
+  };
 
   return (
     <div className="space-y-8">
@@ -372,18 +388,27 @@ export default function CotisationsPage() {
                         </td>
                         {isAdmin && (
                           <td className="px-4 py-3">
-                            {m.isSuspended ? (
+                            <div className="flex items-center gap-3">
                               <button
                                 type="button"
-                                onClick={() => setReactivateModalMember({ id: m.id, firstName: m.firstName, lastName: m.lastName })}
-                                disabled={reactivatingId === m.id}
-                                className="cursor-pointer text-sm font-medium text-emerald-600 hover:text-emerald-700 disabled:opacity-60 disabled:cursor-not-allowed"
+                                onClick={() => handleRemind(m.id, m.firstName)}
+                                disabled={remindingId === m.id}
+                                className="cursor-pointer text-sm font-medium text-[var(--sky-blue-dark)] hover:text-[var(--sky-blue)] disabled:opacity-60 disabled:cursor-not-allowed"
+                                title="Envoyer un rappel SMS"
                               >
-                                {reactivatingId === m.id ? '…' : 'Réactiver le compte'}
+                                {remindingId === m.id ? '…' : 'Relancer'}
                               </button>
-                            ) : (
-                              '—'
-                            )}
+                              {m.isSuspended && (
+                                <button
+                                  type="button"
+                                  onClick={() => setReactivateModalMember({ id: m.id, firstName: m.firstName, lastName: m.lastName })}
+                                  disabled={reactivatingId === m.id}
+                                  className="cursor-pointer text-sm font-medium text-emerald-600 hover:text-emerald-700 disabled:opacity-60 disabled:cursor-not-allowed"
+                                >
+                                  {reactivatingId === m.id ? '…' : 'Réactiver'}
+                                </button>
+                              )}
+                            </div>
                           </td>
                         )}
                       </tr>
