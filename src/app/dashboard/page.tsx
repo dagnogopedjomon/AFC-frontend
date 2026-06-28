@@ -14,7 +14,7 @@ import {
   Bar,
   Line,
 } from 'recharts';
-import { LayoutDashboard, Wallet, PiggyBank, Users, CalendarDays, FileText, Bell, TrendingUp, AlertCircle } from 'lucide-react';
+import { LayoutDashboard, Wallet, PiggyBank, Users, CalendarDays, FileText, Bell, TrendingUp, AlertCircle, AlertTriangle } from 'lucide-react';
 import { useAuth } from '@/lib/auth-context';
 import {
   API_BASE,
@@ -55,6 +55,40 @@ const cardMotion = {
   animate: { opacity: 1, y: 0 },
   transition: { duration: 0.25 },
 };
+
+function ArrearsBanner({ arrears }: { arrears: ArrearsResult | null }) {
+  if (!arrears || arrears.total === 0) return null;
+
+  const periodLabel = new Date(arrears.periodYear, arrears.periodMonth - 1).toLocaleDateString('fr-FR', {
+    month: 'long',
+    year: 'numeric',
+  });
+
+  const membersText = arrears.members
+    .map((m) => `${m.firstName} ${m.lastName}`)
+    .join(' • ');
+
+  const fullText = `${arrears.total} membre${arrears.total > 1 ? 's' : ''} en retard pour ${periodLabel} : ${membersText}`;
+  // Dupliquer le texte pour créer une boucle fluide
+  const duplicatedText = `${fullText}   •   ${fullText}   •   ${fullText}`;
+
+  return (
+    <motion.div
+      initial={{ opacity: 0, y: -8 }}
+      animate={{ opacity: 1, y: 0 }}
+      className="mt-4 overflow-hidden rounded-xl border border-amber-200 bg-amber-50 shadow-sm"
+    >
+      <div className="flex items-center gap-3 px-4 py-2.5">
+        <AlertTriangle className="h-5 w-5 shrink-0 text-amber-600" />
+        <div className="overflow-hidden">
+          <div className="animate-marquee text-sm font-medium text-amber-800 whitespace-nowrap">
+            {duplicatedText}
+          </div>
+        </div>
+      </div>
+    </motion.div>
+  );
+}
 
 export default function DashboardPage() {
   const { user } = useAuth();
@@ -194,6 +228,8 @@ export default function DashboardPage() {
           </div>
         </div>
       </motion.header>
+
+      <ArrearsBanner arrears={arrears} />
 
       {error && (
         <motion.div

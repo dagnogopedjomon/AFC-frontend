@@ -108,3 +108,19 @@ body {
   border-radius: 1rem !important;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08) !important;
 }
+
+/* Bannière défilante (marquee) pour les retards de paiement */
+@keyframes marquee {
+  0% { transform: translateX(0); }
+  100% { transform: translateX(-50%); }
+}
+
+.animate-marquee {
+  display: flex;
+  animation: marquee 30s linear infinite;
+  width: max-content;
+}
+
+.animate-marquee:hover {
+  animation-play-state: paused;
+}
