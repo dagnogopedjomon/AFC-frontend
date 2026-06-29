@@ -43,7 +43,7 @@ const COTISATIONS_ADMIN_SUB = [
 
 const CAISSE_SUB = [
   { href: '/dashboard/caisse', label: 'Caisse', exact: true },
-  { href: '/dashboard/caisse/nouvelle-depense', label: 'Dépenses', exact: false },
+  { href: '/dashboard/caisse/depenses', label: 'Dépenses', exact: false },
   { href: '/dashboard/caisse/livre', label: 'Livre de caisse', exact: false },
 ];
 
