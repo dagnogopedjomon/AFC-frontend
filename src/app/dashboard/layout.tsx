@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
 import {
@@ -27,10 +27,8 @@ const CAISSE_ROLES = ['ADMIN', 'TREASURER', 'COMMISSIONER'];
 const baseNav = [
   { href: '/dashboard', label: 'Tableau de bord', icon: LayoutDashboard },
   { href: '/dashboard/membres', label: 'Membres', icon: Users },
-  { href: '/dashboard/caisse', label: 'Caisse', icon: Wallet },
   { href: '/dashboard/rapports', label: 'Rapports', icon: BarChart3 },
   { href: '/dashboard/activites', label: 'Activités', icon: CalendarDays },
-  { href: '/dashboard/notifications', label: 'Notifications', icon: Bell },
 ];
 
 const COTISATIONS_SUB = [
@@ -41,6 +39,12 @@ const COTISATIONS_SUB = [
 
 const COTISATIONS_ADMIN_SUB = [
   { href: '/dashboard/cotisations/gerer', label: 'Gérer' },
+];
+
+const CAISSE_SUB = [
+  { href: '/dashboard/caisse', label: 'Caisse' },
+  { href: '/dashboard/caisse/nouvelle-depense', label: 'Nouvelle dépense' },
+  { href: '/dashboard/caisse', label: 'Livre de caisse' },
 ];
 
 function NavGroupClient({
@@ -63,9 +67,20 @@ function NavGroupClient({
   const allItems = [...items, ...(isAdmin && adminItems ? adminItems : [])];
   const isParentActive = allItems.some((item) => pathname.startsWith(item.href));
   const [open, setOpen] = useState(isParentActive);
+  const ref = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    const handler = (e: MouseEvent) => {
+      if (ref.current && !ref.current.contains(e.target as Node)) {
+        setOpen(false);
+      }
+    };
+    document.addEventListener('mousedown', handler);
+    return () => document.removeEventListener('mousedown', handler);
+  }, []);
 
   return (
-    <div>
+    <div ref={ref}>
       <button
         type="button"
         onClick={() => setOpen((v) => !v)}
@@ -278,14 +293,14 @@ export default function DashboardLayout({
           <span className="text-lg font-bold text-[var(--sky-blue)] tracking-tight">AFC</span>
         </Link>
         <nav className="flex-1 overflow-y-auto p-3 space-y-0.5">
-          {nav.slice(0, 2).map((item) => (
+          {nav.map((item) => (
             <NavLink
               key={item.href}
               href={item.href}
               label={item.label}
               icon={item.icon}
               isActive={isActive(item.href)}
-              badge={0}
+              badge={item.href === '/dashboard/activites' ? activitiesRecentCount : 0}
             />
           ))}
           <NavGroupClient
@@ -296,22 +311,14 @@ export default function DashboardLayout({
             adminItems={COTISATIONS_ADMIN_SUB}
             isAdmin={user?.role === 'ADMIN' || user?.role === 'TREASURER' || user?.role === 'COMMISSIONER'}
           />
-          {nav.slice(2).map((item) => (
-            <NavLink
-              key={item.href}
-              href={item.href}
-              label={item.label}
-              icon={item.icon}
-              isActive={isActive(item.href)}
-              badge={
-                item.href === '/dashboard/caisse'
-                  ? caisseBadge
-                  : item.href === '/dashboard/activites'
-                    ? activitiesRecentCount
-                    : 0
-              }
-            />
-          ))}
+          <NavGroupClient
+            label="Caisse"
+            icon={Wallet}
+            pathname={pathname}
+            items={CAISSE_SUB}
+            adminItems={[]}
+            isAdmin={false}
+          />
           <NavLink
             href="/dashboard/notifications"
             label="Notifications"
@@ -379,7 +386,7 @@ export default function DashboardLayout({
         style={{ background: 'var(--sidebar-bg)', borderRight: '1px solid rgba(100,116,139,0.3)' }}
       >
         <nav className="p-4 space-y-0.5">
-          {nav.slice(0, 2).map((item) => (
+          {nav.map((item) => (
             <NavLink
               key={item.href}
               href={item.href}
@@ -387,7 +394,7 @@ export default function DashboardLayout({
               icon={item.icon}
               isActive={isActive(item.href)}
               onClick={() => setMobileMenuOpen(false)}
-              badge={0}
+              badge={item.href === '/dashboard/activites' ? activitiesRecentCount : 0}
             />
           ))}
           <NavGroupClient
@@ -399,25 +406,23 @@ export default function DashboardLayout({
             isAdmin={user?.role === 'ADMIN' || user?.role === 'TREASURER' || user?.role === 'COMMISSIONER'}
             onClick={() => setMobileMenuOpen(false)}
           />
-          {nav.slice(2).map((item) => (
-            <NavLink
-              key={item.href}
-              href={item.href}
-              label={item.label}
-              icon={item.icon}
-              isActive={isActive(item.href)}
-              onClick={() => setMobileMenuOpen(false)}
-              badge={
-                item.href === '/dashboard/caisse'
-                  ? caisseBadge
-                  : item.href === '/dashboard/activites'
-                    ? activitiesRecentCount
-                    : item.href === '/dashboard/notifications'
-                      ? inAppUnreadCount
-                      : 0
-              }
-            />
-          ))}
+          <NavGroupClient
+            label="Caisse"
+            icon={Wallet}
+            pathname={pathname}
+            items={CAISSE_SUB}
+            adminItems={[]}
+            isAdmin={false}
+            onClick={() => setMobileMenuOpen(false)}
+          />
+          <NavLink
+            href="/dashboard/notifications"
+            label="Notifications"
+            icon={Bell}
+            isActive={isActive('/dashboard/notifications')}
+            onClick={() => setMobileMenuOpen(false)}
+            badge={inAppUnreadCount}
+          />
         </nav>
         <div className="p-4 border-t border-slate-600/50">
           <button
@@ -433,6 +438,34 @@ export default function DashboardLayout({
 
       {/* Main content */}
       <main className="flex-1 lg:pl-64 flex flex-col min-h-screen bg-gradient-to-br from-slate-50 via-sky-50/30 to-white">
+        {user && (
+          <header className="hidden lg:flex sticky top-0 z-10 items-center justify-between border-b border-slate-200/80 bg-white/70 backdrop-blur px-6 py-3">
+            <div>
+              <p className="text-sm text-slate-500">Bienvenue,</p>
+              <h1 className="text-base font-semibold text-slate-800">
+                {user.firstName} {user.lastName} <span className="text-slate-400 font-normal">·</span>{' '}
+                <span className="text-xs font-medium text-slate-500 uppercase tracking-wide">{user.role.replace(/_/g, ' ')}</span>
+              </h1>
+            </div>
+            <div className="flex items-center gap-3">
+              <Link
+                href="/dashboard/notifications"
+                className="relative p-2 rounded-lg text-slate-600 hover:bg-slate-100 transition"
+                aria-label="Notifications"
+              >
+                <Bell size={22} />
+                {inAppUnreadCount > 0 && (
+                  <span className="absolute -top-0.5 -right-0.5 flex h-5 min-w-[1.25rem] items-center justify-center rounded-full bg-red-500 px-1.5 text-[10px] font-bold text-white">
+                    {inAppUnreadCount > 99 ? '99+' : inAppUnreadCount}
+                  </span>
+                )}
+              </Link>
+              <div className="h-9 w-9 rounded-full bg-[var(--sky-blue)] text-white flex items-center justify-center font-semibold text-sm uppercase">
+                {user.firstName?.[0]}{user.lastName?.[0]}
+              </div>
+            </div>
+          </header>
+        )}
         {user?.isSuspended && user.role !== 'ADMIN' && (
           <div className="bg-amber-50 border-b border-amber-200 px-4 py-3 text-center text-amber-800 text-sm font-medium">
             Votre cotisation n’est pas à jour. Accès en lecture seule jusqu’à régularisation.

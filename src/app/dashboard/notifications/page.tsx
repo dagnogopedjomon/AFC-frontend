@@ -20,7 +20,6 @@ function typeLabel(type: string) {
 
 export default function NotificationsPage() {
   const { user } = useAuth();
-  const [status, setStatus] = useState<{ whatsappConfigured: boolean } | null>(null);
   const [logs, setLogs] = useState<NotificationLog[]>([]);
   const [inAppList, setInAppList] = useState<InAppNotification[]>([]);
   const [loading, setLoading] = useState(true);
@@ -39,14 +38,8 @@ export default function NotificationsPage() {
   const loadAdmin = () => {
     if (!canAccess) return;
     setLoading(true);
-    Promise.all([
-      notificationsApi.status(),
-      notificationsApi.logs(undefined, 50),
-    ])
-      .then(([s, l]) => {
-        setStatus(s);
-        setLogs(l);
-      })
+    notificationsApi.logs(undefined, 50)
+      .then(setLogs)
       .catch((e) => setError(e instanceof Error ? e.message : 'Erreur'))
       .finally(() => setLoading(false));
   };
@@ -124,7 +117,7 @@ export default function NotificationsPage() {
         </h1>
         <p className="text-gray-600 mt-1">
           {canAccess
-            ? 'Statut WhatsApp, envoi de messages aux membres en retard et historique.'
+            ? 'Envoi de messages aux membres en retard et historique.'
             : 'Les messages du bureau vous concernant.'}
         </p>
       </div>
@@ -200,18 +193,6 @@ export default function NotificationsPage() {
             </div>
           ) : (
             <>
-              {status && (
-                <div className="card border-l-4 border-l-[var(--sky-blue)]">
-                  <h2 className="text-sm font-medium text-gray-500 uppercase tracking-wide">WhatsApp</h2>
-                  <p className="mt-2 text-[var(--foreground)]">
-                    {status.whatsappConfigured ? (
-                      <span className="text-green-700 font-medium">Configuré — les messages sont envoyés par WhatsApp.</span>
-                    ) : (
-                      <span className="text-amber-700">Non configuré — les envois sont uniquement enregistrés (pas d’envoi réel).</span>
-                    )}
-                  </p>
-                </div>
-              )}
 
               <div className="card w-full">
                 <h2 className="text-lg font-semibold text-[var(--foreground)] mb-4">
@@ -278,7 +259,7 @@ export default function NotificationsPage() {
 
               <div className="card overflow-hidden p-0">
                 <h2 className="px-6 py-4 text-lg font-semibold text-[var(--foreground)] border-b border-gray-100">
-                  Historique des envois (WhatsApp / SMS)
+                  Historique des envois
                 </h2>
                 <div className="overflow-x-auto">
                   <table className="w-full text-left">
