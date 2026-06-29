@@ -308,12 +308,17 @@ export default function DashboardLayout({
                   ? caisseBadge
                   : item.href === '/dashboard/activites'
                     ? activitiesRecentCount
-                    : item.href === '/dashboard/notifications'
-                      ? inAppUnreadCount
-                      : 0
+                    : 0
               }
             />
           ))}
+          <NavLink
+            href="/dashboard/notifications"
+            label="Notifications"
+            icon={Bell}
+            isActive={isActive('/dashboard/notifications')}
+            badge={inAppUnreadCount}
+          />
         </nav>
         <div className="p-3 border-t border-slate-600/50">
           <button
