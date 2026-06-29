@@ -42,9 +42,8 @@ const COTISATIONS_ADMIN_SUB = [
 ];
 
 const CAISSE_SUB = [
-  { href: '/dashboard/caisse', label: 'Caisse' },
-  { href: '/dashboard/caisse/nouvelle-depense', label: 'Nouvelle dépense' },
-  { href: '/dashboard/caisse', label: 'Livre de caisse' },
+  { href: '/dashboard/caisse', label: 'Caisse', exact: true },
+  { href: '/dashboard/caisse/nouvelle-depense', label: 'Nouvelle dépense', exact: false },
 ];
 
 function NavGroupClient({
@@ -59,13 +58,15 @@ function NavGroupClient({
   label: string;
   icon: React.ComponentType<{ className?: string; size?: number }>;
   pathname: string;
-  items: { href: string; label: string }[];
-  adminItems?: { href: string; label: string }[];
+  items: { href: string; label: string; exact?: boolean }[];
+  adminItems?: { href: string; label: string; exact?: boolean }[];
   isAdmin?: boolean;
   onClick?: () => void;
 }) {
-  const allItems = [...items, ...(isAdmin && adminItems ? adminItems : [])];
-  const isParentActive = allItems.some((item) => pathname.startsWith(item.href));
+  const allItems: { href: string; label: string; exact?: boolean }[] = [...items, ...(isAdmin && adminItems ? adminItems : [])];
+  const isParentActive = allItems.some((item) =>
+    item.exact ? pathname === item.href.split('#')[0] : pathname.startsWith(item.href.split('#')[0]),
+  );
   const [open, setOpen] = useState(isParentActive);
   const ref = useRef<HTMLDivElement>(null);
 
@@ -104,7 +105,7 @@ function NavGroupClient({
               onClick={onClick}
               className={cn(
                 'flex items-center gap-2 rounded-xl px-3 py-2 text-sm font-medium transition',
-                pathname.startsWith(item.href)
+                (item.exact ? pathname === item.href.split('#')[0] : pathname.startsWith(item.href.split('#')[0]))
                   ? 'bg-[var(--sky-blue)] text-white'
                   : 'text-[var(--sidebar-text-muted)] hover:bg-white/10 hover:text-[var(--sidebar-text)]',
               )}
