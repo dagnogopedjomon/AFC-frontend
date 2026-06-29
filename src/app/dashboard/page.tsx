@@ -23,6 +23,7 @@ import {
   activitiesApi,
   membersApi,
   reportsApi,
+  notificationsApi,
   type CaisseSummary,
   type ArrearsResult,
   type Expense,
@@ -100,6 +101,15 @@ export default function DashboardPage() {
   const [annualReport, setAnnualReport] = useState<AnnualReport | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [inAppUnreadCount, setInAppUnreadCount] = useState(0);
+
+  useEffect(() => {
+    if (!user) return;
+    notificationsApi.inApp.unreadCount().then((r) => setInAppUnreadCount(r.count)).catch(() => {});
+    const handler = () => notificationsApi.inApp.unreadCount().then((r) => setInAppUnreadCount(r.count)).catch(() => {});
+    window.addEventListener('notifications-inapp-updated', handler);
+    return () => window.removeEventListener('notifications-inapp-updated', handler);
+  }, [user]);
 
   const canSeeCaisse = user && CAISSE_ROLES.includes(user.role);
   const canSeeArrears = user && ARREARS_ROLES.includes(user.role);
@@ -206,6 +216,18 @@ export default function DashboardPage() {
           </p>
         </div>
         <div className="flex items-center gap-3 shrink-0">
+          <Link
+            href="/dashboard/notifications"
+            className="relative p-2 rounded-xl text-slate-500 hover:bg-slate-100 transition hidden sm:inline-flex items-center justify-center"
+            aria-label="Notifications"
+          >
+            <Bell size={22} />
+            {inAppUnreadCount > 0 && (
+              <span className="absolute -top-0.5 -right-0.5 flex h-5 min-w-[1.25rem] items-center justify-center rounded-full bg-red-500 px-1.5 text-[10px] font-bold text-white">
+                {inAppUnreadCount > 99 ? '99+' : inAppUnreadCount}
+              </span>
+            )}
+          </Link>
           <div className="flex items-center gap-3 rounded-2xl border border-slate-200 bg-white px-4 py-3 shadow-md min-w-[200px] ring-1 ring-slate-100">
             {user?.profilePhotoUrl ? (
               <img

@@ -438,34 +438,6 @@ export default function DashboardLayout({
 
       {/* Main content */}
       <main className="flex-1 lg:pl-64 flex flex-col min-h-screen bg-gradient-to-br from-slate-50 via-sky-50/30 to-white">
-        {user && (
-          <header className="hidden lg:flex sticky top-0 z-10 items-center justify-between border-b border-slate-200/80 bg-white/70 backdrop-blur px-6 py-3">
-            <div>
-              <p className="text-sm text-slate-500">Bienvenue,</p>
-              <h1 className="text-base font-semibold text-slate-800">
-                {user.firstName} {user.lastName} <span className="text-slate-400 font-normal">·</span>{' '}
-                <span className="text-xs font-medium text-slate-500 uppercase tracking-wide">{user.role.replace(/_/g, ' ')}</span>
-              </h1>
-            </div>
-            <div className="flex items-center gap-3">
-              <Link
-                href="/dashboard/notifications"
-                className="relative p-2 rounded-lg text-slate-600 hover:bg-slate-100 transition"
-                aria-label="Notifications"
-              >
-                <Bell size={22} />
-                {inAppUnreadCount > 0 && (
-                  <span className="absolute -top-0.5 -right-0.5 flex h-5 min-w-[1.25rem] items-center justify-center rounded-full bg-red-500 px-1.5 text-[10px] font-bold text-white">
-                    {inAppUnreadCount > 99 ? '99+' : inAppUnreadCount}
-                  </span>
-                )}
-              </Link>
-              <div className="h-9 w-9 rounded-full bg-[var(--sky-blue)] text-white flex items-center justify-center font-semibold text-sm uppercase">
-                {user.firstName?.[0]}{user.lastName?.[0]}
-              </div>
-            </div>
-          </header>
-        )}
         {user?.isSuspended && user.role !== 'ADMIN' && (
           <div className="bg-amber-50 border-b border-amber-200 px-4 py-3 text-center text-amber-800 text-sm font-medium">
             Votre cotisation n’est pas à jour. Accès en lecture seule jusqu’à régularisation.
