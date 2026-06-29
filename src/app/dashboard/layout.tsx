@@ -14,6 +14,7 @@ import {
   LogOut,
   Menu,
   X,
+  ChevronDown,
 } from 'lucide-react';
 import { useAuth } from '@/lib/auth-context';
 import { notificationsApi, caisseApi, activitiesApi } from '@/lib/api';
@@ -26,12 +27,81 @@ const CAISSE_ROLES = ['ADMIN', 'TREASURER', 'COMMISSIONER'];
 const baseNav = [
   { href: '/dashboard', label: 'Tableau de bord', icon: LayoutDashboard },
   { href: '/dashboard/membres', label: 'Membres', icon: Users },
-  { href: '/dashboard/cotisations', label: 'Cotisations', icon: PiggyBank },
   { href: '/dashboard/caisse', label: 'Caisse', icon: Wallet },
   { href: '/dashboard/rapports', label: 'Rapports', icon: BarChart3 },
   { href: '/dashboard/activites', label: 'Activités', icon: CalendarDays },
   { href: '/dashboard/notifications', label: 'Notifications', icon: Bell },
 ];
+
+const COTISATIONS_SUB = [
+  { href: '/dashboard/cotisations/mensuelle', label: 'Mensuelle' },
+  { href: '/dashboard/cotisations/exceptionnelles', label: 'Exceptionnelles' },
+  { href: '/dashboard/cotisations/historique', label: 'Historique' },
+];
+
+const COTISATIONS_ADMIN_SUB = [
+  { href: '/dashboard/cotisations/gerer', label: 'Gérer' },
+];
+
+function NavGroupClient({
+  label,
+  icon: Icon,
+  pathname,
+  items,
+  adminItems,
+  isAdmin,
+  onClick,
+}: {
+  label: string;
+  icon: React.ComponentType<{ className?: string; size?: number }>;
+  pathname: string;
+  items: { href: string; label: string }[];
+  adminItems?: { href: string; label: string }[];
+  isAdmin?: boolean;
+  onClick?: () => void;
+}) {
+  const allItems = [...items, ...(isAdmin && adminItems ? adminItems : [])];
+  const isParentActive = allItems.some((item) => pathname.startsWith(item.href));
+  const [open, setOpen] = useState(isParentActive);
+
+  return (
+    <div>
+      <button
+        type="button"
+        onClick={() => setOpen((v) => !v)}
+        className={cn(
+          'flex w-full items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-medium transition',
+          isParentActive
+            ? 'bg-[var(--sky-blue)]/20 text-[var(--sky-blue)]'
+            : 'text-[var(--sidebar-text-muted)] hover:bg-white/10 hover:text-[var(--sidebar-text)]',
+        )}
+      >
+        <Icon className="shrink-0" size={20} />
+        <span className="flex-1 min-w-0 truncate text-left">{label}</span>
+        <ChevronDown size={16} className={cn('shrink-0 transition-transform', open && 'rotate-180')} />
+      </button>
+      {open && (
+        <div className="mt-0.5 ml-8 space-y-0.5">
+          {allItems.map((item) => (
+            <Link
+              key={item.href}
+              href={item.href}
+              onClick={onClick}
+              className={cn(
+                'flex items-center gap-2 rounded-xl px-3 py-2 text-sm font-medium transition',
+                pathname.startsWith(item.href)
+                  ? 'bg-[var(--sky-blue)] text-white'
+                  : 'text-[var(--sidebar-text-muted)] hover:bg-white/10 hover:text-[var(--sidebar-text)]',
+              )}
+            >
+              {item.label}
+            </Link>
+          ))}
+        </div>
+      )}
+    </div>
+  );
+}
 
 function NavLink({
   href,
@@ -208,7 +278,25 @@ export default function DashboardLayout({
           <span className="text-lg font-bold text-[var(--sky-blue)] tracking-tight">AFC</span>
         </Link>
         <nav className="flex-1 overflow-y-auto p-3 space-y-0.5">
-          {nav.map((item) => (
+          {nav.slice(0, 2).map((item) => (
+            <NavLink
+              key={item.href}
+              href={item.href}
+              label={item.label}
+              icon={item.icon}
+              isActive={isActive(item.href)}
+              badge={0}
+            />
+          ))}
+          <NavGroupClient
+            label="Cotisations"
+            icon={PiggyBank}
+            pathname={pathname}
+            items={COTISATIONS_SUB}
+            adminItems={COTISATIONS_ADMIN_SUB}
+            isAdmin={user?.role === 'ADMIN' || user?.role === 'TREASURER' || user?.role === 'COMMISSIONER'}
+          />
+          {nav.slice(2).map((item) => (
             <NavLink
               key={item.href}
               href={item.href}
@@ -286,7 +374,27 @@ export default function DashboardLayout({
         style={{ background: 'var(--sidebar-bg)', borderRight: '1px solid rgba(100,116,139,0.3)' }}
       >
         <nav className="p-4 space-y-0.5">
-          {nav.map((item) => (
+          {nav.slice(0, 2).map((item) => (
+            <NavLink
+              key={item.href}
+              href={item.href}
+              label={item.label}
+              icon={item.icon}
+              isActive={isActive(item.href)}
+              onClick={() => setMobileMenuOpen(false)}
+              badge={0}
+            />
+          ))}
+          <NavGroupClient
+            label="Cotisations"
+            icon={PiggyBank}
+            pathname={pathname}
+            items={COTISATIONS_SUB}
+            adminItems={COTISATIONS_ADMIN_SUB}
+            isAdmin={user?.role === 'ADMIN' || user?.role === 'TREASURER' || user?.role === 'COMMISSIONER'}
+            onClick={() => setMobileMenuOpen(false)}
+          />
+          {nav.slice(2).map((item) => (
             <NavLink
               key={item.href}
               href={item.href}
