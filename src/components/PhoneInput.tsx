@@ -78,12 +78,28 @@ const PhoneInput = forwardRef<HTMLInputElement, PhoneInputProps>(
     );
     const [open, setOpen] = useState(false);
     const v = VARIANTS[variant];
+    const selectedDialDigits = selected.dial.replace(/\D/g, '');
+
+    const displayValue = (() => {
+      if (!value) return '';
+      if (!selected.dial) return value;
+
+      if (value.startsWith(selected.dial)) {
+        return value.slice(selected.dial.length);
+      }
+
+      const digits = value.replace(/\D/g, '');
+      if (selectedDialDigits && digits.startsWith(selectedDialDigits)) {
+        return digits.slice(selectedDialDigits.length);
+      }
+
+      return value;
+    })();
 
     const handleCountryChange = (country: Country) => {
       setSelected(country);
       setOpen(false);
       const digits = value.replace(/^\+|\D/g, '');
-      const selectedDialDigits = selected.dial.replace('+', '');
       const withoutOldDial = selectedDialDigits && digits.startsWith(selectedDialDigits)
         ? digits.slice(selectedDialDigits.length)
         : digits;
@@ -99,8 +115,6 @@ const PhoneInput = forwardRef<HTMLInputElement, PhoneInputProps>(
       const fullValue = raw.startsWith('+') || raw.startsWith(selected.dial) ? raw : selected.dial + digits;
       onChange(fullValue);
     };
-
-    const displayValue = value.startsWith('+') || selected.dial === '' ? value : value ? selected.dial + value : '';
 
     return (
       <div className={`relative flex items-center ${className ?? ''}`}>
@@ -120,7 +134,7 @@ const PhoneInput = forwardRef<HTMLInputElement, PhoneInputProps>(
           type="tel"
           value={displayValue}
           onChange={(e) => handleInputChange(e.target.value)}
-          placeholder={placeholder || `${selected.dial} 07 12 34 56 78`}
+          placeholder={placeholder || '07 12 34 56 78'}
           disabled={disabled}
           className={`flex-1 rounded-r-xl border px-4 py-3 outline-none transition focus:ring-2 ${v.input} ${inputClassName ?? ''}`}
         />
