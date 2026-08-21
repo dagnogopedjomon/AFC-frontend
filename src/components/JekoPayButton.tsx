@@ -21,9 +21,10 @@ type Props = {
   defaultPhone?: string;
   label?: string;
   onError?: (msg: string) => void;
+  regularizationAgreementId?: string;
 };
 
-export function JekoPayButton({ contributionId, amount, periodYear, periodMonth, defaultPhone = '', label, onError }: Props) {
+export function JekoPayButton({ contributionId, amount, periodYear, periodMonth, defaultPhone = '', label, onError, regularizationAgreementId }: Props) {
   const [method, setMethod] = useState<string>('wave');
   const [phone, setPhone] = useState(defaultPhone);
   const [loading, setLoading] = useState(false);
@@ -39,6 +40,7 @@ export function JekoPayButton({ contributionId, amount, periodYear, periodMonth,
           periodYear,
           periodMonth,
           title: label ?? `Cotisation AFC`,
+          regularizationAgreementId,
         });
         localStorage.setItem('jeko_pending_link', res.reference);
         window.location.href = res.link;
@@ -50,6 +52,7 @@ export function JekoPayButton({ contributionId, amount, periodYear, periodMonth,
           periodMonth,
           paymentMethod: method,
           payerPhone: phone || undefined,
+          regularizationAgreementId,
         });
         localStorage.setItem('jeko_pending_link', res.reference);
         window.location.href = res.redirectUrl;

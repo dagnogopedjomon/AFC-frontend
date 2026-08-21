@@ -39,6 +39,7 @@ const COTISATIONS_SUB = [
 
 const COTISATIONS_ADMIN_SUB = [
   { href: '/dashboard/cotisations/gerer', label: 'Gérer' },
+  { href: '/dashboard/regularisations', label: 'Régularisations' },
 ];
 
 const CAISSE_SUB = [

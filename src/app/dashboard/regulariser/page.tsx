@@ -3,7 +3,7 @@
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { AlertCircle } from 'lucide-react';
-import { contributionsApi, type Contribution } from '@/lib/api';
+import { contributionsApi, regularizationsApi, type Contribution, type RegularizationAgreement } from '@/lib/api';
 import { useAuth } from '@/lib/auth-context';
 import { JekoPayButton } from '@/components/JekoPayButton';
 
@@ -17,16 +17,17 @@ export default function RegulariserPage() {
     monthlyContributionId: string | null;
   } | null>(null);
   const [monthly, setMonthly] = useState<Contribution | null>(null);
+  const [agreement, setAgreement] = useState<RegularizationAgreement | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
   const fetchData = () => {
     setLoading(true);
     setError(null);
-    contributionsApi
-      .meDebtSummary()
-      .then((data) => {
+    Promise.all([contributionsApi.meDebtSummary(), regularizationsApi.myActive()])
+      .then(([data, activeAgreement]) => {
         setDebtSummary(data);
+        setAgreement(activeAgreement);
       })
       .catch((e) => setError(e instanceof Error ? e.message : 'Erreur'))
       .finally(() => setLoading(false));
@@ -46,10 +47,10 @@ export default function RegulariserPage() {
   }, [debtSummary?.monthlyContributionId]);
 
   useEffect(() => {
-    if (debtSummary && debtSummary.unpaidMonths.length === 0 && !loading) {
+    if (debtSummary && debtSummary.unpaidMonths.length === 0 && !agreement && !loading) {
       router.replace('/dashboard');
     }
-  }, [debtSummary, loading, router]);
+  }, [debtSummary, agreement, loading, router]);
 
   if (loading && (!debtSummary || debtSummary.unpaidMonths.length === 0)) {
     return (
@@ -59,7 +60,7 @@ export default function RegulariserPage() {
     );
   }
 
-  if (!debtSummary || debtSummary.unpaidMonths.length === 0) {
+  if (!debtSummary || (debtSummary.unpaidMonths.length === 0 && !agreement)) {
     return null;
   }
 
@@ -75,11 +76,33 @@ export default function RegulariserPage() {
               Régulariser vos cotisations
             </h1>
             <p className="text-amber-800 mt-1">
-              Vous devez régler <strong>tous</strong> les mois ci-dessous pour retrouver l&apos;accès à votre compte.
+              {agreement
+                ? 'Un accord de régularisation a été défini par l’administrateur pour votre compte.'
+                : <>Vous devez régler <strong>tous</strong> les mois ci-dessous pour retrouver l&apos;accès à votre compte.</>}
             </p>
           </div>
         </div>
       </div>
+
+      {agreement && (
+        <div className="card border-l-4 border-l-[var(--sky-blue)] space-y-3">
+          <div className="flex items-center justify-between gap-3">
+            <h2 className="text-lg font-bold text-[var(--foreground)]">Votre accord de régularisation</h2>
+            <span className="rounded-full bg-blue-50 px-3 py-1 text-xs font-semibold text-blue-700">
+              {agreement.mode === 'INSTALLMENT' ? 'Paiement par tranches' : 'Règlement négocié'}
+            </span>
+          </div>
+          <div className="grid grid-cols-2 gap-3 text-sm">
+            <div><span className="text-gray-500">Dette initiale</span><p className="font-semibold">{agreement.originalAmount.toLocaleString('fr-FR')} FCFA</p></div>
+            <div><span className="text-gray-500">Montant accordé</span><p className="font-semibold">{agreement.agreedAmount.toLocaleString('fr-FR')} FCFA</p></div>
+            <div><span className="text-gray-500">Déjà payé</span><p className="font-semibold text-green-700">{agreement.paidAmount.toLocaleString('fr-FR')} FCFA</p></div>
+            <div><span className="text-gray-500">Solde</span><p className="font-semibold text-amber-700">{agreement.balance.toLocaleString('fr-FR')} FCFA</p></div>
+          </div>
+          {agreement.discountAmount > 0 && <p className="text-sm text-green-700">Remise accordée : <strong>{agreement.discountAmount.toLocaleString('fr-FR')} FCFA</strong></p>}
+          {agreement.deadline && <p className="text-sm text-gray-700">Solde à payer avant le <strong>{new Date(agreement.deadline).toLocaleDateString('fr-FR')}</strong>. Après cette date, le compte sera automatiquement suspendu.</p>}
+          {agreement.notes && <p className="text-sm text-gray-600">Note : {agreement.notes}</p>}
+        </div>
+      )}
 
       <div className="card">
         <h2 className="text-sm font-medium text-gray-500 uppercase tracking-wide mb-2">
@@ -112,11 +135,14 @@ export default function RegulariserPage() {
           <h2 className="text-sm font-medium text-gray-700 uppercase tracking-wide">Payer en ligne</h2>
           <JekoPayButton
             contributionId={debtSummary.monthlyContributionId}
-            amount={debtSummary.totalOwed}
+            amount={agreement ? (agreement.paidAmount === 0 ? agreement.initialAmount : agreement.balance) : debtSummary.totalOwed}
             periodYear={debtSummary.unpaidMonths[0]?.year}
             periodMonth={debtSummary.unpaidMonths[0]?.month}
             defaultPhone={user?.phone ?? ''}
-            label={`${debtSummary.totalOwed.toLocaleString('fr-FR')} FCFA (${debtSummary.unpaidMonths.length} mois)`}
+            label={agreement
+              ? `${(agreement.paidAmount === 0 ? agreement.initialAmount : agreement.balance).toLocaleString('fr-FR')} FCFA`
+              : `${debtSummary.totalOwed.toLocaleString('fr-FR')} FCFA (${debtSummary.unpaidMonths.length} mois)`}
+            regularizationAgreementId={agreement?.id}
             onError={setError}
           />
         </div>
