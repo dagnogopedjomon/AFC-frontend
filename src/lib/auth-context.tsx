@@ -2,7 +2,7 @@
 
 import React, { createContext, useContext, useEffect, useState, useCallback } from 'react';
 import { useRouter } from 'next/navigation';
-import { authApi, type AuthUser } from './api';
+import { ApiError, authApi, type AuthUser } from './api';
 
 type AuthContextType = {
   user: AuthUser | null;
@@ -15,6 +15,17 @@ type AuthContextType = {
 };
 
 const AuthContext = createContext<AuthContextType | null>(null);
+
+function getCachedUser(): AuthUser | null {
+  if (typeof window === 'undefined') return null;
+  const raw = localStorage.getItem('afc_user');
+  if (!raw) return null;
+  try {
+    return JSON.parse(raw) as AuthUser;
+  } catch {
+    return null;
+  }
+}
 
 export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [user, setUser] = useState<AuthUser | null>(null);
@@ -34,11 +45,16 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       const u = await authApi.me();
       setUser(u);
       setToken(t);
-    } catch {
-      localStorage.removeItem('afc_token');
-      localStorage.removeItem('afc_user');
-      setUser(null);
-      setToken(null);
+    } catch (error) {
+      if (error instanceof ApiError && error.status === 401) {
+        localStorage.removeItem('afc_token');
+        localStorage.removeItem('afc_user');
+        setUser(null);
+        setToken(null);
+      } else {
+        setUser(getCachedUser());
+        setToken(t);
+      }
     } finally {
       setLoading(false);
     }
@@ -53,10 +69,15 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     setToken(t);
     authApi.me()
       .then((u) => setUser(u))
-      .catch(() => {
-        localStorage.removeItem('afc_token');
-        localStorage.removeItem('afc_user');
-        setToken(null);
+      .catch((error) => {
+        if (error instanceof ApiError && error.status === 401) {
+          localStorage.removeItem('afc_token');
+          localStorage.removeItem('afc_user');
+          setToken(null);
+          setUser(null);
+        } else {
+          setUser(getCachedUser());
+        }
       })
       .finally(() => setLoading(false));
   }, []);
