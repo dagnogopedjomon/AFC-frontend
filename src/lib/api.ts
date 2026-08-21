@@ -341,6 +341,11 @@ export const contributionsApi = {
     api<{ unpaidMonths: Array<{ year: number; month: number }>; monthlyContributionId: string | null }>(
       '/contributions/me/unpaid-months',
     ),
+  /** Résumé de la dette du membre : montant total dû + détail par mois */
+  meDebtSummary: () =>
+    api<{ totalOwed: number; monthlyAmount: number; unpaidMonths: Array<{ year: number; month: number; amount: number; label: string }>; monthlyContributionId: string | null }>(
+      '/contributions/me/debt',
+    ),
   /** Initialise un paiement Jeko (redirect) → retourne reference + redirectUrl. */
   jekoInit: (data: { contributionId: string; amount: number; periodYear?: number; periodMonth?: number; paymentMethod: string; payerPhone?: string }) =>
     api<{ reference: string; redirectUrl: string }>('/contributions/payments/jeko/init', {
