@@ -1,16 +1,21 @@
 'use client';
 
 import { useEffect } from 'react';
-import Link from 'next/link';
+import { useRouter } from 'next/navigation';
 import { AlertCircle } from 'lucide-react';
 import { useAuth } from '@/lib/auth-context';
 
 export default function CompteSuspenduPage() {
-  const { clearSession } = useAuth();
+  const { user } = useAuth();
+  const router = useRouter();
 
   useEffect(() => {
-    clearSession();
-  }, [clearSession]);
+    if (user) {
+      router.replace('/dashboard/regulariser');
+    } else {
+      router.replace('/login');
+    }
+  }, [user, router]);
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-neutral-800 px-4">
@@ -29,12 +34,6 @@ export default function CompteSuspenduPage() {
         <p className="mt-2 text-amber-800 font-medium">
           Contactez l'administrateur pour régulariser votre situation et réactiver votre compte.
         </p>
-        <Link
-          href="/login"
-          className="mt-8 inline-block px-6 py-3 rounded-xl bg-[var(--sky-blue)] text-white font-medium hover:opacity-90 transition"
-        >
-          Retour à la connexion
-        </Link>
       </div>
     </div>
   );
