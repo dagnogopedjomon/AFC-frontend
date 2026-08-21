@@ -10,6 +10,16 @@ function getToken(): string | null {
   return localStorage.getItem('afc_token');
 }
 
+export class ApiError extends Error {
+  constructor(
+    message: string,
+    public readonly status: number,
+  ) {
+    super(message);
+    this.name = 'ApiError';
+  }
+}
+
 export async function api<T>(
   path: string,
   options: RequestInit = {},
@@ -33,23 +43,16 @@ export async function api<T>(
         window.location.href = '/login';
       }
     }
-    throw new Error(message);
+    throw new ApiError(message, res.status);
   }
   if (res.status === 403) {
     const err = await res.json().catch(() => ({}));
     const message = typeof err?.message === 'string' ? err.message : 'Accès refusé';
-    if (typeof window !== 'undefined') {
-      const suspended = /suspendu|suspended/i.test(message);
-      if (suspended) {
-        window.location.href = '/dashboard/regulariser';
-        throw new Error(message);
-      }
-    }
-    throw new Error(message);
+    throw new ApiError(message, res.status);
   }
   if (!res.ok) {
     const err = await res.json().catch(() => ({}));
-    throw new Error(err.message || `Erreur ${res.status}`);
+    throw new ApiError(err.message || `Erreur ${res.status}`, res.status);
   }
   return res.json();
 }
