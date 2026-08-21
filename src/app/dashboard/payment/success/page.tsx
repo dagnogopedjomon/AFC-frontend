@@ -5,10 +5,12 @@ import { useSearchParams, useRouter } from 'next/navigation';
 import { CheckCircle, XCircle, Loader2, RefreshCw } from 'lucide-react';
 import { contributionsApi } from '@/lib/api';
 import { toast } from 'sonner';
+import { useAuth } from '@/lib/auth-context';
 
 export default function PaymentSuccessPage() {
   const searchParams = useSearchParams();
   const router = useRouter();
+  const { refreshUser } = useAuth();
   const linkId = searchParams.get('ref');
   const [status, setStatus] = useState<'verifying' | 'paid' | 'pending' | 'error'>('verifying');
   const [retryCount, setRetryCount] = useState(0);
@@ -23,7 +25,8 @@ export default function PaymentSuccessPage() {
       if (res.paid) {
         setStatus('paid');
         toast.success('Paiement confirmé !', { duration: 3000 });
-        setTimeout(() => router.replace('/dashboard/cotisations'), 3000);
+        await refreshUser();
+        setTimeout(() => router.replace('/dashboard'), 3000);
       } else {
         setStatus('pending');
         // Auto-retry every 3 seconds up to 5 times
