@@ -275,8 +275,8 @@ export default function DashboardLayout({
     );
   }
 
-  if (user?.isSuspended && user.role !== 'ADMIN') {
-    router.replace('/regulariser');
+  if (user?.isSuspended && user.role !== 'ADMIN' && pathname !== '/dashboard/regulariser') {
+    router.replace('/dashboard/regulariser');
     return null;
   }
 

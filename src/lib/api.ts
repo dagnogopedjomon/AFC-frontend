@@ -41,7 +41,7 @@ export async function api<T>(
     if (typeof window !== 'undefined') {
       const suspended = /suspendu|suspended/i.test(message);
       if (suspended) {
-        window.location.href = '/regulariser';
+        window.location.href = '/dashboard/regulariser';
         throw new Error(message);
       }
     }
