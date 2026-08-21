@@ -41,9 +41,7 @@ export async function api<T>(
     if (typeof window !== 'undefined') {
       const suspended = /suspendu|suspended/i.test(message);
       if (suspended) {
-        localStorage.removeItem('afc_token');
-        localStorage.removeItem('afc_user');
-        window.location.href = '/compte-suspendu';
+        window.location.href = '/dashboard/regulariser';
         throw new Error(message);
       }
     }
