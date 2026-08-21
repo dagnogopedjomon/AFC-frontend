@@ -11,7 +11,7 @@ export default function CompteSuspenduPage() {
 
   useEffect(() => {
     if (user) {
-      router.replace('/dashboard/regulariser');
+      router.replace('/regulariser');
     } else {
       router.replace('/login');
     }

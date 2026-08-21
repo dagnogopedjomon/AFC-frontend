@@ -276,7 +276,7 @@ export default function DashboardLayout({
   }
 
   if (user?.isSuspended && user.role !== 'ADMIN') {
-    router.replace('/dashboard/regulariser');
+    router.replace('/regulariser');
     return null;
   }
 

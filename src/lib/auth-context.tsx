@@ -69,7 +69,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       setToken(access_token);
       setUser(u);
       if (u.isSuspended) {
-        router.push('/dashboard/regulariser');
+        router.push('/regulariser');
       } else if (u.role === 'ADMIN' || u.profileCompleted) {
         router.push('/dashboard');
       } else {
