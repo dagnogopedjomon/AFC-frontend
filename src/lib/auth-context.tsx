@@ -68,7 +68,9 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       localStorage.setItem('afc_user', JSON.stringify(u));
       setToken(access_token);
       setUser(u);
-      if (u.role === 'ADMIN' || u.profileCompleted) {
+      if (u.isSuspended) {
+        router.push('/dashboard/regulariser');
+      } else if (u.role === 'ADMIN' || u.profileCompleted) {
         router.push('/dashboard');
       } else {
         router.push('/complete-profile');
