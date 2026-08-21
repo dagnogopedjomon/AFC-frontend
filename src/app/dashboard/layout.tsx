@@ -275,7 +275,7 @@ export default function DashboardLayout({
   }
 
   if (user?.isSuspended && user.role !== 'ADMIN') {
-    logout({ redirectTo: '/compte-suspendu' });
+    router.replace('/dashboard/regulariser');
     return (
       <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-slate-50 via-sky-50/30 to-white">
         <div className="inline-block h-10 w-10 animate-spin rounded-full border-4 border-[var(--sky-blue)] border-r-transparent" />
