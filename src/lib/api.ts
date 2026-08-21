@@ -348,13 +348,13 @@ export const contributionsApi = {
       '/contributions/me/debt',
     ),
   /** Initialise un paiement Jeko (redirect) → retourne reference + redirectUrl. */
-  jekoInit: (data: { contributionId: string; amount: number; periodYear?: number; periodMonth?: number; paymentMethod: string; payerPhone?: string }) =>
+  jekoInit: (data: { contributionId: string; amount: number; periodYear?: number; periodMonth?: number; paymentMethod: string; payerPhone?: string; regularizationAgreementId?: string }) =>
     api<{ reference: string; redirectUrl: string }>('/contributions/payments/jeko/init', {
       method: 'POST',
       body: JSON.stringify(data),
     }),
   /** Crée un lien de paiement Jeko (checkout avec carte bancaire + mobile money). */
-  jekoLink: (data: { contributionId: string; amount: number; periodYear?: number; periodMonth?: number; title: string }) =>
+  jekoLink: (data: { contributionId: string; amount: number; periodYear?: number; periodMonth?: number; title: string; regularizationAgreementId?: string }) =>
     api<{ reference: string; link: string }>('/contributions/payments/jeko/link', {
       method: 'POST',
       body: JSON.stringify(data),
@@ -375,6 +375,38 @@ export type MemberHistory = {
   payments: Payment[];
   byMonth: Array<{ year: number; month: number; amount: number; paidAt: string }>;
   totalPaid: number;
+};
+
+export type RegularizationAgreement = {
+  id: string;
+  memberId: string;
+  contributionId: string;
+  mode: 'INSTALLMENT' | 'SETTLEMENT';
+  status: 'PENDING' | 'PARTIALLY_PAID' | 'COMPLETED' | 'OVERDUE' | 'CANCELLED';
+  originalAmount: number;
+  agreedAmount: number;
+  initialAmount: number;
+  paidAmount: number;
+  discountAmount: number;
+  balance: number;
+  deadline: string | null;
+  months: Array<{ year: number; month: number; amount: number; label: string }>;
+  notes: string | null;
+  createdAt: string;
+  activatedAt: string | null;
+  completedAt: string | null;
+  member?: { id: string; firstName: string; lastName: string; phone: string; isSuspended: boolean };
+  createdBy?: { id: string; firstName: string; lastName: string };
+};
+
+export const regularizationsApi = {
+  myActive: () => api<RegularizationAgreement | null>('/regularizations/me/active'),
+  list: () => api<RegularizationAgreement[]>('/regularizations'),
+  forMember: (memberId: string) => api<RegularizationAgreement[]>(`/regularizations/member/${memberId}`),
+  candidates: () => api<Array<Member & { debt: { totalOwed: number; monthlyAmount: number; unpaidMonths: Array<{ year: number; month: number; amount: number; label: string }>; monthlyContributionId: string } }>>('/regularizations/candidates'),
+  create: (data: { memberId: string; mode: 'INSTALLMENT' | 'SETTLEMENT'; agreedAmount: number; initialAmount: number; deadline?: string; notes?: string }) =>
+    api<RegularizationAgreement>('/regularizations', { method: 'POST', body: JSON.stringify(data) }),
+  cancel: (id: string) => api<RegularizationAgreement>(`/regularizations/${id}/cancel`, { method: 'POST' }),
 };
 
 // ========== Caisse (sous-caisses type Wave) ==========
