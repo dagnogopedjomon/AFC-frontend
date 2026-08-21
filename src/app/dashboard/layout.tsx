@@ -262,7 +262,8 @@ export default function DashboardLayout({
   useEffect(() => {
     if (!loading && !token) router.replace('/login');
     // L'admin reste sur le dashboard même sans profil complété.
-    if (!loading && token && user && user.role !== 'ADMIN' && !user.profileCompleted)
+    // Les membres suspendus vont vers regulariser même si profil non complété.
+    if (!loading && token && user && user.role !== 'ADMIN' && !user.profileCompleted && !user.isSuspended)
       router.replace('/complete-profile');
   }, [loading, token, user, router]);
 
