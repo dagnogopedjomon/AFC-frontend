@@ -28,7 +28,6 @@ import {
   type ArrearsResult,
   type Expense,
   type Activity,
-  type MemberHistory,
   type AnnualReport,
 } from '@/lib/api';
 import { cn, roleLabelFr } from '@/lib/utils';
@@ -94,7 +93,6 @@ export default function DashboardPage() {
   const [caisseSummary, setCaisseSummary] = useState<CaisseSummary | null>(null);
   const [arrears, setArrears] = useState<ArrearsResult | null>(null);
   const [totalMembers, setTotalMembers] = useState<number | null>(null);
-  const [myStatus, setMyStatus] = useState<MemberHistory | null>(null);
   const [myUnpaidMonths, setMyUnpaidMonths] = useState<Array<{ year: number; month: number }> | null>(null);
   const [expenses, setExpenses] = useState<Expense[]>([]);
   const [activities, setActivities] = useState<Activity[]>([]);
@@ -139,7 +137,6 @@ export default function DashboardPage() {
     }
     if (user) {
       promises.push(
-        contributionsApi.me().then(setMyStatus).catch(() => setMyStatus(null)),
         contributionsApi.meUnpaidMonths().then((d) => setMyUnpaidMonths(d.unpaidMonths)).catch(() => setMyUnpaidMonths([])),
       );
     }
@@ -170,14 +167,8 @@ export default function DashboardPage() {
     (e) => e.status === 'PENDING_TREASURER' || e.status === 'PENDING_COMMISSIONER',
   ).length;
 
-  const now = new Date();
-  const currentMonth = now.getMonth() + 1;
-  const paidThisMonth =
-    myStatus?.byMonth?.some((m) => m.year === currentYear && m.month === currentMonth) ?? false;
-  const monthLabelDashboard = new Date(currentYear, currentMonth - 1).toLocaleString('fr-FR', {
-    month: 'long',
-    year: 'numeric',
-  });
+  const outstandingMonthsCount = myUnpaidMonths?.length ?? 0;
+  const hasOutstandingDebt = outstandingMonthsCount > 0;
 
   const roleLabel = user?.role ? roleLabelFr(user.role) : '';
 
@@ -301,17 +292,17 @@ export default function DashboardPage() {
 
             <motion.div variants={cardMotion} className="h-full">
               <Link
-                href="/dashboard/cotisations"
+                href={hasOutstandingDebt ? '/dashboard/regulariser' : '/dashboard/cotisations'}
                 className={cn(
                   'card card-hover block border-l-4 h-full',
-                  paidThisMonth ? 'border-l-emerald-500' : 'border-l-amber-500',
+                  hasOutstandingDebt ? 'border-l-amber-500' : 'border-l-emerald-500',
                 )}
               >
                 <div className="flex items-center gap-3">
                   <div
                     className={cn(
                       'flex h-10 w-10 shrink-0 items-center justify-center rounded-xl',
-                      paidThisMonth ? 'bg-emerald-100 text-emerald-600' : 'bg-amber-100 text-amber-600',
+                      hasOutstandingDebt ? 'bg-amber-100 text-amber-600' : 'bg-emerald-100 text-emerald-600',
                     )}
                   >
                     <PiggyBank size={20} />
@@ -320,14 +311,14 @@ export default function DashboardPage() {
                     <h2 className="text-xs font-semibold text-slate-500 uppercase tracking-wide">
                       Ma cotisation
                     </h2>
-                    <p className={cn('mt-0.5 text-lg font-bold', paidThisMonth ? 'text-emerald-700' : 'text-amber-700')}>
-                      {myStatus === null
+                    <p className={cn('mt-0.5 text-lg font-bold', hasOutstandingDebt ? 'text-amber-700' : 'text-emerald-700')}>
+                      {myUnpaidMonths === null
                         ? '—'
-                        : paidThisMonth
-                          ? `À jour pour ${monthLabelDashboard}`
-                          : `En retard pour ${monthLabelDashboard}`}
+                        : hasOutstandingDebt
+                          ? `${outstandingMonthsCount} mois à régulariser`
+                          : 'À jour'}
                     </p>
-                    <p className="text-sm text-slate-500 mt-1">Voir mes cotisations →</p>
+                    <p className="text-sm text-slate-500 mt-1">{hasOutstandingDebt ? 'Voir ma dette →' : 'Voir mes cotisations →'}</p>
                   </div>
                 </div>
               </Link>
