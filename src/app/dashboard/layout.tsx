@@ -438,11 +438,6 @@ export default function DashboardLayout({
 
       {/* Main content */}
       <main className="flex-1 lg:pl-64 flex flex-col min-h-screen bg-gradient-to-br from-slate-50 via-sky-50/30 to-white">
-        {user?.isSuspended && user.role !== 'ADMIN' && (
-          <div className="bg-amber-50 border-b border-amber-200 px-4 py-3 text-center text-amber-800 text-sm font-medium">
-            Votre cotisation n’est pas à jour. Accès en lecture seule jusqu’à régularisation.
-          </div>
-        )}
         {user && !user.isSuspended && user.reactivatedAt && user.role !== 'ADMIN' && (
           <div className="bg-amber-50 border-b border-amber-200 px-4 py-3 text-center text-amber-800 text-sm font-medium">
             Vous avez été réactivé temporairement. Vous avez <strong>24 h</strong> pour régulariser votre cotisation, sinon votre compte sera désactivé à nouveau.{' '}
