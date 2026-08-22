@@ -62,12 +62,12 @@ export default function LoginPage() {
 
   return (
     <div
-      className="flex min-h-screen items-center justify-center px-4"
+      className="flex min-h-screen w-full items-center justify-center overflow-x-hidden px-4"
       style={{ backgroundColor: '#ffffff' }}
     >
       <div
         data-login-dark
-        className="w-full max-w-md rounded-2xl border p-6 shadow-xl"
+        className="min-w-0 w-full max-w-md rounded-2xl border p-5 shadow-xl sm:p-6"
         style={{
           backgroundColor: '#262626',
           borderColor: 'rgba(229, 231, 235, 0.35)',
