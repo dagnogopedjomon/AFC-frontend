@@ -117,12 +117,12 @@ const PhoneInput = forwardRef<HTMLInputElement, PhoneInputProps>(
     };
 
     return (
-      <div className={`relative flex items-center ${className ?? ''}`}>
+      <div className={`relative flex min-w-0 max-w-full items-center ${className ?? ''}`}>
         <button
           type="button"
           onClick={() => !disabled && setOpen((v) => !v)}
           disabled={disabled}
-          className={`flex items-center gap-1 px-3 py-3 rounded-l-xl border border-r-0 text-sm transition disabled:opacity-50 ${v.button}`}
+          className={`flex shrink-0 items-center gap-1 px-3 py-3 rounded-l-xl border border-r-0 text-sm transition disabled:opacity-50 ${v.button}`}
           title={selected.name}
         >
           <span className="text-base">{selected.flag}</span>
@@ -136,10 +136,10 @@ const PhoneInput = forwardRef<HTMLInputElement, PhoneInputProps>(
           onChange={(e) => handleInputChange(e.target.value)}
           placeholder={placeholder || '07 12 34 56 78'}
           disabled={disabled}
-          className={`flex-1 rounded-r-xl border px-4 py-3 outline-none transition focus:ring-2 ${v.input} ${inputClassName ?? ''}`}
+          className={`w-0 min-w-0 flex-1 rounded-r-xl border px-4 py-3 outline-none transition focus:ring-2 ${v.input} ${inputClassName ?? ''}`}
         />
         {open && (
-          <div className={`absolute left-0 top-full z-20 mt-1 max-h-60 w-64 overflow-auto rounded-xl border ${v.dropdown}`}>
+          <div className={`absolute left-0 top-full z-20 mt-1 max-h-60 w-64 max-w-full overflow-auto rounded-xl border ${v.dropdown}`}>
             {COUNTRIES.map((c) => (
               <button
                 key={c.code}
