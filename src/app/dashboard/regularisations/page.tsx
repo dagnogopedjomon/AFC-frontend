@@ -5,6 +5,7 @@ import { regularizationsApi, type Member, type RegularizationAgreement } from '@
 import { useAuth } from '@/lib/auth-context';
 
 type Candidate = Member & {
+  eligibleForAgreement: boolean;
   debt: { totalOwed: number; monthlyAmount: number; unpaidMonths: Array<{ year: number; month: number; amount: number; label: string }>; monthlyContributionId: string };
 };
 
@@ -67,10 +68,31 @@ export default function RegularisationsAdminPage() {
     <div className="space-y-6">
       <div>
         <h1 className="text-2xl font-bold text-[var(--foreground)]">Régularisations</h1>
-        <p className="text-gray-600 mt-1">Accords nominatifs pour les membres ayant au moins quatre mois impayés.</p>
+        <p className="text-gray-600 mt-1">Consultez les dettes de chaque membre et créez un accord à partir de quatre mois impayés.</p>
       </div>
       {error && <div className="rounded-xl bg-red-50 px-4 py-3 text-red-700">{error}</div>}
       {message && <div className="rounded-xl bg-green-50 px-4 py-3 text-green-800">{message}</div>}
+
+      <div className="card">
+        <div className="flex items-center justify-between gap-3 mb-4">
+          <h2 className="text-lg font-semibold">Membres en retard</h2>
+          <span className="text-sm text-gray-500">{candidates.length} membre{candidates.length !== 1 ? 's' : ''}</span>
+        </div>
+        {loading ? <p>Chargement…</p> : candidates.length === 0 ? <p className="text-gray-500">Tous les membres sont à jour.</p> : (
+          <div className="grid gap-3 lg:grid-cols-2">
+            {candidates.map((candidate) => (
+              <button key={candidate.id} type="button" onClick={() => candidate.eligibleForAgreement && setSelectedId(candidate.id)} className={`rounded-xl border p-4 text-left ${candidate.eligibleForAgreement ? 'border-amber-200 hover:bg-amber-50 cursor-pointer' : 'border-gray-200 bg-gray-50 cursor-default'}`}>
+                <div className="flex items-start justify-between gap-3">
+                  <div><p className="font-semibold text-[var(--foreground)]">{candidate.firstName} {candidate.lastName}</p><p className="text-xs text-gray-500">{candidate.phone}</p></div>
+                  <span className="font-bold text-amber-700 whitespace-nowrap">{candidate.debt.totalOwed.toLocaleString('fr-FR')} FCFA</span>
+                </div>
+                <p className="mt-2 text-sm text-gray-700"><strong>{candidate.debt.unpaidMonths.length} mois :</strong> {candidate.debt.unpaidMonths.map((month) => month.label).join(', ')}</p>
+                <p className="mt-2 text-xs font-medium text-gray-500">{candidate.eligibleForAgreement ? 'Cliquer pour préparer un accord de régularisation' : 'Accord disponible à partir de 4 mois impayés'}</p>
+              </button>
+            ))}
+          </div>
+        )}
+      </div>
 
       <form onSubmit={submit} className="card space-y-4">
         <h2 className="text-lg font-semibold">Créer un accord</h2>
@@ -78,7 +100,7 @@ export default function RegularisationsAdminPage() {
           <label className="block text-sm font-medium mb-1">Membre concerné</label>
           <select className="input w-full" value={selectedId} onChange={(e) => setSelectedId(e.target.value)} required>
             <option value="">Sélectionner un membre</option>
-            {candidates.map((c) => <option key={c.id} value={c.id}>{c.firstName} {c.lastName} — {c.debt.unpaidMonths.length} mois — {c.debt.totalOwed.toLocaleString('fr-FR')} FCFA</option>)}
+            {candidates.map((c) => <option key={c.id} value={c.id} disabled={!c.eligibleForAgreement}>{c.firstName} {c.lastName} — {c.debt.unpaidMonths.length} mois — {c.debt.totalOwed.toLocaleString('fr-FR')} FCFA{!c.eligibleForAgreement ? ' (moins de 4 mois)' : ''}</option>)}
           </select>
         </div>
         {selected && <div className="rounded-xl bg-amber-50 p-3 text-sm text-amber-900">Dette constatée : <strong>{selected.debt.totalOwed.toLocaleString('fr-FR')} FCFA</strong> pour {selected.debt.unpaidMonths.map((m) => m.label).join(', ')}.</div>}

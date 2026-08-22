@@ -70,7 +70,7 @@ function ArrearsBanner({
   const duplicatedText = `${fullText}   •   ${fullText}`;
 
   return (
-    <Link href="/dashboard/cotisations">
+    <Link href="/dashboard/regulariser">
       <motion.div
         initial={{ opacity: 0, y: -8 }}
         animate={{ opacity: 1, y: 0 }}
@@ -377,7 +377,7 @@ export default function DashboardPage() {
 
             {canSeeArrears && arrears !== null && (
               <motion.div variants={cardMotion} className="h-full">
-                <Link href="/dashboard/cotisations" className="card card-hover border-l-4 border-l-amber-500 block h-full">
+                <Link href={user?.role === 'ADMIN' ? '/dashboard/regularisations' : '/dashboard/cotisations'} className="card card-hover border-l-4 border-l-amber-500 block h-full">
                   <div className="flex items-center gap-3">
                     <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-amber-100 text-amber-600">
                       <PiggyBank size={20} />
@@ -389,7 +389,7 @@ export default function DashboardPage() {
                       <p className="mt-0.5 text-xl font-bold text-[var(--foreground)]">
                         {arrears.total} membre{arrears.total !== 1 ? 's' : ''} en retard
                       </p>
-                      <p className="text-sm text-slate-500 mt-1">Voir les cotisations →</p>
+                      <p className="text-sm text-slate-500 mt-1">{user?.role === 'ADMIN' ? 'Voir les dettes détaillées →' : 'Voir les cotisations →'}</p>
                     </div>
                   </div>
                 </Link>
