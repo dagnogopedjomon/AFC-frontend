@@ -24,7 +24,10 @@ export default function RegulariserPage() {
   const fetchData = () => {
     setLoading(true);
     setError(null);
-    Promise.all([contributionsApi.meDebtSummary(), regularizationsApi.myActive()])
+    Promise.all([
+      contributionsApi.meDebtSummary(),
+      regularizationsApi.myActive().catch(() => null),
+    ])
       .then(([data, activeAgreement]) => {
         setDebtSummary(data);
         setAgreement(activeAgreement);
@@ -60,7 +63,19 @@ export default function RegulariserPage() {
     );
   }
 
-  if (!debtSummary || (debtSummary.unpaidMonths.length === 0 && !agreement)) {
+  if (!debtSummary) {
+    return (
+      <div className="max-w-xl mx-auto">
+        <div className="card border-l-4 border-l-red-500">
+          <h1 className="text-lg font-bold text-[var(--foreground)]">Impossible d’afficher votre dette</h1>
+          <p className="mt-2 text-sm text-red-700">{error ?? 'Le détail des cotisations est temporairement indisponible.'}</p>
+          <button type="button" onClick={fetchData} className="btn-primary mt-4">Réessayer</button>
+        </div>
+      </div>
+    );
+  }
+
+  if (debtSummary.unpaidMonths.length === 0 && !agreement) {
     return null;
   }
 
