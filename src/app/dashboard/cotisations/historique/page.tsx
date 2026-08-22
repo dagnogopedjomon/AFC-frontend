@@ -18,6 +18,16 @@ export default function HistoriquePage() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
+  async function cancelPayment(payment: Payment) {
+    const reason = window.prompt('Motif de l’annulation (obligatoire) :');
+    if (!reason?.trim()) return;
+    try {
+      const updated = await contributionsApi.cancelPayment(payment.id, reason.trim());
+      setPayments((rows) => rows.map((row) => row.id === payment.id ? { ...row, ...updated } : row));
+      setSummary(await contributionsApi.historySummary());
+    } catch (e) { setError(e instanceof Error ? e.message : 'Annulation impossible'); }
+  }
+
   const filteredPayments = useMemo(() => {
     const q = searchQuery.trim().toLowerCase();
     if (!q) return payments;
@@ -104,18 +114,19 @@ export default function HistoriquePage() {
                   <th className="px-4 py-3 text-gray-600">Téléphone</th>
                   <th className="px-4 py-3 text-gray-600">Cotisation</th>
                   <th className="px-4 py-3 text-gray-600">Montant</th>
+                  <th className="px-4 py-3 text-gray-600">Source / action</th>
                 </tr>
               </thead>
               <tbody>
                 {filteredPayments.length === 0 ? (
                   <tr>
-                    <td colSpan={5} className="px-4 py-6 text-center text-gray-500">
+                    <td colSpan={6} className="px-4 py-6 text-center text-gray-500">
                       {payments.length === 0 ? 'Aucun paiement enregistré.' : 'Aucun résultat pour cette recherche.'}
                     </td>
                   </tr>
                 ) : (
                   filteredPayments.map((p) => (
-                    <tr key={p.id} className="border-b border-gray-50 hover:bg-gray-50/50">
+                    <tr key={p.id} className={`border-b border-gray-50 hover:bg-gray-50/50 ${p.cancelledAt ? 'opacity-50' : ''}`}>
                       <td className="px-4 py-3 text-gray-600 whitespace-nowrap">
                         {new Date(p.paidAt).toLocaleDateString('fr-FR', { day: 'numeric', month: 'short', year: 'numeric' })}
                       </td>
@@ -125,6 +136,10 @@ export default function HistoriquePage() {
                       <td className="px-4 py-3 text-gray-600">{p.member?.phone ?? '—'}</td>
                       <td className="px-4 py-3 text-gray-600">{p.contribution?.name ?? '—'}</td>
                       <td className="px-4 py-3 font-medium">{Number(p.amount).toLocaleString('fr-FR')} FCFA</td>
+                      <td className="px-4 py-3 text-xs">
+                        <span className="block text-gray-600">{p.metadata?.includes('external_admin') ? 'Hors application' : 'En ligne / interne'}</span>
+                        {p.cancelledAt ? <span className="font-semibold text-red-600">Annulé</span> : user?.role === 'ADMIN' ? <button type="button" onClick={() => cancelPayment(p)} className="font-semibold text-red-600 hover:underline">Annuler</button> : null}
+                      </td>
                     </tr>
                   ))
                 )}

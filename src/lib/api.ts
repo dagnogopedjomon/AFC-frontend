@@ -221,6 +221,9 @@ export type Payment = {
   periodMonth: number | null;
   member?: { id: string; firstName: string; lastName: string; phone: string };
   contribution?: Contribution;
+  cancelledAt?: string | null;
+  cancellationReason?: string | null;
+  metadata?: string | null;
 };
 
 export type ArrearsResult = {
@@ -316,6 +319,12 @@ export const contributionsApi = {
       method: 'POST',
       body: JSON.stringify(data),
     }),
+  recordExternalAdvance: (data: { memberId: string; months: number; amount: number; paymentMethod?: string; reference?: string; note?: string }) =>
+    api<{ periods: Array<{ year: number; month: number }>; paidThrough: { year: number; month: number }; totalAmount: number }>('/contributions/payments/advance/external', { method: 'POST', body: JSON.stringify(data) }),
+  cancelPayment: (id: string, reason: string) =>
+    api<Payment>(`/contributions/payments/${id}/cancel`, { method: 'POST', body: JSON.stringify({ reason }) }),
+  mePrepayment: () =>
+    api<{ paidThrough: { year: number; month: number } | null; futureMonthsPaid: number; periods: Array<{ year: number; month: number }> }>('/contributions/me/prepayment'),
   /** Paiement par le membre pour lui-même (tous les rôles). */
   recordSelfPayment: (data: {
     contributionId: string;
@@ -348,13 +357,13 @@ export const contributionsApi = {
       '/contributions/me/debt',
     ),
   /** Initialise un paiement Jeko (redirect) → retourne reference + redirectUrl. */
-  jekoInit: (data: { contributionId: string; amount: number; periodYear?: number; periodMonth?: number; paymentMethod: string; payerPhone?: string; regularizationAgreementId?: string }) =>
+  jekoInit: (data: { contributionId: string; amount: number; periodYear?: number; periodMonth?: number; paymentMethod: string; payerPhone?: string; regularizationAgreementId?: string; advanceMonths?: number }) =>
     api<{ reference: string; redirectUrl: string }>('/contributions/payments/jeko/init', {
       method: 'POST',
       body: JSON.stringify(data),
     }),
   /** Crée un lien de paiement Jeko (checkout avec carte bancaire + mobile money). */
-  jekoLink: (data: { contributionId: string; amount: number; periodYear?: number; periodMonth?: number; title: string; regularizationAgreementId?: string }) =>
+  jekoLink: (data: { contributionId: string; amount: number; periodYear?: number; periodMonth?: number; title: string; regularizationAgreementId?: string; advanceMonths?: number }) =>
     api<{ reference: string; link: string }>('/contributions/payments/jeko/link', {
       method: 'POST',
       body: JSON.stringify(data),
