@@ -319,7 +319,7 @@ export const contributionsApi = {
       method: 'POST',
       body: JSON.stringify(data),
     }),
-  recordExternalAdvance: (data: { memberId: string; months: number; calendarYear?: number; amount: number; paymentMethod?: string; reference?: string; note?: string }) =>
+  recordExternalAdvance: (data: { memberId: string; months: number; amount: number; paymentMethod?: string; reference?: string; note?: string }) =>
     api<{ periods: Array<{ year: number; month: number }>; paidThrough: { year: number; month: number }; totalAmount: number }>('/contributions/payments/advance/external', { method: 'POST', body: JSON.stringify(data) }),
   cancelPayment: (id: string, reason: string) =>
     api<Payment>(`/contributions/payments/${id}/cancel`, { method: 'POST', body: JSON.stringify({ reason }) }),
