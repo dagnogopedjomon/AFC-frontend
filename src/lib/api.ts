@@ -433,6 +433,7 @@ export type CashBox = {
 export type CashBoxSummary = CashBox & {
   solde: number;
   totalEntries: number;
+  advanceEntries: number;
   totalExits: number;
 };
 
@@ -536,7 +537,7 @@ export type MonthlyReport = {
 
 export type AnnualReport = {
   year: number;
-  months: Array<{ year: number; month: number; label: string; totalEntries: number; totalExits: number; solde: number }>;
+  months: Array<{ year: number; month: number; label: string; totalEntries: number; advanceEntries: number; totalExits: number; solde: number }>;
   totalEntries: number;
   totalExits: number;
   solde: number;
