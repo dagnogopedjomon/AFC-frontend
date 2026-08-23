@@ -7,12 +7,14 @@ import { useAuth } from '@/lib/auth-context';
 import { contributionsApi, membersApi, type HistorySummary, type MemberHistory, type Member, type Payment } from '@/lib/api';
 
 export default function HistoriquePage() {
+  const paymentsPerPage = 10;
   const { user } = useAuth();
   const [summary, setSummary] = useState<HistorySummary | null>(null);
   const [members, setMembers] = useState<Member[]>([]);
   const [payments, setPayments] = useState<Payment[]>([]);
   const [paymentsLoading, setPaymentsLoading] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
+  const [paymentsPage, setPaymentsPage] = useState(1);
   const [selectedMemberId, setSelectedMemberId] = useState<string | null>(null);
   const [memberHistory, setMemberHistory] = useState<MemberHistory | null>(null);
   const [loading, setLoading] = useState(true);
@@ -39,6 +41,13 @@ export default function HistoriquePage() {
       return fullName.includes(q) || phone.includes(q);
     });
   }, [payments, searchQuery]);
+
+  const paymentsPageCount = Math.max(1, Math.ceil(filteredPayments.length / paymentsPerPage));
+  const currentPaymentsPage = Math.min(paymentsPage, paymentsPageCount);
+  const paginatedPayments = useMemo(() => {
+    const start = (currentPaymentsPage - 1) * paymentsPerPage;
+    return filteredPayments.slice(start, start + paymentsPerPage);
+  }, [filteredPayments, currentPaymentsPage]);
 
   useEffect(() => {
     if (!user) return;
@@ -96,7 +105,10 @@ export default function HistoriquePage() {
             type="search"
             placeholder="Nom ou téléphone…"
             value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
+            onChange={(e) => {
+              setSearchQuery(e.target.value);
+              setPaymentsPage(1);
+            }}
             className="input-field w-full pl-10"
           />
         </div>
@@ -125,7 +137,7 @@ export default function HistoriquePage() {
                     </td>
                   </tr>
                 ) : (
-                  filteredPayments.map((p) => (
+                  paginatedPayments.map((p) => (
                     <tr key={p.id} className={`border-b border-gray-50 hover:bg-gray-50/50 ${p.cancelledAt ? 'opacity-50' : ''}`}>
                       <td className="px-4 py-3 text-gray-600 whitespace-nowrap">
                         {new Date(p.paidAt).toLocaleDateString('fr-FR', { day: 'numeric', month: 'short', year: 'numeric' })}
@@ -148,9 +160,34 @@ export default function HistoriquePage() {
           </div>
         )}
         {filteredPayments.length > 0 && (
-          <p className="mt-3 text-xs text-gray-500">
-            {filteredPayments.length} paiement{filteredPayments.length !== 1 ? 's' : ''} affiché{searchQuery.trim() ? ' (filtré)' : ''}.
-          </p>
+          <div className="mt-4 flex flex-wrap items-center justify-between gap-3">
+            <p className="text-xs text-gray-500">
+              {filteredPayments.length} paiement{filteredPayments.length !== 1 ? 's' : ''}{searchQuery.trim() ? ' trouvé(s)' : ''}.
+            </p>
+            {paymentsPageCount > 1 && (
+              <nav aria-label="Pagination des paiements" className="flex items-center gap-2">
+                <button
+                  type="button"
+                  onClick={() => setPaymentsPage((page) => Math.max(1, page - 1))}
+                  disabled={currentPaymentsPage === 1}
+                  className="rounded-lg border border-gray-200 px-3 py-1.5 text-sm font-medium disabled:cursor-not-allowed disabled:opacity-40 hover:bg-gray-50"
+                >
+                  Précédent
+                </button>
+                <span className="min-w-16 text-center text-sm font-semibold text-gray-700">
+                  {currentPaymentsPage}/{paymentsPageCount}
+                </span>
+                <button
+                  type="button"
+                  onClick={() => setPaymentsPage((page) => Math.min(paymentsPageCount, page + 1))}
+                  disabled={currentPaymentsPage === paymentsPageCount}
+                  className="rounded-lg border border-gray-200 px-3 py-1.5 text-sm font-medium disabled:cursor-not-allowed disabled:opacity-40 hover:bg-gray-50"
+                >
+                  Suivant
+                </button>
+              </nav>
+            )}
+          </div>
         )}
       </div>
 
