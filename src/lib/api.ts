@@ -556,10 +556,10 @@ export const reportsApi = {
     const y = year ?? new Date().getFullYear();
     return api<AnnualReport>(`/reports/annual?year=${y}`);
   },
-  downloadCsv: (year?: number, month?: number) => {
+  downloadExcel: (year?: number, month?: number) => {
     const base = API_BASE;
     const token = typeof window !== 'undefined' ? localStorage.getItem('afc_token') : null;
-    let url = `${base}/reports/export/csv`;
+    let url = `${base}/reports/export/xlsx`;
     if (year != null) url += `?year=${year}`;
     if (month != null) url += `${year != null ? '&' : '?'}month=${month}`;
     if (typeof window !== 'undefined' && token) {
@@ -568,7 +568,7 @@ export const reportsApi = {
         .then((blob) => {
           const a = document.createElement('a');
           a.href = URL.createObjectURL(blob);
-          a.download = `rapport-transactions${year ?? ''}${month != null ? `-${month}` : ''}.csv`;
+          a.download = `rapport-transactions${year ?? ''}${month != null ? `-${month}` : ''}.xlsx`;
           a.click();
           URL.revokeObjectURL(a.href);
         });

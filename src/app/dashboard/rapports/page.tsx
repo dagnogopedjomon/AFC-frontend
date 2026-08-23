@@ -72,10 +72,10 @@ export default function RapportsPage() {
           </select>
           <button
             type="button"
-            onClick={() => reportsApi.downloadCsv(year, month)}
+            onClick={() => reportsApi.downloadExcel(year, month)}
             className="btn-primary text-sm"
           >
-            Export CSV
+            Export Excel
           </button>
           <button
             type="button"
