@@ -135,7 +135,7 @@ export default function RapportsPage() {
               </h2>
               <div className="grid gap-4 sm:grid-cols-3 mb-6">
                 <div>
-                  <p className="text-sm text-gray-500">Total entrées</p>
+                  <p className="text-sm text-gray-500">Total encaissé dans la caisse</p>
                   <p className="text-xl font-semibold text-green-700">
                     {annual.totalEntries.toLocaleString('fr-FR')} FCFA
                   </p>
@@ -152,6 +152,10 @@ export default function RapportsPage() {
                     {annual.solde.toLocaleString('fr-FR')} FCFA
                   </p>
                 </div>
+              </div>
+              <div className="mb-5 rounded-xl border border-blue-100 bg-blue-50 px-4 py-3 text-sm text-blue-900">
+                Cotisations affectées, mois futurs inclus :{' '}
+                <span className="font-semibold">{(annual.allocatedEntries ?? annual.totalEntries).toLocaleString('fr-FR')} FCFA</span>
               </div>
               <div className="overflow-x-auto">
                 <table className="w-full text-sm">
@@ -177,6 +181,19 @@ export default function RapportsPage() {
                         </td>
                         <td className="px-4 py-2">{m.totalExits.toLocaleString('fr-FR')}</td>
                         <td className="px-4 py-2 font-medium">{m.solde.toLocaleString('fr-FR')}</td>
+                      </tr>
+                    ))}
+                    {(annual.futureAllocations ?? []).map((m) => (
+                      <tr key={`future-${m.year}-${m.month}`} className="border-b border-amber-100 bg-amber-50/40">
+                        <td className="px-4 py-2">{m.label}</td>
+                        <td className="px-4 py-2">
+                          {m.totalEntries.toLocaleString('fr-FR')}
+                          <span className="ml-2 inline-flex rounded-full bg-amber-100 px-2 py-0.5 text-xs font-semibold text-amber-800">
+                            Avance
+                          </span>
+                        </td>
+                        <td className="px-4 py-2">—</td>
+                        <td className="px-4 py-2 font-medium">—</td>
                       </tr>
                     ))}
                   </tbody>
