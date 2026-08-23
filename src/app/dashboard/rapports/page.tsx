@@ -167,7 +167,14 @@ export default function RapportsPage() {
                     {annual.months.map((m) => (
                       <tr key={`${m.year}-${m.month}`} className="border-b border-gray-50">
                         <td className="px-4 py-2">{m.label}</td>
-                        <td className="px-4 py-2">{m.totalEntries.toLocaleString('fr-FR')}</td>
+                        <td className="px-4 py-2">
+                          {m.totalEntries.toLocaleString('fr-FR')}
+                          {m.advanceEntries > 0 && (
+                            <span className="ml-2 inline-flex rounded-full bg-amber-100 px-2 py-0.5 text-xs font-semibold text-amber-800">
+                              Avance
+                            </span>
+                          )}
+                        </td>
                         <td className="px-4 py-2">{m.totalExits.toLocaleString('fr-FR')}</td>
                         <td className="px-4 py-2 font-medium">{m.solde.toLocaleString('fr-FR')}</td>
                       </tr>
@@ -175,6 +182,9 @@ export default function RapportsPage() {
                   </tbody>
                 </table>
               </div>
+              <p className="mt-3 text-xs text-gray-500">
+                <span className="font-semibold text-amber-700">Avance</span> : cotisation déjà encaissée auparavant et affectée à ce mois.
+              </p>
             </div>
           )}
         </>
