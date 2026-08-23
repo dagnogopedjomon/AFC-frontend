@@ -538,6 +538,8 @@ export type MonthlyReport = {
 export type AnnualReport = {
   year: number;
   months: Array<{ year: number; month: number; label: string; totalEntries: number; advanceEntries: number; totalExits: number; solde: number }>;
+  futureAllocations?: Array<{ year: number; month: number; label: string; totalEntries: number }>;
+  allocatedEntries?: number;
   totalEntries: number;
   totalExits: number;
   solde: number;
