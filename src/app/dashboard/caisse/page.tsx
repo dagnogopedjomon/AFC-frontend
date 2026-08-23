@@ -816,9 +816,9 @@ export default function CaissePage() {
             <p className="px-6 py-2 text-sm text-gray-500 border-b border-gray-50">
               Derniers paiements de cotisations enregistrés.
             </p>
-            <div className="overflow-x-auto">
+            <div className="max-h-[520px] overflow-auto">
               <table className="w-full text-left">
-                <thead>
+                <thead className="sticky top-0 z-10">
                   <tr className="border-b border-gray-100 bg-emerald-50/80">
                     <th className="px-6 py-3 text-sm font-semibold text-gray-700">Membre</th>
                     <th className="px-6 py-3 text-sm font-semibold text-gray-600">Cotisation</th>
