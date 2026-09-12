@@ -48,6 +48,10 @@ body {
   overscroll-behavior-y: none;
 }
 
+@media (min-width: 1024px) {
+  .dashboard-content-offset { padding-left: 64px !important; }
+}
+
 /* One typographic system across every dashboard screen. The reference uses
    serif display type for headings and amounts, while controls, labels and
    tables stay in the neutral sans-serif face. */
