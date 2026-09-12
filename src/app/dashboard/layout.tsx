@@ -18,6 +18,8 @@ import {
   Settings,
   Gavel,
   KeyRound,
+  PanelLeftClose,
+  PanelLeftOpen,
 } from 'lucide-react';
 import { useAuth } from '@/lib/auth-context';
 import { notificationsApi, caisseApi, activitiesApi } from '@/lib/api';
@@ -65,6 +67,7 @@ function NavGroupClient({
   adminItems,
   isAdmin,
   onClick,
+  collapsed = false,
 }: {
   label: string;
   icon: React.ComponentType<{ className?: string; size?: number }>;
@@ -73,6 +76,7 @@ function NavGroupClient({
   adminItems?: { href: string; label: string; exact?: boolean }[];
   isAdmin?: boolean;
   onClick?: () => void;
+  collapsed?: boolean;
 }) {
   const allItems: { href: string; label: string; exact?: boolean }[] = [...items, ...(isAdmin && adminItems ? adminItems : [])];
   const isParentActive = allItems.some((item) =>
@@ -98,16 +102,17 @@ function NavGroupClient({
         onClick={() => setOpen((v) => !v)}
         className={cn(
           'flex w-full items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium transition',
+          collapsed && 'justify-center px-2',
           isParentActive
             ? 'bg-white text-[var(--sky-blue-dark)] shadow-sm'
             : 'text-[var(--sidebar-text-muted)] hover:bg-white hover:text-[var(--sidebar-text)]',
         )}
       >
         <Icon className="shrink-0" size={20} />
-        <span className="flex-1 min-w-0 truncate text-left">{label}</span>
-        <ChevronDown size={16} className={cn('shrink-0 transition-transform', open && 'rotate-180')} />
+        {!collapsed && <span className="flex-1 min-w-0 truncate text-left">{label}</span>}
+        {!collapsed && <ChevronDown size={16} className={cn('shrink-0 transition-transform', open && 'rotate-180')} />}
       </button>
-      {open && (
+      {open && !collapsed && (
         <div className="mt-0.5 ml-8 space-y-0.5">
           {allItems.map((item) => (
             <Link
@@ -138,6 +143,7 @@ function NavLink({
   onClick,
   className = '',
   badge = 0,
+  collapsed = false,
 }: {
   href: string;
   label: string;
@@ -146,6 +152,7 @@ function NavLink({
   onClick?: () => void;
   className?: string;
   badge?: number;
+  collapsed?: boolean;
 }) {
   return (
     <Link
@@ -153,6 +160,7 @@ function NavLink({
       onClick={onClick}
       className={cn(
         'flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium transition',
+        collapsed && 'justify-center px-2',
         isActive
           ? 'bg-white text-[var(--sky-blue-dark)] shadow-sm'
           : 'text-[var(--sidebar-text-muted)] hover:bg-white hover:text-[var(--sidebar-text)]',
@@ -160,8 +168,8 @@ function NavLink({
       )}
     >
       <Icon className="shrink-0" size={20} />
-      <span className="flex-1 min-w-0 truncate">{label}</span>
-      {badge > 0 && (
+      {!collapsed && <span className="flex-1 min-w-0 truncate">{label}</span>}
+      {badge > 0 && !collapsed && (
         <span
           className={cn(
             'shrink-0 flex items-center justify-center rounded-full min-w-[1.25rem] h-5 px-1.5 text-xs font-bold',
@@ -184,11 +192,24 @@ export default function DashboardLayout({
   const pathname = usePathname();
   const router = useRouter();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
   const [inAppUnreadCount, setInAppUnreadCount] = useState(0);
   const [pendingTreasurer, setPendingTreasurer] = useState(0);
   const [pendingCommissioner, setPendingCommissioner] = useState(0);
   const [activitiesRecentCount, setActivitiesRecentCount] = useState(0);
   const [logoutOpen, setLogoutOpen] = useState(false);
+
+  useEffect(() => {
+    setSidebarCollapsed(window.localStorage.getItem('afc_sidebar_collapsed') === '1');
+  }, []);
+
+  const toggleSidebar = () => {
+    setSidebarCollapsed((collapsed) => {
+      const next = !collapsed;
+      window.localStorage.setItem('afc_sidebar_collapsed', next ? '1' : '0');
+      return next;
+    });
+  };
 
   const nav = baseNav;
 
@@ -295,12 +316,15 @@ export default function DashboardLayout({
     <div className="min-h-screen flex flex-col lg:flex-row">
       {/* Sidebar — desktop */}
       <aside
-        className="hidden lg:flex lg:w-72 lg:flex-col lg:fixed lg:inset-y-0 lg:border-r lg:border-[#d2dae3]"
+        className={cn(
+          'hidden lg:flex lg:flex-col lg:fixed lg:inset-y-0 lg:border-r lg:border-[#d2dae3] transition-[width] duration-200 overflow-hidden',
+          sidebarCollapsed ? 'lg:w-[76px] [&_p]:hidden [&_span]:hidden [&_button]:justify-center [&_button]:px-2 [&_a]:justify-center [&_a]:px-2' : 'lg:w-72',
+        )}
         style={{ background: 'var(--sidebar-bg)' }}
       >
         <Link href="/dashboard" className="flex h-20 items-center gap-3 px-5 border-b border-[#d2dae3]">
           <img src="/images/logo-afc.png" alt="Amicale Football Club" className="h-14 w-12 shrink-0 object-contain" />
-          <div><span className="block text-base font-bold text-[var(--foreground)] tracking-tight">Amicale FC</span><span className="text-[11px] text-slate-500">Trésorerie du club</span></div>
+          {!sidebarCollapsed && <div><span className="block text-base font-bold text-[var(--foreground)] tracking-tight">Amicale FC</span><span className="text-[11px] text-slate-500">Trésorerie du club</span></div>}
         </Link>
         <nav className="flex-1 overflow-y-auto p-3 space-y-0.5">
           <p className="px-3 pb-2 pt-2 text-[10px] font-bold uppercase tracking-[.18em] text-slate-400">Pilotage</p>
@@ -347,8 +371,8 @@ export default function DashboardLayout({
         <div className="border-t border-slate-200 p-3">
           <div className="flex items-center gap-2 rounded-lg bg-white/70 p-2">
             <div className="grid h-9 w-9 shrink-0 place-items-center rounded-full bg-[#dbe7f5] text-xs font-bold text-[#315f9e]">{user?.firstName?.[0]}{user?.lastName?.[0]}</div>
-            <div className="min-w-0 flex-1"><p className="truncate text-sm font-semibold text-slate-800">{user?.firstName} {user?.lastName}</p><p className="truncate text-[11px] text-slate-500">{user?.email || roleLabelFr(user?.role || '')}</p></div>
-            <Link href={user?.id ? `/dashboard/membres/${user.id}` : '/dashboard/parametres'} title="Gérer mon compte" aria-label="Gérer mon compte" className="grid h-8 w-8 shrink-0 place-items-center rounded-lg border border-slate-200 bg-white text-slate-600 hover:bg-slate-50 hover:text-blue-700"><KeyRound size={16} /></Link>
+            {!sidebarCollapsed && <div className="min-w-0 flex-1"><p className="truncate text-sm font-semibold text-slate-800">{user?.firstName} {user?.lastName}</p><p className="truncate text-[11px] text-slate-500">{user?.email || roleLabelFr(user?.role || '')}</p></div>}
+            {!sidebarCollapsed && <Link href={user?.id ? `/dashboard/membres/${user.id}` : '/dashboard/parametres'} title="Gérer mon compte" aria-label="Gérer mon compte" className="grid h-8 w-8 shrink-0 place-items-center rounded-lg border border-slate-200 bg-white text-slate-600 hover:bg-slate-50 hover:text-blue-700"><KeyRound size={16} /></Link>}
             <button type="button" onClick={() => setLogoutOpen(true)} title="Déconnexion" aria-label="Déconnexion" className="grid h-8 w-8 shrink-0 place-items-center rounded-lg border border-slate-200 bg-white text-slate-600 hover:bg-red-50 hover:text-red-700"><LogOut size={16} /></button>
           </div>
         </div>
@@ -470,7 +494,17 @@ export default function DashboardLayout({
       />
 
       {/* Main content */}
-      <main className="flex-1 lg:pl-72 flex flex-col min-h-screen bg-[#f7f9fb]">
+      <main className={cn('flex-1 flex flex-col min-h-screen bg-[#f7f9fb] transition-[padding] duration-200', sidebarCollapsed ? 'lg:pl-[76px]' : 'lg:pl-72')}>
+        <button
+          type="button"
+          onClick={toggleSidebar}
+          title={sidebarCollapsed ? 'Afficher la barre latérale' : 'Réduire la barre latérale'}
+          aria-label={sidebarCollapsed ? 'Afficher la barre latérale' : 'Réduire la barre latérale'}
+          className="fixed top-4 z-30 hidden h-9 w-9 place-items-center rounded-lg border border-slate-200 bg-white text-slate-600 shadow-sm transition hover:border-[var(--sky-blue)] hover:text-[var(--sky-blue)] lg:grid"
+          style={{ left: sidebarCollapsed ? '92px' : '304px' }}
+        >
+          {sidebarCollapsed ? <PanelLeftOpen size={17} /> : <PanelLeftClose size={17} />}
+        </button>
         {user && !user.isSuspended && user.reactivatedAt && user.role !== 'ADMIN' && (
           <div className="bg-amber-50 border-b border-amber-200 px-4 py-3 text-center text-amber-800 text-sm font-medium">
             Vous avez été réactivé temporairement. Vous avez <strong>24 h</strong> pour régulariser votre cotisation, sinon votre compte sera désactivé à nouveau.{' '}
