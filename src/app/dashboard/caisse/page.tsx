@@ -385,7 +385,12 @@ export default function CaissePage() {
                       <BarChart data={livreByMonth} margin={{ top: 8, right: 8, left: 0, bottom: 8 }}>
                         <CartesianGrid strokeDasharray="3 3" stroke="#e2e8f0" />
                         <XAxis dataKey="mois" tick={{ fontSize: 12 }} />
-                        <YAxis tick={{ fontSize: 12 }} tickFormatter={(v) => `${(v / 1000).toFixed(0)}k`} />
+                        <YAxis
+                          tick={{ fontSize: 12 }}
+                          tickFormatter={(value: number) => value >= 1000
+                            ? `${(value / 1000).toLocaleString('fr-FR', { maximumFractionDigits: 1 })}k`
+                            : value.toLocaleString('fr-FR')}
+                        />
                         <Tooltip
                           formatter={(value: number | undefined) => [Number(value ?? 0).toLocaleString('fr-FR') + ' FCFA', '']}
                           contentStyle={{ fontSize: 12 }}
