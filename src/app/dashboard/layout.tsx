@@ -295,7 +295,7 @@ export default function DashboardLayout({
     <div className="min-h-screen flex flex-col lg:flex-row">
       {/* Sidebar — desktop */}
       <aside
-        className="hidden lg:flex lg:w-72 lg:flex-col lg:fixed lg:inset-y-0 lg:border-r lg:border-slate-200"
+        className="hidden lg:flex lg:w-72 lg:flex-col lg:fixed lg:inset-y-0 lg:border-r lg:border-[#d2dae3]"
         style={{ background: 'var(--sidebar-bg)' }}
       >
         <Link href="/dashboard" className="flex h-20 items-center gap-3 px-5 border-b border-slate-200">
