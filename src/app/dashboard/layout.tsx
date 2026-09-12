@@ -298,7 +298,7 @@ export default function DashboardLayout({
         className="hidden lg:flex lg:w-72 lg:flex-col lg:fixed lg:inset-y-0 lg:border-r lg:border-[#d2dae3]"
         style={{ background: 'var(--sidebar-bg)' }}
       >
-        <Link href="/dashboard" className="flex h-20 items-center gap-3 px-5 border-b border-slate-200">
+        <Link href="/dashboard" className="flex h-20 items-center gap-3 px-5 border-b border-[#d2dae3]">
           <img src="/images/logo-afc.png" alt="Amicale Football Club" className="h-14 w-12 shrink-0 object-contain" />
           <div><span className="block text-base font-bold text-[var(--foreground)] tracking-tight">Amicale FC</span><span className="text-[11px] text-slate-500">Trésorerie du club</span></div>
         </Link>
