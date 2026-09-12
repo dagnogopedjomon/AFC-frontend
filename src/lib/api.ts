@@ -133,7 +133,7 @@ export const membersApi = {
     >('/members/invite', { method: 'POST', body: JSON.stringify(data) }),
   create: (data: CreateMemberInput) =>
     api<Member>('/members', { method: 'POST', body: JSON.stringify(data) }),
-  update: (id: string, data: Partial<CreateMemberInput> & { isSuspended?: boolean; role?: string }) =>
+  update: (id: string, data: Partial<CreateMemberInput> & { isSuspended?: boolean; role?: string; membershipStatus?: 'PROSPECT' | 'ACTIVE' }) =>
     api<Member>(`/members/${id}`, { method: 'PATCH', body: JSON.stringify(data) }),
   delete: (id: string) =>
     api<{ success: boolean }>(`/members/${id}`, { method: 'DELETE' }),
@@ -156,6 +156,7 @@ export type AuthUser = {
   firstName: string;
   lastName: string;
   role: string;
+  membershipStatus?: 'PROSPECT' | 'ACTIVE';
   profileCompleted: boolean;
   profilePhotoUrl: string | null;
   email: string | null;

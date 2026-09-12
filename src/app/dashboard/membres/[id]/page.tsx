@@ -28,6 +28,7 @@ const editSchema = z.object({
   firstName: z.string().min(1, 'Le prénom est requis'),
   lastName: z.string().min(1, 'Le nom est requis'),
   role: z.string().min(1, 'Le rôle est requis'),
+  membershipStatus: z.enum(['PROSPECT', 'ACTIVE']),
   profilePhotoUrl: z.string().optional(),
   email: z.string().email('Email invalide').optional().or(z.literal('')),
   neighborhood: z.string().optional(),
@@ -81,6 +82,7 @@ export default function MemberDetailPage() {
           firstName: m.firstName,
           lastName: m.lastName,
           role: m.role,
+          membershipStatus: m.membershipStatus ?? 'ACTIVE',
           profilePhotoUrl: m.profilePhotoUrl ?? '',
           email: m.email ?? '',
           neighborhood: m.neighborhood ?? '',
@@ -101,6 +103,7 @@ export default function MemberDetailPage() {
         firstName: data.firstName.trim(),
         lastName: data.lastName.trim(),
         role: data.role,
+        membershipStatus: data.membershipStatus,
         profilePhotoUrl: data.profilePhotoUrl?.trim() || undefined,
         email: data.email?.trim() || undefined,
         neighborhood: data.neighborhood?.trim(),
@@ -249,6 +252,16 @@ export default function MemberDetailPage() {
                   ))}
                 </select>
                 {errors.role && <p className="text-red-600 text-sm mt-1">{errors.role.message}</p>}
+              </div>
+            )}
+            {isAdmin && (
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">Statut d’adhésion</label>
+                <select {...register('membershipStatus')} className="input w-full">
+                  <option value="PROSPECT">Prospect (6 mois)</option>
+                  <option value="ACTIVE">Membre actif</option>
+                </select>
+                <p className="mt-1 text-xs text-slate-500">La promotion automatique intervient après six mois, sauf modification manuelle.</p>
               </div>
             )}
             <div>

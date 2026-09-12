@@ -25,7 +25,7 @@ export default function MembresPage() {
   const params = useSearchParams();
   const [members, setMembers] = useState<Member[]>([]);
   const [query, setQuery] = useState('');
-  const [filter, setFilter] = useState<'ALL'|'ACTIVE'|'LATE'|'INACTIVE'>('ALL');
+  const [filter, setFilter] = useState<'ALL'|'ACTIVE'|'PROSPECT'|'LATE'|'INACTIVE'>('ALL');
   const [loading, setLoading] = useState(true);
   const [actioning, setActioning] = useState<string | null>(null);
   const canList = !!user && BUREAU.includes(user.role);
@@ -55,6 +55,7 @@ export default function MembresPage() {
   const filtered = useMemo(() => members.filter((m) => {
     if (!matches(m, query)) return false;
     if (filter === 'ACTIVE') return !m.isSuspended && m.role !== 'FORMER_PLAYER';
+    if (filter === 'PROSPECT') return m.membershipStatus === 'PROSPECT';
     if (filter === 'LATE') return !!m.isSuspended;
     if (filter === 'INACTIVE') return m.role === 'FORMER_PLAYER';
     return true;
@@ -63,6 +64,7 @@ export default function MembresPage() {
   if (!canList) return <div className="card"><h1 className="text-xl font-bold">Membres</h1><p className="mt-2 text-slate-600">Accès réservé au bureau du club.</p></div>;
 
   const countActive = members.filter((m) => !m.isSuspended && m.role !== 'FORMER_PLAYER').length;
+  const countProspects = members.filter((m) => m.membershipStatus === 'PROSPECT').length;
   const countLate = members.filter((m) => !!m.isSuspended).length;
   const countInactive = members.filter((m) => m.role === 'FORMER_PLAYER').length;
 
@@ -75,7 +77,7 @@ export default function MembresPage() {
     <section className="card p-4">
       <div className="flex flex-wrap items-center justify-between gap-4">
         <div className="flex flex-wrap gap-1 rounded-lg bg-slate-100 p-1 text-sm">
-          {([['ALL',`Tous (${members.length})`],['ACTIVE',`Actifs (${countActive})`],['LATE',`En retard (${countLate})`],['INACTIVE',`Inactifs (${countInactive})`]] as const).map(([value,label]) => <button key={value} type="button" onClick={() => setFilter(value)} className={`rounded-md px-3 py-2 font-medium ${filter === value ? 'bg-white text-slate-900 shadow-sm' : 'text-slate-500'}`}>{label}</button>)}
+          {([['ALL',`Tous (${members.length})`],['ACTIVE',`Actifs (${countActive})`],['PROSPECT',`Prospects (${countProspects})`],['LATE',`En retard (${countLate})`],['INACTIVE',`Inactifs (${countInactive})`]] as const).map(([value,label]) => <button key={value} type="button" onClick={() => setFilter(value)} className={`rounded-md px-3 py-2 font-medium ${filter === value ? 'bg-white text-slate-900 shadow-sm' : 'text-slate-500'}`}>{label}</button>)}
         </div>
         <div className="relative w-full max-w-xs"><Search aria-hidden="true" className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" size={18}/><input aria-label="Rechercher un membre" value={query} onChange={(e) => setQuery(e.target.value)} placeholder="Rechercher un membre…" className="input-field w-full !pl-11"/></div>
       </div>
@@ -91,7 +93,7 @@ export default function MembresPage() {
               <td className="px-5 py-3"><div className="flex items-center gap-3">{m.profilePhotoUrl ? <img src={m.profilePhotoUrl.startsWith('http') ? m.profilePhotoUrl : API_BASE + m.profilePhotoUrl} className="h-8 w-8 rounded-full object-cover" alt="" /> : <span className="grid h-8 w-8 place-items-center rounded-full border border-slate-300 bg-slate-100 text-xs font-semibold text-blue-700">{m.firstName[0]}{m.lastName[0]}</span>}<Link href={`/dashboard/membres/${m.id}`} className="font-medium text-slate-800 hover:text-blue-700">{m.firstName} {m.lastName}</Link></div></td>
               <td className="px-5 py-3 font-mono text-xs text-slate-600">{m.phone}</td>
               <td className="px-5 py-3 font-mono text-xs text-slate-500">{new Date(m.createdAt).toLocaleDateString('fr-FR',{day:'2-digit',month:'short',year:'numeric'})}</td>
-              <td className="px-5 py-3"><Badge tone={m.isSuspended ? 'red' : bureau ? 'gray' : 'blue'}>{m.isSuspended ? 'Inactif' : bureau ? 'Bureau' : former ? 'Inactif' : 'Actif'}</Badge></td>
+              <td className="px-5 py-3"><Badge tone={m.isSuspended ? 'red' : bureau ? 'gray' : former ? 'gray' : m.membershipStatus === 'PROSPECT' ? 'amber' : 'blue'}>{m.isSuspended ? 'Inactif' : bureau ? 'Bureau' : former ? 'Inactif' : m.membershipStatus === 'PROSPECT' ? 'Prospect' : 'Actif'}</Badge></td>
               <td className="px-5 py-3"><Badge tone={former ? 'gray' : 'blue'}>{former ? '—' : 'Payé'}</Badge></td>
               <td className="px-5 py-3"><Badge tone={m.isSuspended ? 'red' : 'blue'}>{m.isSuspended ? 'Inactif' : 'Actif'}</Badge></td>
               <td className="px-5 py-3"><div className="flex justify-end gap-3 text-slate-600"><Link title="Modifier le membre" aria-label="Modifier le membre" href={`/dashboard/membres/${m.id}`} className="rounded p-1 hover:bg-slate-100 hover:text-blue-700"><Pencil size={16}/></Link><Link title="Voir le compte" aria-label="Voir le compte" href={`/dashboard/membres/${m.id}`} className="rounded p-1 hover:bg-slate-100 hover:text-blue-700"><UserRound size={16}/></Link><button title="Renvoyer la clé d’activation" aria-label="Renvoyer la clé d’activation" type="button" disabled={actioning === m.id} onClick={() => sendActivation(m)} className="rounded p-1 hover:bg-slate-100 hover:text-blue-700 disabled:opacity-50"><KeyRound size={16}/></button>{user?.role === 'ADMIN' && <button title="Supprimer le membre" aria-label="Supprimer le membre" className="rounded p-1 text-red-500 hover:bg-red-50 disabled:opacity-50" type="button" disabled={actioning === m.id} onClick={() => deleteMember(m)}><Trash2 size={16}/></button>}</div></td>
