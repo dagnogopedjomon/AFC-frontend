@@ -77,9 +77,11 @@ export default function LoginPage() {
         </aside>
 
         <main className="flex min-h-[100dvh] flex-col px-4 py-3 sm:px-10 sm:py-6 lg:px-14 xl:px-20">
-          <div className="flex justify-end"><button type="button" onClick={() => setDark(v => !v)} className="inline-flex items-center gap-2 rounded-full border border-slate-200 bg-white px-4 py-2 text-sm text-slate-600 shadow-sm dark:border-white/10 dark:bg-white/5 dark:text-slate-200">{dark ? <Sun size={16}/> : <Moon size={16}/>} {dark ? 'Clair' : 'Sombre'}</button></div>
+          <div className="flex items-center justify-between lg:justify-end">
+            <img src="/images/logo-afc.png" alt="Amicale Football Club" className="h-12 w-10 object-contain lg:hidden" />
+            <button type="button" onClick={() => setDark(v => !v)} className="inline-flex items-center gap-2 rounded-full border border-slate-200 bg-white px-4 py-2 text-sm text-slate-600 shadow-sm dark:border-white/10 dark:bg-white/5 dark:text-slate-200">{dark ? <Sun size={16}/> : <Moon size={16}/>} {dark ? 'Clair' : 'Sombre'}</button>
+          </div>
           <div className="m-auto w-full max-w-md py-4 sm:py-10">
-            <div className="mb-3 sm:mb-8 lg:hidden"><img src="/images/logo-afc.png" alt="Amicale Football Club" className="mx-0 h-16 w-14 object-contain sm:mx-auto sm:h-24 sm:w-20" /></div>
             <p className="flex items-center gap-2 text-xs font-bold uppercase tracking-[.2em] text-[#315f9e]"><ShieldCheck size={16}/> Connexion sécurisée</p>
             <h2 className="mt-2 font-serif text-4xl sm:mt-4 sm:text-5xl">{greeting}.</h2>
             <p className="mt-2 text-sm leading-6 text-slate-500 sm:mt-4 sm:text-base sm:leading-7 dark:text-slate-300">Connectez-vous pour accéder aux cotisations de l&apos;Amicale Football Club.</p>
