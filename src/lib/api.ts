@@ -58,10 +58,10 @@ export async function api<T>(
 }
 
 export const authApi = {
-  login: (phone: string, password: string) =>
+  login: (identifier: string, password: string) =>
     api<{ access_token: string; user: AuthUser }>('/auth/login', {
       method: 'POST',
-      body: JSON.stringify({ phone, password }),
+      body: JSON.stringify({ phone: identifier, password }),
     }),
   me: () => api<AuthUser>('/auth/me'),
   sendActivationOtp: (phone: string) =>
@@ -80,6 +80,11 @@ export const authApi = {
     api<{ ok: boolean; message?: string }>('/auth/set-password', {
       method: 'POST',
       body: JSON.stringify({ activationToken, password }),
+    }),
+  changePassword: (currentPassword: string, newPassword: string) =>
+    api<{ ok: boolean; message: string }>('/auth/change-password', {
+      method: 'POST',
+      body: JSON.stringify({ currentPassword, newPassword }),
     }),
 };
 
@@ -240,6 +245,20 @@ export type ArrearsResult = {
   total: number;
 };
 
+export type AnnualContributionMatrix = {
+  year: number;
+  monthlyAmount: number;
+  contributionId: string;
+  members: Array<Member & {
+    months: Array<{
+      month: number;
+      status: 'PAID' | 'PARTIAL' | 'LATE' | 'ADVANCE' | 'INACTIVE' | 'NOT_DUE' | 'EXEMPT';
+      amountPaid: number;
+      paidAt: string | null;
+    }>;
+  }>;
+};
+
 export type CreateContributionInput = {
   name: string;
   type: 'MONTHLY' | 'EXCEPTIONAL' | 'PROJECT';
@@ -270,6 +289,8 @@ export const contributionsApi = {
         ? `/contributions/arrears?year=${year}&month=${month}`
         : '/contributions/arrears',
     ),
+  annualMatrix: (year = new Date().getFullYear()) =>
+    api<AnnualContributionMatrix>(`/contributions/annual-matrix?year=${year}`),
   applySuspensions: () =>
     api<{ applied: number; periodYear?: number; periodMonth?: number; message?: string }>(
       '/contributions/apply-suspensions',
@@ -454,6 +475,8 @@ export type Expense = {
   description: string;
   expenseDate: string;
   beneficiary?: string | null;
+  note?: string | null;
+  category?: { id: string; name: string } | null;
   status: string;
   createdAt: string;
   updatedAt: string;
@@ -470,7 +493,7 @@ export type Expense = {
 export type LivreEntry =
   | {
       type: 'entree';
-      kind?: 'payment' | 'allocation';
+      kind?: 'payment' | 'allocation' | 'fine';
       date: string;
       id: string;
       amount: number;
@@ -594,6 +617,30 @@ export const reportsApi = {
   },
 };
 
+export type ExpenseCategory = { id: string; name: string; isActive: boolean; createdAt: string; updatedAt: string };
+export type Fine = {
+  id: string; reason: string; amount: number; status: 'UNPAID' | 'PAID' | 'CANCELLED';
+  createdAt: string; paidAt: string | null; cancelledAt: string | null; note: string | null;
+  member: { id: string; firstName: string; lastName: string; phone: string };
+};
+export type ContributionExemption = { id: string; memberId: string; periodYear: number; periodMonth: number; reason: string | null; member: { id: string; firstName: string; lastName: string } };
+
+export const administrationApi = {
+  categories: (all = false) => api<ExpenseCategory[]>(`/administration/expense-categories${all ? '?all=1' : ''}`),
+  createCategory: (name: string) => api<ExpenseCategory>('/administration/expense-categories', { method: 'POST', body: JSON.stringify({ name }) }),
+  updateCategory: (id: string, data: { name?: string; isActive?: boolean }) => api<ExpenseCategory>(`/administration/expense-categories/${id}`, { method: 'PATCH', body: JSON.stringify(data) }),
+  fines: () => api<Fine[]>('/administration/fines'),
+  createFine: (data: { memberId: string; reason: string; amount: number; note?: string }) => api<Fine>('/administration/fines', { method: 'POST', body: JSON.stringify(data) }),
+  settleFine: (id: string) => api<Fine>(`/administration/fines/${id}/settle`, { method: 'PATCH' }),
+  cancelFine: (id: string) => api<Fine>(`/administration/fines/${id}/cancel`, { method: 'PATCH' }),
+  exemptions: (memberId?: string, year?: number) => {
+    const params = new URLSearchParams(); if (memberId) params.set('memberId', memberId); if (year) params.set('year', String(year));
+    return api<ContributionExemption[]>(`/administration/exemptions?${params}`);
+  },
+  createExemption: (data: { memberId: string; periodYear: number; periodMonth: number; reason?: string }) => api<ContributionExemption>('/administration/exemptions', { method: 'POST', body: JSON.stringify(data) }),
+  deleteExemption: (id: string) => api<ContributionExemption>(`/administration/exemptions/${id}`, { method: 'DELETE' }),
+};
+
 // ========== Activités ==========
 
 export type Activity = {
@@ -678,6 +725,8 @@ export const caisseApi = {
     expenseDate: string;
     cashBoxId?: string;
     beneficiary?: string;
+    categoryId?: string;
+    note?: string;
   }) =>
     api<Expense>('/caisse/expenses', { method: 'POST', body: JSON.stringify(data) }),
   validateTreasurer: (id: string) =>

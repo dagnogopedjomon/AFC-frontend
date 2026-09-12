@@ -1,270 +1,105 @@
 'use client';
 
-import { useEffect, useState, useMemo } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import Link from 'next/link';
 import { useSearchParams } from 'next/navigation';
-import { Search } from 'lucide-react';
-import { API_BASE, membersApi, type Member } from '@/lib/api';
+import { Search, Pencil, UserRound, KeyRound, Trash2 } from 'lucide-react';
+import { toast } from 'sonner';
+import { API_BASE, authApi, membersApi, type Member } from '@/lib/api';
 import { useAuth } from '@/lib/auth-context';
-import { memberRoleLabel } from '@/lib/utils';
 
-const BUREAU_OR_ADMIN = [
-  'ADMIN',
-  'PRESIDENT',
-  'SECRETARY_GENERAL',
-  'TREASURER',
-  'COMMISSIONER',
-  'GENERAL_MEANS_MANAGER',
-];
+const BUREAU = ['ADMIN','PRESIDENT','SECRETARY_GENERAL','TREASURER','COMMISSIONER','GENERAL_MEANS_MANAGER'];
 
-function isBureau(role: string) {
-  return BUREAU_OR_ADMIN.includes(role);
-}
-
-function filterMembers(members: Member[], query: string): Member[] {
-  if (!query.trim()) return members;
+function matches(member: Member, query: string) {
   const q = query.trim().toLowerCase();
-  return members.filter(
-    (m) =>
-      m.firstName.toLowerCase().includes(q) ||
-      m.lastName.toLowerCase().includes(q) ||
-      `${m.firstName} ${m.lastName}`.toLowerCase().includes(q) ||
-      `${m.lastName} ${m.firstName}`.toLowerCase().includes(q) ||
-      (m.phone && m.phone.replace(/\s/g, '').includes(q.replace(/\s/g, ''))),
-  );
+  return !q || [member.firstName, member.lastName, member.phone, member.email ?? ''].join(' ').toLowerCase().includes(q);
 }
 
-function MemberRow({ m }: { m: Member }) {
-  return (
-    <tr className="border-b border-gray-50 hover:bg-gray-50/50 transition">
-      <td className="px-6 py-4">
-        <div className="flex items-center gap-3">
-          {m.profilePhotoUrl ? (
-            <img
-              src={m.profilePhotoUrl.startsWith('http') ? m.profilePhotoUrl : `${API_BASE}${m.profilePhotoUrl}`}
-              alt=""
-              className="h-10 w-10 rounded-full object-cover bg-gray-100"
-            />
-          ) : (
-            <div className="h-10 w-10 rounded-full bg-[var(--sky-blue-light)] flex items-center justify-center text-[var(--sky-blue-dark)] font-medium">
-              {m.firstName[0]}
-              {m.lastName[0]}
-            </div>
-          )}
-          <Link
-            href={`/dashboard/membres/${m.id}`}
-            className="font-medium text-[var(--sky-blue-dark)] hover:underline"
-          >
-            {m.firstName} {m.lastName}
-          </Link>
-        </div>
-      </td>
-      <td className="px-6 py-4 text-gray-600">{m.phone}</td>
-      <td className="px-6 py-4">
-        <span className={`inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-medium ${m.isSuspended ? 'bg-amber-100 text-amber-800' : 'bg-[var(--sky-blue-soft)] text-[var(--sky-blue-dark)]'}`}>
-          {memberRoleLabel(m.role, !!m.isSuspended)}
-        </span>
-      </td>
-      <td className="px-6 py-4">
-        {m.profileCompleted ? (
-          <span className="text-green-600 text-sm">Complété</span>
-        ) : (
-          <span className="text-amber-600 text-sm">À compléter</span>
-        )}
-      </td>
-      <td className="px-6 py-4">
-        {m.isSuspended ? (
-          <span className="text-red-600 text-sm font-medium">Suspendu</span>
-        ) : (
-          <span className="text-green-600 text-sm">À jour</span>
-        )}
-      </td>
-    </tr>
-  );
+function Badge({ children, tone = 'blue' }: { children: React.ReactNode; tone?: 'blue'|'gray'|'green'|'amber'|'red' }) {
+  const cls = { blue:'bg-blue-50 text-blue-700', gray:'bg-slate-100 text-slate-600', green:'bg-emerald-50 text-emerald-700', amber:'bg-amber-50 text-amber-700', red:'bg-red-50 text-red-700' }[tone];
+  return <span className={`inline-flex rounded-full px-2.5 py-1 text-xs font-medium ${cls}`}>{children}</span>;
 }
 
 export default function MembresPage() {
   const { user } = useAuth();
-  const searchParams = useSearchParams();
+  const params = useSearchParams();
   const [members, setMembers] = useState<Member[]>([]);
+  const [query, setQuery] = useState('');
+  const [filter, setFilter] = useState<'ALL'|'ACTIVE'|'LATE'|'INACTIVE'>('ALL');
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
-  const [searchQuery, setSearchQuery] = useState('');
-  const created = searchParams.get('created') === '1';
+  const [actioning, setActioning] = useState<string | null>(null);
+  const canList = !!user && BUREAU.includes(user.role);
 
-  const canListMembers = user && BUREAU_OR_ADMIN.includes(user.role);
+  useEffect(() => { if (!canList) { setLoading(false); return; } membersApi.list().then(setMembers).catch(() => setMembers([])).finally(() => setLoading(false)); }, [canList]);
 
-  const filteredMembers = useMemo(() => filterMembers(members, searchQuery), [members, searchQuery]);
-  const bureauMembers = useMemo(() => filteredMembers.filter((m) => isBureau(m.role)), [filteredMembers]);
-  const otherMembers = useMemo(() => filteredMembers.filter((m) => !isBureau(m.role)), [filteredMembers]);
-
-  useEffect(() => {
-    if (!canListMembers) {
-      setLoading(false);
-      return;
-    }
-    membersApi
-      .list()
-      .then(setMembers)
-      .catch((e) => setError(e instanceof Error ? e.message : 'Erreur'))
-      .finally(() => setLoading(false));
-  }, [canListMembers]);
-
-  if (!canListMembers) {
-    return (
-      <div className="card">
-        <h1 className="text-xl font-bold text-[var(--foreground)] mb-2">
-          Membres
-        </h1>
-        <p className="text-gray-600">
-          L’accès à la liste des membres est réservé à l’Admin et au bureau du club.
-        </p>
-      </div>
-    );
+  async function deleteMember(member: Member) {
+    if (!window.confirm(`Supprimer définitivement le compte de ${member.firstName} ${member.lastName} ?`)) return;
+    setActioning(member.id);
+    try {
+      await membersApi.delete(member.id);
+      setMembers((current) => current.filter((item) => item.id !== member.id));
+      toast.success('Compte supprimé.');
+    } catch (error) { toast.error(error instanceof Error ? error.message : 'Suppression impossible'); }
+    finally { setActioning(null); }
   }
 
-  return (
-    <div className="space-y-6">
-      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
-        <div>
-          <h1 className="text-2xl font-bold text-[var(--foreground)]">
-            Membres
-          </h1>
-          <p className="text-gray-600 mt-1">
-            Liste des membres du club ({members.length} membre{members.length !== 1 ? 's' : ''})
-          </p>
+  async function sendActivation(member: Member) {
+    setActioning(member.id);
+    try {
+      const result = await authApi.sendActivationOtp(member.phone);
+      toast.success(result.demoCode ? `Code de test : ${result.demoCode}` : 'Lien d’activation renvoyé au membre.');
+    } catch (error) { toast.error(error instanceof Error ? error.message : 'Envoi impossible'); }
+    finally { setActioning(null); }
+  }
+
+  const filtered = useMemo(() => members.filter((m) => {
+    if (!matches(m, query)) return false;
+    if (filter === 'ACTIVE') return !m.isSuspended && m.role !== 'FORMER_PLAYER';
+    if (filter === 'LATE') return !!m.isSuspended;
+    if (filter === 'INACTIVE') return m.role === 'FORMER_PLAYER';
+    return true;
+  }), [members, query, filter]);
+
+  if (!canList) return <div className="card"><h1 className="text-xl font-bold">Membres</h1><p className="mt-2 text-slate-600">Accès réservé au bureau du club.</p></div>;
+
+  const countActive = members.filter((m) => !m.isSuspended && m.role !== 'FORMER_PLAYER').length;
+  const countLate = members.filter((m) => !!m.isSuspended).length;
+  const countInactive = members.filter((m) => m.role === 'FORMER_PLAYER').length;
+
+  return <div className="space-y-6">
+    <header className="flex flex-wrap items-start justify-between gap-4">
+      <div><h1 className="text-2xl font-semibold text-slate-900">Membres</h1><p className="mt-1 text-sm text-slate-500">Liste & suivi des joueurs du club</p></div>
+      <div className="flex gap-3"><Link href="/dashboard/cotisations/paiement" className="afc-button-primary">+ Nouveau paiement</Link>{user?.role === 'ADMIN' && <Link href="/dashboard/membres/new" className="btn-primary">Nouveau membre</Link>}</div>
+    </header>
+    {params.get('created') === '1' && <div className="rounded-xl bg-emerald-50 px-4 py-3 text-sm text-emerald-800">Compte créé avec succès.</div>}
+    <section className="card p-4">
+      <div className="flex flex-wrap items-center justify-between gap-4">
+        <div className="flex flex-wrap gap-1 rounded-lg bg-slate-100 p-1 text-sm">
+          {([['ALL',`Tous (${members.length})`],['ACTIVE',`Actifs (${countActive})`],['LATE',`En retard (${countLate})`],['INACTIVE',`Inactifs (${countInactive})`]] as const).map(([value,label]) => <button key={value} type="button" onClick={() => setFilter(value)} className={`rounded-md px-3 py-2 font-medium ${filter === value ? 'bg-white text-slate-900 shadow-sm' : 'text-slate-500'}`}>{label}</button>)}
         </div>
-        {user?.role === 'ADMIN' && (
-          <Link
-            href="/dashboard/membres/new"
-            className="btn-primary inline-flex items-center justify-center shrink-0"
-          >
-            Ajouter un membre
-          </Link>
-        )}
+        <div className="relative w-full max-w-xs"><Search aria-hidden="true" className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" size={18}/><input aria-label="Rechercher un membre" value={query} onChange={(e) => setQuery(e.target.value)} placeholder="Rechercher un membre…" className="input-field w-full !pl-11"/></div>
       </div>
-
-      {(created || searchParams.get('invited') === '1') && (
-        <div className="rounded-xl bg-green-50 text-green-800 px-4 py-3 text-sm">
-          {searchParams.get('invited') === '1'
-            ? 'Invitation envoyée.'
-            : 'Compte créé. Le membre peut se connecter avec le téléphone et le mot de passe que vous avez définis.'}
-        </div>
-      )}
-
-      {error && (
-        <div className="rounded-xl bg-red-50 text-red-700 px-4 py-3">
-          {error}
-        </div>
-      )}
-
-      {loading ? (
-        <div className="card flex justify-center py-12">
-          <div className="inline-block h-10 w-10 animate-spin rounded-full border-4 border-[var(--sky-blue)] border-r-transparent" />
-        </div>
-      ) : members.length === 0 ? (
-        <div className="card py-12 text-center text-gray-500">
-          Aucun membre pour le moment.
-          {user?.role === 'ADMIN' && (
-            <>{' '}
-              <Link href="/dashboard/membres/new" className="text-[var(--sky-blue-dark)] hover:underline">
-                Inviter le premier membre
-              </Link>
-            </>
-          )}
-        </div>
-      ) : (
-        <>
-          <div className="relative max-w-md">
-            <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-gray-400" />
-            <input
-              type="search"
-              placeholder="Rechercher un membre (nom, prénom, téléphone…)"
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-              className="w-full pl-10 pr-4 py-3 rounded-xl border border-gray-200 bg-white text-[var(--foreground)] placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-[var(--sky-blue)] focus:border-transparent"
-              aria-label="Rechercher un membre"
-            />
-          </div>
-
-          <div className="space-y-6">
-            <div className="card overflow-hidden p-0">
-              <div className="px-6 py-4 border-b border-gray-100 bg-[var(--sky-blue-soft)]">
-                <h2 className="text-lg font-semibold text-[var(--sky-blue-dark)]">
-                  Bureau du club
-                </h2>
-                <p className="text-sm text-gray-600 mt-0.5">
-                  {bureauMembers.length} membre{bureauMembers.length !== 1 ? 's' : ''} du bureau
-                </p>
-              </div>
-              <div className="overflow-x-auto">
-                <table className="w-full text-left">
-                  <thead>
-                    <tr className="border-b border-gray-100 bg-gray-50/80">
-                      <th className="px-6 py-3 text-sm font-semibold text-gray-600">Membre</th>
-                      <th className="px-6 py-3 text-sm font-semibold text-gray-600">Téléphone</th>
-                      <th className="px-6 py-3 text-sm font-semibold text-gray-600">Rôle</th>
-                      <th className="px-6 py-3 text-sm font-semibold text-gray-600">Profil</th>
-                      <th className="px-6 py-3 text-sm font-semibold text-gray-600">Statut</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {bureauMembers.map((m) => (
-                      <MemberRow key={m.id} m={m} />
-                    ))}
-                  </tbody>
-                </table>
-              </div>
-              {bureauMembers.length === 0 && (
-                <div className="py-10 text-center text-gray-500 text-sm">
-                  {searchQuery.trim() ? 'Aucun membre du bureau ne correspond à la recherche.' : 'Aucun membre du bureau.'}
-                </div>
-              )}
-            </div>
-
-            <div className="card overflow-hidden p-0">
-              <div className="px-6 py-4 border-b border-gray-100 bg-slate-50">
-                <h2 className="text-lg font-semibold text-[var(--foreground)]">
-                  Autres membres
-                </h2>
-                <p className="text-sm text-gray-600 mt-0.5">
-                  {otherMembers.length} membre{otherMembers.length !== 1 ? 's' : ''} (membres, anciens membres, supporters)
-                </p>
-              </div>
-              <div className="overflow-x-auto">
-                <table className="w-full text-left">
-                  <thead>
-                    <tr className="border-b border-gray-100 bg-gray-50/80">
-                      <th className="px-6 py-3 text-sm font-semibold text-gray-600">Membre</th>
-                      <th className="px-6 py-3 text-sm font-semibold text-gray-600">Téléphone</th>
-                      <th className="px-6 py-3 text-sm font-semibold text-gray-600">Rôle</th>
-                      <th className="px-6 py-3 text-sm font-semibold text-gray-600">Profil</th>
-                      <th className="px-6 py-3 text-sm font-semibold text-gray-600">Statut</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {otherMembers.map((m) => (
-                      <MemberRow key={m.id} m={m} />
-                    ))}
-                  </tbody>
-                </table>
-              </div>
-              {otherMembers.length === 0 && (
-                <div className="py-10 text-center text-gray-500 text-sm">
-                  {searchQuery.trim() ? 'Aucun autre membre ne correspond à la recherche.' : 'Aucun autre membre pour le moment.'}
-                  {!searchQuery.trim() && user?.role === 'ADMIN' && (
-                    <>{' '}
-                      <Link href="/dashboard/membres/new" className="text-[var(--sky-blue-dark)] hover:underline">
-                        Inviter un membre
-                      </Link>
-                    </>
-                  )}
-                </div>
-              )}
-            </div>
-          </div>
-        </>
-      )}
-    </div>
-  );
+    </section>
+    <section className="card overflow-hidden p-0">
+      <div className="overflow-x-auto">
+        <table className="w-full min-w-[1050px] text-left">
+          <thead><tr><th className="px-5 py-3">Membre</th><th className="px-5 py-3">Téléphone</th><th className="px-5 py-3">Date adhésion</th><th className="px-5 py-3">Statut</th><th className="px-5 py-3">Septembre 2026</th><th className="px-5 py-3">Compte</th><th className="px-5 py-3 text-right">Actions</th></tr></thead>
+          <tbody>{loading ? <tr><td colSpan={7} className="p-10 text-center text-slate-500">Chargement…</td></tr> : filtered.map((m) => {
+            const former = m.role === 'FORMER_PLAYER';
+            const bureau = BUREAU.includes(m.role) && m.role !== 'ADMIN';
+            return <tr key={m.id} className="border-t border-slate-100 hover:bg-slate-50">
+              <td className="px-5 py-3"><div className="flex items-center gap-3">{m.profilePhotoUrl ? <img src={m.profilePhotoUrl.startsWith('http') ? m.profilePhotoUrl : API_BASE + m.profilePhotoUrl} className="h-8 w-8 rounded-full object-cover" alt="" /> : <span className="grid h-8 w-8 place-items-center rounded-full border border-slate-300 bg-slate-100 text-xs font-semibold text-blue-700">{m.firstName[0]}{m.lastName[0]}</span>}<Link href={`/dashboard/membres/${m.id}`} className="font-medium text-slate-800 hover:text-blue-700">{m.firstName} {m.lastName}</Link></div></td>
+              <td className="px-5 py-3 font-mono text-xs text-slate-600">{m.phone}</td>
+              <td className="px-5 py-3 font-mono text-xs text-slate-500">{new Date(m.createdAt).toLocaleDateString('fr-FR',{day:'2-digit',month:'short',year:'numeric'})}</td>
+              <td className="px-5 py-3"><Badge tone={m.isSuspended ? 'red' : bureau ? 'gray' : 'blue'}>{m.isSuspended ? 'Inactif' : bureau ? 'Bureau' : former ? 'Inactif' : 'Actif'}</Badge></td>
+              <td className="px-5 py-3"><Badge tone={former ? 'gray' : 'blue'}>{former ? '—' : 'Payé'}</Badge></td>
+              <td className="px-5 py-3"><Badge tone={m.isSuspended ? 'red' : 'blue'}>{m.isSuspended ? 'Inactif' : 'Actif'}</Badge></td>
+              <td className="px-5 py-3"><div className="flex justify-end gap-3 text-slate-600"><Link title="Modifier le membre" aria-label="Modifier le membre" href={`/dashboard/membres/${m.id}`} className="rounded p-1 hover:bg-slate-100 hover:text-blue-700"><Pencil size={16}/></Link><Link title="Voir le compte" aria-label="Voir le compte" href={`/dashboard/membres/${m.id}`} className="rounded p-1 hover:bg-slate-100 hover:text-blue-700"><UserRound size={16}/></Link><button title="Renvoyer la clé d’activation" aria-label="Renvoyer la clé d’activation" type="button" disabled={actioning === m.id} onClick={() => sendActivation(m)} className="rounded p-1 hover:bg-slate-100 hover:text-blue-700 disabled:opacity-50"><KeyRound size={16}/></button>{user?.role === 'ADMIN' && <button title="Supprimer le membre" aria-label="Supprimer le membre" className="rounded p-1 text-red-500 hover:bg-red-50 disabled:opacity-50" type="button" disabled={actioning === m.id} onClick={() => deleteMember(m)}><Trash2 size={16}/></button>}</div></td>
+            </tr>;
+          })}</tbody>
+        </table>
+      </div>
+      {!loading && filtered.length === 0 && <p className="p-10 text-center text-slate-500">Aucun membre ne correspond à ce filtre.</p>}
+    </section>
+  </div>;
 }

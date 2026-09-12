@@ -14,6 +14,9 @@ export default function HistoriquePage() {
   const [payments, setPayments] = useState<Payment[]>([]);
   const [paymentsLoading, setPaymentsLoading] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
+  const [typeFilter, setTypeFilter] = useState<'ALL' | 'MONTHLY' | 'EXCEPTIONAL'>('ALL');
+  const [startDate, setStartDate] = useState('');
+  const [endDate, setEndDate] = useState('');
   const [paymentsPage, setPaymentsPage] = useState(1);
   const [selectedMemberId, setSelectedMemberId] = useState<string | null>(null);
   const [memberHistory, setMemberHistory] = useState<MemberHistory | null>(null);
@@ -32,15 +35,19 @@ export default function HistoriquePage() {
 
   const filteredPayments = useMemo(() => {
     const q = searchQuery.trim().toLowerCase();
-    if (!q) return payments;
     return payments.filter((p) => {
+      if (typeFilter !== 'ALL' && p.contribution?.type !== typeFilter) return false;
+      const paidDay = p.paidAt.slice(0, 10);
+      if (startDate && paidDay < startDate) return false;
+      if (endDate && paidDay > endDate) return false;
+      if (!q) return true;
       const member = p.member;
       if (!member) return false;
       const fullName = `${member.firstName ?? ''} ${member.lastName ?? ''}`.toLowerCase();
       const phone = (member.phone ?? '').toLowerCase();
       return fullName.includes(q) || phone.includes(q);
     });
-  }, [payments, searchQuery]);
+  }, [payments, searchQuery, typeFilter, startDate, endDate]);
 
   const paymentsPageCount = Math.max(1, Math.ceil(filteredPayments.length / paymentsPerPage));
   const currentPaymentsPage = Math.min(paymentsPage, paymentsPageCount);
@@ -88,9 +95,9 @@ export default function HistoriquePage() {
           ← Cotisations
         </Link>
       </div>
-      <div>
-        <h1 className="text-2xl font-bold text-[var(--foreground)]">Historique & soldes</h1>
-        <p className="text-gray-600 mt-1">Historique des cotisations, solde global et recherche pour tracer qui a payé.</p>
+      <div className="flex items-start justify-between gap-4">
+        <div><h1 className="text-2xl font-bold text-[var(--foreground)]">Historique</h1><p className="text-gray-600 mt-1">Tous les paiements enregistrés.</p></div>
+        <Link href="/dashboard/cotisations/paiement" className="afc-button-primary shrink-0">+ Nouveau paiement</Link>
       </div>
 
       {/* Recherche des paiements — tracer qui a payé */}
@@ -99,7 +106,11 @@ export default function HistoriquePage() {
         <p className="text-sm text-gray-600 mb-4">
           Recherchez par nom ou numéro de téléphone pour voir tous les paiements d’un membre.
         </p>
-        <div className="relative max-w-md mb-4">
+        <div className="mb-4 flex w-fit flex-wrap gap-1 rounded-lg bg-slate-100 p-1 text-sm">
+          {([['ALL','Tous'],['MONTHLY','Mensuelles'],['EXCEPTIONAL','Exceptionnelles']] as const).map(([value,label])=><button key={value} type="button" onClick={()=>{setTypeFilter(value);setPaymentsPage(1);}} className={`rounded-md px-4 py-2 font-medium ${typeFilter===value?'bg-white text-blue-700 shadow-sm':'text-slate-500'}`}>{label}</button>)}
+        </div>
+        <div className="mb-4 grid gap-3 md:grid-cols-[minmax(240px,1fr)_180px_180px_auto]">
+        <div className="relative">
           <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400" />
           <input
             type="search"
@@ -111,6 +122,10 @@ export default function HistoriquePage() {
             }}
             className="input-field w-full pl-10"
           />
+        </div>
+        <input type="date" className="input-field" aria-label="Date de début" value={startDate} onChange={e=>setStartDate(e.target.value)}/>
+        <input type="date" className="input-field" aria-label="Date de fin" value={endDate} onChange={e=>setEndDate(e.target.value)}/>
+        <button type="button" className="rounded-lg border border-slate-200 px-4 py-2 text-sm font-medium" onClick={()=>{setSearchQuery('');setStartDate('');setEndDate('');setTypeFilter('ALL');}}>Réinitialiser</button>
         </div>
         {paymentsLoading ? (
           <div className="py-8 flex justify-center">

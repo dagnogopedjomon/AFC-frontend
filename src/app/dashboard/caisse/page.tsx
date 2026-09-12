@@ -287,11 +287,10 @@ export default function CaissePage() {
               : 'Consultation en lecture seule — transparence totale sur les entrées, sorties et soldes.'}
           </p>
         </div>
-        {canCreate && (
-          <Link href="/dashboard/caisse/nouvelle-depense" className="btn-primary inline-flex items-center justify-center shrink-0">
-            Nouvelle dépense
-          </Link>
-        )}
+        <div className="flex items-center gap-3 shrink-0">
+          <Link href="/dashboard/cotisations/paiement" className="afc-button-primary">+ Nouveau paiement</Link>
+          {canCreate && <Link href="/dashboard/caisse/nouvelle-depense" className="btn-primary inline-flex items-center justify-center">Ajouter une dépense</Link>}
+        </div>
       </div>
 
       {error && (
@@ -876,7 +875,7 @@ export default function CaissePage() {
             )}
           </div>
 
-          <div className="card overflow-hidden p-0">
+          {false && <div className="card overflow-hidden p-0">
             <h2 className="px-6 py-4 text-lg font-semibold text-[var(--foreground)] border-b border-gray-100">
               Dépenses
             </h2>
@@ -1003,7 +1002,7 @@ export default function CaissePage() {
                 </button>
               </div>
             )}
-          </div>
+          </div>}
         </>
       )}
 

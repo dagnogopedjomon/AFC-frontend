@@ -8,7 +8,7 @@ type AuthContextType = {
   user: AuthUser | null;
   token: string | null;
   loading: boolean;
-  login: (phone: string, password: string) => Promise<void>;
+  login: (identifier: string, password: string) => Promise<void>;
   logout: (opts?: { redirectTo?: string }) => void;
   clearSession: () => void;
   refreshUser: () => Promise<void>;
@@ -83,8 +83,8 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   }, []);
 
   const login = useCallback(
-    async (phone: string, password: string) => {
-      const { access_token, user: u } = await authApi.login(phone, password);
+    async (identifier: string, password: string) => {
+      const { access_token, user: u } = await authApi.login(identifier, password);
       localStorage.setItem('afc_token', access_token);
       localStorage.setItem('afc_user', JSON.stringify(u));
       setToken(access_token);

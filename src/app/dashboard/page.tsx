@@ -1,579 +1,82 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import Link from 'next/link';
-import { motion, AnimatePresence } from 'framer-motion';
-import {
-  ResponsiveContainer,
-  Legend,
-  Tooltip,
-  XAxis,
-  YAxis,
-  CartesianGrid,
-  ComposedChart,
-  Bar,
-  Line,
-} from 'recharts';
-import { LayoutDashboard, Wallet, PiggyBank, Users, CalendarDays, FileText, Bell, TrendingUp, AlertCircle, AlertTriangle } from 'lucide-react';
+import { ResponsiveContainer, BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend } from 'recharts';
+import { ArrowUpRight, Wallet, Users, CalendarDays } from 'lucide-react';
 import { useAuth } from '@/lib/auth-context';
-import {
-  API_BASE,
-  caisseApi,
-  contributionsApi,
-  activitiesApi,
-  membersApi,
-  reportsApi,
-  notificationsApi,
-  type CaisseSummary,
-  type ArrearsResult,
-  type Expense,
-  type Activity,
-  type AnnualReport,
-} from '@/lib/api';
-import { cn, roleLabelFr } from '@/lib/utils';
-import { toast } from 'sonner';
+import { caisseApi, contributionsApi, membersApi, reportsApi, activitiesApi, type CaisseSummary, type AnnualContributionMatrix, type AnnualReport, type Member, type Payment, type Expense, type Activity } from '@/lib/api';
 
-const CAISSE_ROLES = ['ADMIN', 'TREASURER', 'COMMISSIONER'];
-const ARREARS_ROLES = ['ADMIN', 'TREASURER'];
-const MEMBERS_DASHBOARD_ROLES = ['ADMIN', 'PRESIDENT', 'SECRETARY_GENERAL', 'TREASURER', 'COMMISSIONER', 'GENERAL_MEANS_MANAGER'];
-/** Rapports : bureau uniquement (pas Admin, pas membre / ancien membre / supporter). */
-const RAPPORTS_ROLES = ['PRESIDENT', 'SECRETARY_GENERAL', 'TREASURER', 'COMMISSIONER', 'GENERAL_MEANS_MANAGER'];
+const money = (n: number) => n.toLocaleString('fr-FR');
+const monthName = new Intl.DateTimeFormat('fr-FR', { month: 'long', year: 'numeric' });
+const shortMonth = new Intl.DateTimeFormat('fr-FR', { month: 'short' });
 
-function activityTypeLabel(type: string) {
-  const labels: Record<string, string> = {
-    MATCH: 'Match',
-    TRAINING: 'Entraînement',
-    BIRTHDAY: 'Anniversaire',
-    ANNOUNCEMENT: 'Annonce',
-    OTHER: 'Autre',
-  };
-  return labels[type] ?? type;
-}
-
-const cardMotion = {
-  initial: { opacity: 0, y: 12 },
-  animate: { opacity: 1, y: 0 },
-  transition: { duration: 0.25 },
-};
-
-function ArrearsBanner({
-  user,
-  unpaidMonths,
-}: {
-  user: { firstName: string } | null;
-  unpaidMonths: Array<{ year: number; month: number }> | null;
-}) {
-  if (!unpaidMonths || unpaidMonths.length === 0) return null;
-
-  const fullText = `${user?.firstName ?? 'Vous'}, vous êtes en retard de ${unpaidMonths.length} mois de cotisation. Cliquez pour régulariser dans Cotisations.`;
-  const duplicatedText = `${fullText}   •   ${fullText}`;
-
-  return (
-    <Link href="/dashboard/regulariser">
-      <motion.div
-        initial={{ opacity: 0, y: -8 }}
-        animate={{ opacity: 1, y: 0 }}
-        className="mt-4 mb-4 overflow-hidden rounded-xl border border-red-200 bg-red-50 shadow-sm cursor-pointer hover:bg-red-100 transition-colors"
-      >
-        <div className="flex items-center gap-3 px-4 py-2.5">
-          <AlertTriangle className="h-5 w-5 shrink-0 text-red-600" />
-          <div className="overflow-hidden">
-            <div className="animate-marquee text-sm font-medium text-red-800 whitespace-nowrap">
-              {duplicatedText}
-            </div>
-          </div>
-        </div>
-      </motion.div>
-    </Link>
-  );
+function Metric({ title, children, footer }: { title: string; children: React.ReactNode; footer?: React.ReactNode }) {
+  return <div className="card min-h-[150px] p-5"><p className="text-[11px] font-medium uppercase tracking-[.17em] text-slate-500">{title}</p><div className="mt-4">{children}</div>{footer && <div className="mt-2 text-xs text-slate-500">{footer}</div>}</div>;
 }
 
 export default function DashboardPage() {
   const { user } = useAuth();
-  const [caisseSummary, setCaisseSummary] = useState<CaisseSummary | null>(null);
-  const [arrears, setArrears] = useState<ArrearsResult | null>(null);
-  const [totalMembers, setTotalMembers] = useState<number | null>(null);
-  const [myUnpaidMonths, setMyUnpaidMonths] = useState<Array<{ year: number; month: number }> | null>(null);
+  const [caisse, setCaisse] = useState<CaisseSummary | null>(null);
+  const [members, setMembers] = useState<Member[]>([]);
+  const [matrix, setMatrix] = useState<AnnualContributionMatrix | null>(null);
+  const [annual, setAnnual] = useState<AnnualReport | null>(null);
+  const [payments, setPayments] = useState<Payment[]>([]);
   const [expenses, setExpenses] = useState<Expense[]>([]);
   const [activities, setActivities] = useState<Activity[]>([]);
-  const [annualReport, setAnnualReport] = useState<AnnualReport | null>(null);
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
-  const [inAppUnreadCount, setInAppUnreadCount] = useState(0);
+  const now = useMemo(() => new Date(), []);
+  const year = now.getFullYear();
+  const month = now.getMonth() + 1;
 
   useEffect(() => {
     if (!user) return;
-    notificationsApi.inApp.unreadCount().then((r) => setInAppUnreadCount(r.count)).catch(() => {});
-    const handler = () => notificationsApi.inApp.unreadCount().then((r) => setInAppUnreadCount(r.count)).catch(() => {});
-    window.addEventListener('notifications-inapp-updated', handler);
-    return () => window.removeEventListener('notifications-inapp-updated', handler);
-  }, [user]);
-
-  const canSeeCaisse = user && CAISSE_ROLES.includes(user.role);
-  const canSeeArrears = user && ARREARS_ROLES.includes(user.role);
-  const canSeeMembersCount = user && MEMBERS_DASHBOARD_ROLES.includes(user.role);
-
-  const currentYear = new Date().getFullYear();
-
-  useEffect(() => {
-    const promises: Promise<unknown>[] = [];
-
-    if (canSeeCaisse) {
-      promises.push(
-        caisseApi.summary().then(setCaisseSummary).catch(() => setCaisseSummary(null)),
-        caisseApi.expenses().then(setExpenses).catch(() => setExpenses([])),
-        reportsApi.annual(currentYear).then(setAnnualReport).catch(() => setAnnualReport(null)),
-      );
-    }
-    if (canSeeArrears) {
-      promises.push(
-        contributionsApi.arrears().then(setArrears).catch(() => setArrears(null)),
-      );
-    }
-    if (canSeeMembersCount || canSeeArrears) {
-      promises.push(
-        membersApi.count().then((r) => setTotalMembers(r.count)).catch(() => setTotalMembers(null)),
-      );
-    }
-    if (user) {
-      promises.push(
-        contributionsApi.meUnpaidMonths().then((d) => setMyUnpaidMonths(d.unpaidMonths)).catch(() => setMyUnpaidMonths([])),
-      );
-    }
-    promises.push(
+    Promise.all([
+      caisseApi.summary().then(setCaisse).catch(() => null),
+      membersApi.list().then(setMembers).catch(() => setMembers([])),
+      contributionsApi.annualMatrix(year).then(setMatrix).catch(() => null),
+      reportsApi.annual(year).then(setAnnual).catch(() => null),
+      contributionsApi.payments({ limit: 8 }).then(setPayments).catch(() => setPayments([])),
+      caisseApi.expenses().then(setExpenses).catch(() => setExpenses([])),
       activitiesApi.list().then(setActivities).catch(() => setActivities([])),
-    );
+    ]).finally(() => setLoading(false));
+  }, [user, year]);
 
-    setLoading(true);
-    setError(null);
-    Promise.all(promises)
-      .then(() => {})
-      .catch((e) => {
-        const msg = e instanceof Error ? e.message : 'Erreur';
-        setError(msg);
-        toast.error("Certaines données n'ont pas pu être chargées.");
-      })
-      .finally(() => setLoading(false));
-  }, [canSeeCaisse, canSeeArrears, canSeeMembersCount, user]);
+  const active = members.filter((m) => !m.isSuspended && m.role !== 'FORMER_PLAYER');
+  const inactive = members.length - active.length;
+  const rows = matrix?.members.map((m) => ({ ...m, current: m.months.find((x) => x.month === month) })).filter((m) => m.current && !['INACTIVE', 'NOT_DUE', 'EXEMPT'].includes(m.current.status)) ?? [];
+  const paid = rows.filter((m) => m.current && ['PAID', 'ADVANCE'].includes(m.current.status)).length;
+  const rate = rows.length ? Math.round((paid / rows.length) * 100) : 0;
+  const late = matrix?.members.map((m) => { const months = m.months.filter((x) => x.status === 'LATE'); return { ...m, count: months.length, debt: months.reduce((s, x) => s + Math.max(0, (matrix.monthlyAmount ?? 0) - x.amountPaid), 0) }; }).filter((m) => m.count >= 2).sort((a, b) => b.count - a.count) ?? [];
+  const approvedExpenses = expenses.filter((e) => e.status === 'APPROVED');
+  const expenseTotal = approvedExpenses.reduce((s, e) => s + Number(e.amount), 0);
+  const currentBox = caisse?.boxes.find((b) => b.isDefault) ?? caisse?.boxes[0];
+  const exceptional = caisse?.boxes.find((b) => b.id !== currentBox?.id);
+  const chart = annual?.months.map((m) => ({ month: shortMonth.format(new Date(m.year, m.month - 1, 1)), Encaissé: m.totalEntries, Dépensé: m.totalExits })) ?? [];
 
-  const today = new Date();
-  today.setHours(0, 0, 0, 0);
-  const upcomingActivities = activities
-    .filter((a) => new Date(a.date) >= today)
-    .sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime())
-    .slice(0, 5);
-
-  const pendingExpensesCount = expenses.filter(
-    (e) => e.status === 'PENDING_TREASURER' || e.status === 'PENDING_COMMISSIONER',
-  ).length;
-
-  const outstandingMonthsCount = myUnpaidMonths?.length ?? 0;
-  const hasOutstandingDebt = outstandingMonthsCount > 0;
-
-  const roleLabel = user?.role ? roleLabelFr(user.role) : '';
-
-  const canSeeRapports = user && RAPPORTS_ROLES.includes(user.role);
-  const cardCount =
-    1 + // Mon rôle
-    1 + // Ma cotisation
-    (canSeeMembersCount && totalMembers !== null ? 1 : 0) +
-    (canSeeCaisse && caisseSummary ? 1 : 0) +
-    (canSeeArrears && arrears !== null ? 1 : 0) +
-    (canSeeCaisse && !caisseSummary ? 1 : 0) +
-    (canSeeCaisse && pendingExpensesCount > 0 ? 1 : 0) +
-    1 + // Activités
-    (canSeeRapports ? 1 : 0); // Rapports (bureau uniquement)
-  const showNotificationsCard = cardCount === 5;
-  const totalCards = cardCount + (showNotificationsCard ? 1 : 0);
-  const placeholderCount = totalCards % 3 === 0 ? 0 : 3 - (totalCards % 3);
-
-  return (
-    <div className="space-y-8">
-      <motion.header
-        initial={{ opacity: 0, y: 8 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.3 }}
-        className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-6 pb-6 border-b border-slate-200/80 min-w-0"
-      >
-        <div>
-          <p className="text-xs font-semibold text-[var(--sky-blue-dark)] uppercase tracking-widest">
-            Tableau de bord
-          </p>
-          <h1 className="mt-2 text-2xl sm:text-3xl font-bold text-[var(--foreground)]">
-            Bon retour, <span className="text-[var(--sky-blue-dark)]">{user?.firstName}</span>
-          </h1>
-          <p className="mt-2 text-slate-600 text-sm sm:text-base max-w-xl">
-            Voici un aperçu de votre amicale.
-          </p>
-        </div>
-        <div className="flex items-center gap-3 shrink-0">
-          <Link
-            href="/dashboard/notifications"
-            className="relative p-2 rounded-xl text-slate-500 hover:bg-slate-100 transition hidden sm:inline-flex items-center justify-center"
-            aria-label="Notifications"
-          >
-            <Bell size={22} />
-            {inAppUnreadCount > 0 && (
-              <span className="absolute -top-0.5 -right-0.5 flex h-5 min-w-[1.25rem] items-center justify-center rounded-full bg-red-500 px-1.5 text-[10px] font-bold text-white">
-                {inAppUnreadCount > 99 ? '99+' : inAppUnreadCount}
-              </span>
-            )}
-          </Link>
-          <div className="flex items-center gap-3 rounded-2xl border border-slate-200 bg-white px-4 py-3 shadow-md min-w-[200px] ring-1 ring-slate-100">
-            {user?.profilePhotoUrl ? (
-              <img
-                src={user.profilePhotoUrl.startsWith('http') ? user.profilePhotoUrl : `${API_BASE}${user.profilePhotoUrl}`}
-                alt=""
-                className="h-11 w-11 shrink-0 rounded-full object-cover bg-slate-100"
-              />
-            ) : (
-              <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-[var(--sky-blue)] text-white font-bold text-sm shadow-inner">
-                {user?.firstName?.[0]}
-                {user?.lastName?.[0]}
-              </div>
-            )}
-            <div className="min-w-0">
-              <p className="font-semibold text-[var(--foreground)] truncate">
-                {user?.firstName} {user?.lastName}
-              </p>
-              <p className="text-xs text-slate-500 truncate">{roleLabel}</p>
-            </div>
-          </div>
-        </div>
-      </motion.header>
-
-      <ArrearsBanner user={user} unpaidMonths={myUnpaidMonths} />
-
-      {error && (
-        <motion.div
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          className="rounded-xl bg-amber-50 text-amber-800 px-4 py-3 text-sm"
-        >
-          Certaines données n'ont pas pu être chargées. Vous pouvez continuer à utiliser l'application.
-        </motion.div>
-      )}
-
-      {loading ? (
-        <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-          {[1, 2, 3].map((i) => (
-            <div key={i} className="card flex justify-center py-12">
-              <div className="inline-block h-8 w-8 animate-spin rounded-full border-4 border-[var(--sky-blue)] border-r-transparent" />
-            </div>
-          ))}
-        </div>
-      ) : (
-        <>
-          <motion.div
-            className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3"
-            initial="initial"
-            animate="animate"
-            variants={{
-              animate: { transition: { staggerChildren: 0.05 } },
-            }}
-          >
-            <motion.div variants={cardMotion} className="h-full">
-              <div className="card border-l-4 border-l-[var(--sky-blue)] h-full flex flex-col">
-                <div className="flex items-center gap-3 flex-1">
-                  <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-[var(--sky-blue-soft)] text-[var(--sky-blue-dark)]">
-                    <LayoutDashboard size={20} />
-                  </div>
-                  <div className="min-w-0 flex-1">
-                    <h2 className="text-xs font-semibold text-slate-500 uppercase tracking-wide">
-                      Mon rôle
-                    </h2>
-                    <p className="mt-0.5 text-lg font-bold text-[var(--sky-blue-dark)] capitalize">
-                      {user?.role ? roleLabelFr(user.role) : ''}
-                    </p>
-                  </div>
-                </div>
-              </div>
-            </motion.div>
-
-            <motion.div variants={cardMotion} className="h-full">
-              <Link
-                href={hasOutstandingDebt ? '/dashboard/regulariser' : '/dashboard/cotisations'}
-                className={cn(
-                  'card card-hover block border-l-4 h-full',
-                  hasOutstandingDebt ? 'border-l-amber-500' : 'border-l-emerald-500',
-                )}
-              >
-                <div className="flex items-center gap-3">
-                  <div
-                    className={cn(
-                      'flex h-10 w-10 shrink-0 items-center justify-center rounded-xl',
-                      hasOutstandingDebt ? 'bg-amber-100 text-amber-600' : 'bg-emerald-100 text-emerald-600',
-                    )}
-                  >
-                    <PiggyBank size={20} />
-                  </div>
-                  <div className="min-w-0 flex-1">
-                    <h2 className="text-xs font-semibold text-slate-500 uppercase tracking-wide">
-                      Ma cotisation
-                    </h2>
-                    <p className={cn('mt-0.5 text-lg font-bold', hasOutstandingDebt ? 'text-amber-700' : 'text-emerald-700')}>
-                      {myUnpaidMonths === null
-                        ? '—'
-                        : hasOutstandingDebt
-                          ? `${outstandingMonthsCount} mois à régulariser`
-                          : 'À jour'}
-                    </p>
-                    <p className="text-sm text-slate-500 mt-1">{hasOutstandingDebt ? 'Voir ma dette →' : 'Voir mes cotisations →'}</p>
-                  </div>
-                </div>
-              </Link>
-            </motion.div>
-
-            {canSeeMembersCount && totalMembers !== null && (
-              <motion.div variants={cardMotion} className="h-full">
-                <Link href="/dashboard/membres" className="card card-hover border-l-4 border-l-[var(--sky-blue)] block h-full">
-                  <div className="flex items-center gap-3">
-                    <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-[var(--sky-blue-soft)] text-[var(--sky-blue-dark)]">
-                      <Users size={20} />
-                    </div>
-                    <div className="min-w-0 flex-1">
-                      <h2 className="text-xs font-semibold text-slate-500 uppercase tracking-wide">
-                        Membres
-                      </h2>
-                      <p className="mt-0.5 text-xl font-bold text-[var(--foreground)]">
-                        {totalMembers} membre{totalMembers !== 1 ? 's' : ''}
-                      </p>
-                      <p className="text-sm text-slate-500 mt-1">Voir la liste →</p>
-                    </div>
-                  </div>
-                </Link>
-              </motion.div>
-            )}
-
-            {canSeeCaisse && caisseSummary && (
-              <motion.div variants={cardMotion} className="h-full">
-                <Link href="/dashboard/caisse" className="card card-hover border-l-4 border-l-emerald-500 block h-full">
-                  <div className="flex items-center gap-3">
-                    <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-emerald-100 text-emerald-600">
-                      <Wallet size={20} />
-                    </div>
-                    <div className="min-w-0 flex-1">
-                      <h2 className="text-xs font-semibold text-slate-500 uppercase tracking-wide">
-                        Solde de la caisse
-                      </h2>
-                      <p className="mt-0.5 text-xl font-bold text-[var(--foreground)]">
-                        {Number(caisseSummary.global.solde).toLocaleString('fr-FR')} FCFA
-                      </p>
-                      <p className="text-sm text-slate-500 mt-1">Voir la caisse →</p>
-                    </div>
-                  </div>
-                </Link>
-              </motion.div>
-            )}
-
-            {canSeeArrears && arrears !== null && (
-              <motion.div variants={cardMotion} className="h-full">
-                <Link href={user?.role === 'ADMIN' ? '/dashboard/regularisations' : '/dashboard/cotisations'} className="card card-hover border-l-4 border-l-amber-500 block h-full">
-                  <div className="flex items-center gap-3">
-                    <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-amber-100 text-amber-600">
-                      <PiggyBank size={20} />
-                    </div>
-                    <div className="min-w-0 flex-1">
-                      <h2 className="text-xs font-semibold text-slate-500 uppercase tracking-wide">
-                        Cotisations ce mois
-                      </h2>
-                      <p className="mt-0.5 text-xl font-bold text-[var(--foreground)]">
-                        {arrears.total} membre{arrears.total !== 1 ? 's' : ''} en retard
-                      </p>
-                      <p className="text-sm text-slate-500 mt-1">{user?.role === 'ADMIN' ? 'Voir les dettes détaillées →' : 'Voir les cotisations →'}</p>
-                    </div>
-                  </div>
-                </Link>
-              </motion.div>
-            )}
-
-            {canSeeCaisse && !caisseSummary && (
-              <motion.div variants={cardMotion} className="h-full">
-                <div className="card bg-slate-50 border-slate-200 h-full">
-                <h2 className="text-xs font-semibold text-slate-500 uppercase tracking-wide">Caisse</h2>
-                <p className="mt-2 text-slate-600 text-sm">
-                  Accès réservé au Trésorier et au Commissaire aux comptes.
-                </p>
-                </div>
-              </motion.div>
-            )}
-
-            {canSeeCaisse && pendingExpensesCount > 0 && (
-              <motion.div variants={cardMotion} className="h-full">
-                <Link href="/dashboard/caisse" className="card card-hover border-l-4 border-l-amber-500 block h-full">
-                  <h2 className="text-xs font-semibold text-slate-500 uppercase tracking-wide">Alertes</h2>
-                  <p className="mt-2 text-lg font-bold text-amber-700">
-                    {pendingExpensesCount} dépense{pendingExpensesCount !== 1 ? 's' : ''} en attente
-                  </p>
-                  <p className="text-sm text-slate-500 mt-1">Valider dans la caisse →</p>
-                </Link>
-              </motion.div>
-            )}
-
-            <motion.div variants={cardMotion} className="h-full">
-              <Link href="/dashboard/activites" className="card card-hover border-l-4 border-l-[var(--sky-blue)] block h-full">
-                <div className="flex items-center gap-3">
-                  <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-[var(--sky-blue-soft)] text-[var(--sky-blue-dark)]">
-                    <CalendarDays size={20} />
-                  </div>
-                  <div className="min-w-0 flex-1">
-                    <h2 className="text-xs font-semibold text-slate-500 uppercase tracking-wide">
-                      Activités
-                    </h2>
-                    <p className="mt-0.5 text-lg font-bold text-[var(--foreground)]">
-                      {activities.length} activité{activities.length !== 1 ? 's' : ''}
-                    </p>
-                    <p className="text-sm text-slate-500 mt-1">Voir le calendrier →</p>
-                  </div>
-                </div>
-              </Link>
-            </motion.div>
-
-            {canSeeRapports && (
-              <motion.div variants={cardMotion} className="h-full">
-                <Link href="/dashboard/rapports" className="card card-hover border-l-4 border-l-slate-400 block h-full">
-                  <div className="flex items-center gap-3">
-                    <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-slate-100 text-slate-600">
-                      <FileText size={20} />
-                    </div>
-                    <div className="min-w-0 flex-1">
-                      <h2 className="text-xs font-semibold text-slate-500 uppercase tracking-wide">
-                        Rapports
-                      </h2>
-                      <p className="mt-0.5 text-lg font-bold text-[var(--foreground)]">
-                        Synthèses & bilans
-                      </p>
-                      <p className="text-sm text-slate-500 mt-1">Consulter les rapports →</p>
-                    </div>
-                  </div>
-                </Link>
-              </motion.div>
-            )}
-
-            {showNotificationsCard && (
-              <motion.div variants={cardMotion} className="h-full">
-                <Link href="/dashboard/notifications" className="card card-hover border-l-4 border-l-[var(--sky-blue)] block h-full">
-                  <div className="flex items-center gap-3">
-                    <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-[var(--sky-blue-soft)] text-[var(--sky-blue-dark)]">
-                      <Bell size={20} />
-                    </div>
-                    <div className="min-w-0 flex-1">
-                      <h2 className="text-xs font-semibold text-slate-500 uppercase tracking-wide">
-                        Notifications
-                      </h2>
-                      <p className="mt-0.5 text-lg font-bold text-[var(--foreground)]">
-                        Alertes & actualités
-                      </p>
-                      <p className="text-sm text-slate-500 mt-1">Voir les notifications →</p>
-                    </div>
-                  </div>
-                </Link>
-              </motion.div>
-            )}
-
-            {Array.from({ length: placeholderCount }, (_, i) => (
-              <div key={`placeholder-${i}`} className="h-full" aria-hidden="true" />
-            ))}
-          </motion.div>
-
-          {/* Caisse : entrées et sorties par mois */}
-          {canSeeCaisse && annualReport?.months?.length ? (
-            <motion.div
-              className="card"
-              initial={{ opacity: 0, y: 12 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.3 }}
-            >
-              <h2 className="text-lg font-bold text-[var(--foreground)] mb-4 pb-2 border-b border-slate-100">
-                Caisse — entrées et sorties par mois ({annualReport.year})
-              </h2>
-              <div className="h-[260px] w-full">
-                <ResponsiveContainer width="100%" height="100%">
-                  <ComposedChart
-                    data={annualReport.months.map((m) => ({
-                      mois: m.label,
-                      entrées: m.totalEntries,
-                      sorties: m.totalExits,
-                      solde: m.solde,
-                    }))}
-                    margin={{ top: 8, right: 8, left: 0, bottom: 8 }}
-                  >
-                    <CartesianGrid strokeDasharray="3 3" stroke="#e2e8f0" />
-                    <XAxis dataKey="mois" tick={{ fontSize: 11 }} />
-                    <YAxis yAxisId="left" tick={{ fontSize: 11 }} tickFormatter={(v) => `${(v / 1000).toFixed(0)}k`} />
-                    <YAxis yAxisId="right" orientation="right" tick={{ fontSize: 11 }} tickFormatter={(v) => `${(v / 1000).toFixed(0)}k`} />
-                    <Tooltip
-                      formatter={(value: number | undefined) => [(value ?? 0).toLocaleString('fr-FR') + ' FCFA', '']}
-                      contentStyle={{ fontSize: 12 }}
-                    />
-                    <Legend />
-                    <Bar yAxisId="left" dataKey="entrées" name="Entrées" fill="#22c55e" radius={[4, 4, 0, 0]} />
-                    <Bar yAxisId="left" dataKey="sorties" name="Sorties" fill="#ef4444" radius={[4, 4, 0, 0]} />
-                    <Line yAxisId="right" type="monotone" dataKey="solde" name="Solde" stroke="var(--sky-blue-dark)" strokeWidth={2} dot={{ r: 3 }} />
-                  </ComposedChart>
-                </ResponsiveContainer>
-              </div>
-            </motion.div>
-          ) : null}
-
-          <AnimatePresence mode="wait">
-            {!loading && upcomingActivities.length > 0 && (
-              <motion.div
-                className="card"
-                initial={{ opacity: 0, y: 12 }}
-                animate={{ opacity: 1, y: 0 }}
-                exit={{ opacity: 0 }}
-                transition={{ duration: 0.25 }}
-              >
-                <h2 className="text-lg font-bold text-[var(--foreground)] mb-4 pb-2 border-b border-slate-100">
-                  Activités à venir
-                </h2>
-                <ul className="space-y-3">
-                  {upcomingActivities.map((a) => (
-                    <li key={a.id} className="flex items-center justify-between gap-4 py-3 border-b border-slate-100 last:border-0">
-                      <div>
-                        <Link href={`/dashboard/activites/${a.id}`} className="font-semibold text-[var(--sky-blue-dark)] hover:text-[var(--sky-blue)] transition link-accent">
-                          {a.title}
-                        </Link>
-                        <p className="text-sm text-slate-500 mt-0.5">
-                          {activityTypeLabel(a.type)} — {new Date(a.date).toLocaleDateString('fr-FR', {
-                            weekday: 'short',
-                            day: 'numeric',
-                            month: 'short',
-                            year: 'numeric',
-                          })}
-                        </p>
-                      </div>
-                      <Link href={`/dashboard/activites/${a.id}`} className="text-sm font-medium text-[var(--sky-blue-dark)] hover:text-[var(--sky-blue)] shrink-0 transition">
-                        Voir →
-                      </Link>
-                    </li>
-                  ))}
-                </ul>
-                <Link href="/dashboard/activites" className="inline-block mt-4 text-sm font-semibold link-accent">
-                  Toutes les activités →
-                </Link>
-              </motion.div>
-            )}
-
-            {!loading && activities.length > 0 && upcomingActivities.length === 0 && (
-              <motion.div
-                className="card"
-                initial={{ opacity: 0, y: 12 }}
-                animate={{ opacity: 1, y: 0 }}
-                exit={{ opacity: 0 }}
-              >
-                <h2 className="text-lg font-bold text-[var(--foreground)] mb-2">Activités à venir</h2>
-                <p className="text-slate-500 text-sm">Aucune activité planifiée pour le moment.</p>
-                <Link href="/dashboard/activites" className="inline-block mt-3 text-sm font-semibold link-accent">
-                  Voir les activités →
-                </Link>
-              </motion.div>
-            )}
-          </AnimatePresence>
-        </>
-      )}
-
-    </div>
-  );
+  return <div className="space-y-6">
+    <header className="flex items-center justify-between gap-4 border-b border-slate-200 pb-5">
+      <div><h1 className="font-serif text-3xl text-slate-900">Tableau de bord</h1><p className="mt-1 text-sm text-slate-500">Vue d'ensemble</p></div>
+      <Link href="/dashboard/cotisations/paiement" className="afc-button-primary">＋ Nouveau paiement</Link>
+    </header>
+    {loading ? <div className="card grid min-h-64 place-items-center"><div className="h-8 w-8 animate-spin rounded-full border-4 border-[#3269ac] border-r-transparent" /></div> : <>
+      <div className="grid gap-4">
+        <div className="card flex items-center gap-5 py-5"><div className="grid h-14 w-14 place-items-center rounded-xl bg-[#edf3fb] text-[#3269ac]"><Wallet size={25}/></div><div><p className="text-[11px] font-medium uppercase tracking-[.18em] text-slate-500">Caisse de départ</p><p className="mt-1 font-serif text-3xl text-slate-900">0 <span className="font-sans text-sm text-slate-500">F CFA</span></p><p className="text-xs text-slate-500">Aucun fonds initial distinct enregistré</p></div></div>
+        <Link href="/dashboard/caisse" className="card card-hover flex items-center gap-5 py-5"><div className="grid h-14 w-14 place-items-center rounded-xl bg-[#edf3fb] text-[#3269ac]"><Wallet size={25}/></div><div><p className="text-[11px] font-medium uppercase tracking-[.18em] text-slate-500">Caisse globale · solde net</p><p className="mt-1 font-serif text-3xl text-slate-900">{money(Number(caisse?.global.solde ?? 0))} <span className="font-sans text-sm text-slate-500">F CFA</span></p><p className="text-xs text-slate-500">Caisse courante + caisse exceptionnelle (nets des dépenses)</p></div></Link>
+      </div>
+      <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3 2xl:grid-cols-6">
+        <Metric title="Caisse · courante"><p className="font-serif text-3xl">{money(Number(currentBox?.solde ?? 0))}<span className="ml-1 font-sans text-xs text-slate-500">F</span></p><Link href="/dashboard/caisse" className="mt-3 inline-flex items-center gap-1 text-xs text-[#3269ac]"><ArrowUpRight size={13}/> Solde net</Link></Metric>
+        <Metric title="Caisse · exceptionnelle"><p className="font-serif text-3xl">{money(Number(exceptional?.solde ?? 0))}<span className="ml-1 font-sans text-xs text-slate-500">F</span></p><p className="mt-3 text-xs">Solde net</p></Metric>
+        <Metric title="Membres actifs"><p className="font-serif text-3xl">{active.length}<span className="ml-1 font-sans text-sm text-slate-500">/ {members.length}</span></p><p className="mt-2 text-xs">{inactive} inactif{inactive !== 1 ? 's' : ''}</p></Metric>
+        <Metric title={'À jour · ' + monthName.format(now)}><p className="font-serif text-3xl">{paid}<span className="ml-1 font-sans text-sm text-slate-500">/ {rows.length}</span></p><p className="mt-2 text-xs font-medium text-[#3269ac]">↗ {rate}% du club concerné</p></Metric>
+        <Metric title="Dépenses · total"><p className="font-serif text-3xl">{money(expenseTotal)}<span className="ml-1 font-sans text-xs text-slate-500">F CFA</span></p><p className="mt-2 text-xs">{approvedExpenses.length} dépense{approvedExpenses.length !== 1 ? 's' : ''} · {money(expenseTotal)} F courantes</p></Metric>
+        <Metric title="Débiteurs ≥ 2 mois"><p className="font-serif text-3xl text-[#d95537]">{late.length}</p><p className="mt-2 text-xs font-medium text-[#d95537]">{money(late.reduce((s, m) => s + m.debt, 0))} F à recouvrer</p></Metric>
+      </div>
+      <div className="grid gap-4 xl:grid-cols-[1.45fr_.75fr]">
+        <section className="card"><div className="border-b border-slate-100 pb-4"><h2 className="font-serif text-xl">Entrées et sorties</h2><p className="text-sm text-slate-500">Cotisations encaissées et dépenses, mois par mois</p></div><div className="mt-4 h-[250px]"><ResponsiveContainer width="100%" height="100%"><BarChart data={chart}><CartesianGrid vertical={false} stroke="#e5e7eb"/><XAxis dataKey="month" axisLine={false} tickLine={false}/><YAxis axisLine={false} tickLine={false} tickFormatter={(v) => Math.round(v/1000) + 'k'}/><Tooltip/><Legend/><Bar dataKey="Encaissé" fill="#356fb5" radius={[5,5,0,0]}/><Bar dataKey="Dépensé" fill="#de725b" radius={[5,5,0,0]}/></BarChart></ResponsiveContainer></div></section>
+        <section className="card p-0 overflow-hidden"><div className="p-5"><h2 className="font-serif text-xl">Membres en retard</h2><p className="text-sm text-slate-500">≥ 2 mois de retard — à relancer</p></div>{late.length ? <div className="divide-y divide-slate-100">{late.slice(0,5).map((m) => <Link key={m.id} href={'/dashboard/membres/' + m.id} className="flex items-center justify-between px-5 py-4 hover:bg-slate-50"><span className="text-sm font-semibold">{m.firstName} {m.lastName}</span><span className="rounded-full bg-red-50 px-3 py-1 text-xs text-[#d95537]">{m.count} mois</span></Link>)}</div> : <p className="px-5 pb-6 text-sm text-slate-500">Aucun débiteur de deux mois ou plus.</p>}</section>
+      </div>
+      <section className="card p-0 overflow-hidden"><div className="p-5"><h2 className="font-serif text-xl">Activité récente</h2><p className="text-sm text-slate-500">Derniers paiements enregistrés</p></div>{payments.length ? <div className="overflow-x-auto"><table className="w-full min-w-[700px] text-sm"><thead><tr><th className="px-5 py-3 text-left">Date</th><th className="px-5 py-3 text-left">Membre</th><th className="px-5 py-3 text-left">Type</th><th className="px-5 py-3 text-left">Libellé</th><th className="px-5 py-3 text-left">Montant</th></tr></thead><tbody>{payments.slice(0,6).map((p) => <tr key={p.id}><td className="px-5 py-3">{new Date(p.paidAt).toLocaleDateString('fr-FR')}</td><td className="px-5 py-3 font-medium">{p.member ? p.member.firstName + ' ' + p.member.lastName : 'Membre'}</td><td className="px-5 py-3">Mensuelle</td><td className="px-5 py-3">{p.periodYear && p.periodMonth ? monthName.format(new Date(p.periodYear, p.periodMonth - 1, 1)) : '—'}</td><td className="px-5 py-3 font-semibold text-emerald-700">{money(Number(p.amount))} F</td></tr>)}</tbody></table></div> : <p className="px-5 pb-6 text-sm text-slate-500">Aucun paiement récent.</p>}</section>
+      <section className="card"><div className="flex items-start justify-between"><div><h2 className="font-serif text-xl">Activités à venir</h2><p className="text-sm text-slate-500">{activities.length ? activities.length + ' activité(s)' : 'Aucune activité planifiée pour le moment.'}</p></div><Link href="/dashboard/activites" className="text-sm text-[#3269ac]">Voir les activités →</Link></div></section>
+    </>}</div>;
 }

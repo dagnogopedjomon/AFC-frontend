@@ -4,7 +4,7 @@ import { useEffect, useState } from 'react';
 import Link from 'next/link';
 import { useAuth } from '@/lib/auth-context';
 import { caisseApi, type Expense } from '@/lib/api';
-import { Plus } from 'lucide-react';
+import { Plus, Search } from 'lucide-react';
 import { toast } from 'sonner';
 
 const CAISSE_ROLES = ['ADMIN', 'TREASURER', 'COMMISSIONER'];
@@ -32,12 +32,19 @@ export default function DepensesPage() {
   const [loading, setLoading] = useState(true);
   const [actioning, setActioning] = useState<string | null>(null);
   const [expenseDetail, setExpenseDetail] = useState<Expense | null>(null);
+  const [query, setQuery] = useState('');
+  const [statusFilter, setStatusFilter] = useState('ALL');
 
   const canAct = user && CAISSE_ROLES.includes(user.role);
   const canCreate = user && CAN_CREATE.includes(user.role);
   const isAdmin = user?.role === 'ADMIN';
   const isTreasurer = user?.role === 'TREASURER';
   const isCommissioner = user?.role === 'COMMISSIONER';
+  const visibleExpenses = expenses.filter((expense) => {
+    const q = query.trim().toLowerCase();
+    const matchesText = !q || `${expense.description} ${expense.beneficiary ?? ''} ${expense.requestedBy.firstName} ${expense.requestedBy.lastName}`.toLowerCase().includes(q);
+    return matchesText && (statusFilter === 'ALL' || expense.status === statusFilter);
+  });
 
   const load = () => {
     if (!user) return;
@@ -85,25 +92,29 @@ export default function DepensesPage() {
 
   return (
     <div className="space-y-6">
-      <div className="flex items-center justify-between gap-4">
+      <div className="flex flex-wrap items-center justify-between gap-4">
         <div>
           <h1 className="text-2xl font-bold text-[var(--foreground)]">Dépenses</h1>
-          <p className="text-gray-500 text-sm mt-1">Liste de toutes les dépenses enregistrées.</p>
+          <p className="text-gray-500 text-sm mt-1">Sorties de caisse</p>
         </div>
-        {canCreate && (
-          <Link href="/dashboard/caisse/nouvelle-depense" className="btn-primary flex items-center gap-2 shrink-0">
-            <Plus size={18} />
-            Nouvelle dépense
-          </Link>
-        )}
+        <div className="flex max-w-full flex-wrap items-center justify-end gap-3">
+          <Link href="/dashboard/cotisations/paiement" className="afc-button-primary">+ Nouveau paiement</Link>
+          {canCreate && (
+            <Link href="/dashboard/caisse/nouvelle-depense" className="btn-primary flex items-center gap-2">
+              <Plus size={18} /> Ajouter une dépense
+            </Link>
+          )}
+        </div>
       </div>
 
       {loading ? (
-        <div className="flex justify-center py-20">
-          <div className="inline-block h-10 w-10 animate-spin rounded-full border-4 border-[var(--sky-blue)] border-r-transparent" />
-        </div>
+        <div className="card py-20 text-center text-sm text-slate-500">Chargement des dépenses…</div>
       ) : (
         <div className="card overflow-hidden p-0">
+          <div className="flex flex-col gap-3 border-b border-slate-100 p-4 sm:flex-row">
+            <div className="relative flex-1"><Search className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" size={18}/><input className="input-field w-full pl-10" placeholder="Libellé, bénéficiaire ou demandeur…" value={query} onChange={(e)=>setQuery(e.target.value)}/></div>
+            <select className="input-field min-w-56" value={statusFilter} onChange={(e)=>setStatusFilter(e.target.value)}><option value="ALL">Tous les statuts</option><option value="PENDING_TREASURER">En attente trésorier</option><option value="PENDING_COMMISSIONER">En attente commissaire</option><option value="APPROVED">Approuvées</option><option value="REJECTED">Rejetées</option></select>
+          </div>
           <div className="overflow-x-auto">
             <table className="w-full text-left">
               <thead>
@@ -111,6 +122,7 @@ export default function DepensesPage() {
                   <th className="px-6 py-4 text-sm font-semibold text-[var(--sky-blue-dark)]">Date</th>
                   <th className="px-6 py-4 text-sm font-semibold text-gray-600">Sous-caisse</th>
                   <th className="px-6 py-4 text-sm font-semibold text-gray-600">Description</th>
+                  <th className="px-6 py-4 text-sm font-semibold text-gray-600">Catégorie</th>
                   <th className="px-6 py-4 text-sm font-semibold text-gray-600">Bénéficiaire</th>
                   <th className="px-6 py-4 text-sm font-semibold text-gray-600">Montant</th>
                   <th className="px-6 py-4 text-sm font-semibold text-gray-600">Demandé par</th>
@@ -120,7 +132,7 @@ export default function DepensesPage() {
                 </tr>
               </thead>
               <tbody>
-                {expenses.map((e) => {
+                {visibleExpenses.map((e) => {
                   const status = statusLabel(e.status);
                   return (
                     <tr key={e.id} className="border-b border-gray-50 hover:bg-gray-50/50">
@@ -140,6 +152,7 @@ export default function DepensesPage() {
                           {e.description}
                         </button>
                       </td>
+                      <td className="px-6 py-4 text-gray-600 text-sm">{e.category?.name ?? '—'}</td>
                       <td className="px-6 py-4 text-gray-600 text-sm">{e.beneficiary ?? '—'}</td>
                       <td className="px-6 py-4 text-gray-700">
                         {Number(e.amount).toLocaleString('fr-FR')} FCFA
@@ -179,8 +192,8 @@ export default function DepensesPage() {
               </tbody>
             </table>
           </div>
-          {expenses.length === 0 && (
-            <div className="py-12 text-center text-gray-500">Aucune dépense pour le moment.</div>
+          {visibleExpenses.length === 0 && (
+            <div className="py-12 text-center text-gray-500">Aucune dépense ne correspond aux filtres.</div>
           )}
           {expenses.length > 0 && expenses.length >= limit && (
             <div className="px-6 py-3 border-t border-gray-100 text-center">

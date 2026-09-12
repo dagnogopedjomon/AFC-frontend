@@ -15,10 +15,14 @@ import {
   Menu,
   X,
   ChevronDown,
+  Settings,
+  Gavel,
+  KeyRound,
 } from 'lucide-react';
 import { useAuth } from '@/lib/auth-context';
 import { notificationsApi, caisseApi, activitiesApi } from '@/lib/api';
-import { cn } from '@/lib/utils';
+import { cn, roleLabelFr } from '@/lib/utils';
+import { ConfirmModal } from '@/components/ConfirmModal';
 
 const CAISSE_ROLES = ['ADMIN', 'TREASURER', 'COMMISSIONER'];
 
@@ -27,13 +31,17 @@ const CAISSE_ROLES = ['ADMIN', 'TREASURER', 'COMMISSIONER'];
 const baseNav = [
   { href: '/dashboard', label: 'Tableau de bord', icon: LayoutDashboard },
   { href: '/dashboard/membres', label: 'Membres', icon: Users },
-  { href: '/dashboard/rapports', label: 'Rapports', icon: BarChart3 },
-  { href: '/dashboard/activites', label: 'Activités', icon: CalendarDays },
+  { href: '/dashboard/caisse/depenses', label: 'Dépenses', icon: Wallet },
+  { href: '/dashboard/amendes', label: 'Amendes', icon: Gavel },
+];
+
+const systemNav = [
+  { href: '/dashboard/parametres', label: 'Paramètres', icon: Settings },
 ];
 
 const COTISATIONS_SUB = [
-  { href: '/dashboard/cotisations/mensuelle', label: 'Mensuelle' },
-  { href: '/dashboard/cotisations/exceptionnelles', label: 'Exceptionnelles' },
+  { href: '/dashboard/cotisations/mensuelle', label: 'Cotisations mensuelles' },
+  { href: '/dashboard/cotisations/exceptionnelles', label: 'Cotisations exceptionnelles' },
   { href: '/dashboard/cotisations/historique', label: 'Historique' },
 ];
 
@@ -41,10 +49,11 @@ const COTISATIONS_ADMIN_SUB = [
   { href: '/dashboard/cotisations/gerer', label: 'Gérer' },
   { href: '/dashboard/regularisations', label: 'Régularisations' },
   { href: '/dashboard/cotisations/paiement', label: 'Paiement déjà reçu' },
+  { href: '/dashboard/exonerations', label: 'Mois exonérés' },
 ];
 
 const CAISSE_SUB = [
-  { href: '/dashboard/caisse', label: 'Caisse', exact: true },
+  { href: '/dashboard/caisse', label: 'Vue d’ensemble', exact: true },
   { href: '/dashboard/caisse/depenses', label: 'Dépenses', exact: false },
   { href: '/dashboard/caisse/livre', label: 'Livre de caisse', exact: false },
 ];
@@ -89,10 +98,10 @@ function NavGroupClient({
         type="button"
         onClick={() => setOpen((v) => !v)}
         className={cn(
-          'flex w-full items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-medium transition',
+          'flex w-full items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium transition',
           isParentActive
-            ? 'bg-[var(--sky-blue)]/20 text-[var(--sky-blue)]'
-            : 'text-[var(--sidebar-text-muted)] hover:bg-white/10 hover:text-[var(--sidebar-text)]',
+            ? 'bg-white text-[var(--sky-blue-dark)] shadow-sm'
+            : 'text-[var(--sidebar-text-muted)] hover:bg-white hover:text-[var(--sidebar-text)]',
         )}
       >
         <Icon className="shrink-0" size={20} />
@@ -107,10 +116,10 @@ function NavGroupClient({
               href={item.href}
               onClick={onClick}
               className={cn(
-                'flex items-center gap-2 rounded-xl px-3 py-2 text-sm font-medium transition',
+                'flex items-center gap-2 rounded-lg px-3 py-2 text-sm font-medium transition',
                 (item.exact ? pathname === item.href.split('#')[0] : pathname.startsWith(item.href.split('#')[0]))
-                  ? 'bg-[var(--sky-blue)] text-white'
-                  : 'text-[var(--sidebar-text-muted)] hover:bg-white/10 hover:text-[var(--sidebar-text)]',
+                  ? 'bg-white text-[var(--sky-blue-dark)] shadow-sm'
+                  : 'text-[var(--sidebar-text-muted)] hover:bg-white hover:text-[var(--sidebar-text)]',
               )}
             >
               {item.label}
@@ -144,10 +153,10 @@ function NavLink({
       href={href}
       onClick={onClick}
       className={cn(
-        'flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-medium transition',
+        'flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium transition',
         isActive
-          ? 'bg-[var(--sky-blue)] text-white shadow-md'
-          : 'text-[var(--sidebar-text-muted)] hover:bg-white/10 hover:text-[var(--sidebar-text)]',
+          ? 'bg-white text-[var(--sky-blue-dark)] shadow-sm'
+          : 'text-[var(--sidebar-text-muted)] hover:bg-white hover:text-[var(--sidebar-text)]',
         className,
       )}
     >
@@ -180,6 +189,7 @@ export default function DashboardLayout({
   const [pendingTreasurer, setPendingTreasurer] = useState(0);
   const [pendingCommissioner, setPendingCommissioner] = useState(0);
   const [activitiesRecentCount, setActivitiesRecentCount] = useState(0);
+  const [logoutOpen, setLogoutOpen] = useState(false);
 
   const nav = baseNav;
 
@@ -286,14 +296,15 @@ export default function DashboardLayout({
     <div className="min-h-screen flex flex-col lg:flex-row">
       {/* Sidebar — desktop */}
       <aside
-        className="hidden lg:flex lg:w-64 lg:flex-col lg:fixed lg:inset-y-0 lg:border-r lg:border-slate-700/50"
-        style={{ background: 'linear-gradient(180deg, var(--sidebar-bg) 0%, #1e293b 100%)' }}
+        className="hidden lg:flex lg:w-72 lg:flex-col lg:fixed lg:inset-y-0 lg:border-r lg:border-slate-200"
+        style={{ background: 'var(--sidebar-bg)' }}
       >
-        <Link href="/dashboard" className="flex h-16 items-center justify-center gap-3 px-4 border-b border-slate-600/50">
-          <img src="/images/afcimage.jpeg" alt="" className="h-12 w-12 shrink-0 object-cover rounded-xl" />
-          <span className="text-lg font-bold text-[var(--sky-blue)] tracking-tight">AFC</span>
+        <Link href="/dashboard" className="flex h-20 items-center gap-3 px-5 border-b border-slate-200">
+          <img src="/images/logo-afc.png" alt="Amicale Football Club" className="h-14 w-12 shrink-0 object-contain" />
+          <div><span className="block text-base font-bold text-[var(--foreground)] tracking-tight">Amicale FC</span><span className="text-[11px] text-slate-500">Trésorerie du club</span></div>
         </Link>
         <nav className="flex-1 overflow-y-auto p-3 space-y-0.5">
+          <p className="px-3 pb-2 pt-2 text-[10px] font-bold uppercase tracking-[.18em] text-slate-400">Pilotage</p>
           {nav.map((item) => (
             <NavLink
               key={item.href}
@@ -304,6 +315,7 @@ export default function DashboardLayout({
               badge={item.href === '/dashboard/activites' ? activitiesRecentCount : 0}
             />
           ))}
+          <p className="px-3 pb-2 pt-5 text-[10px] font-bold uppercase tracking-[.18em] text-slate-400">Cotisations</p>
           <NavGroupClient
             label="Cotisations"
             icon={PiggyBank}
@@ -312,6 +324,7 @@ export default function DashboardLayout({
             adminItems={COTISATIONS_ADMIN_SUB}
             isAdmin={user?.role === 'ADMIN' || user?.role === 'TREASURER' || user?.role === 'COMMISSIONER'}
           />
+          <p className="px-3 pb-2 pt-5 text-[10px] font-bold uppercase tracking-[.18em] text-slate-400">Trésorerie</p>
           <NavGroupClient
             label="Caisse"
             icon={Wallet}
@@ -320,6 +333,10 @@ export default function DashboardLayout({
             adminItems={[]}
             isAdmin={false}
           />
+          <p className="px-3 pb-2 pt-5 text-[10px] font-bold uppercase tracking-[.18em] text-slate-400">Système</p>
+          {systemNav.map((item) => (
+            <NavLink key={item.href} href={item.href} label={item.label} icon={item.icon} isActive={isActive(item.href)} />
+          ))}
           <NavLink
             href="/dashboard/notifications"
             label="Notifications"
@@ -328,38 +345,36 @@ export default function DashboardLayout({
             badge={inAppUnreadCount}
           />
         </nav>
-        <div className="p-3 border-t border-slate-600/50">
-          <button
-            type="button"
-            onClick={() => logout()}
-            className="flex w-full items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-medium text-[var(--sidebar-text-muted)] hover:bg-red-500/20 hover:text-red-300 transition"
-          >
-            <LogOut size={20} />
-            Déconnexion
-          </button>
+        <div className="border-t border-slate-200 p-3">
+          <div className="flex items-center gap-2 rounded-lg bg-white/70 p-2">
+            <div className="grid h-9 w-9 shrink-0 place-items-center rounded-full bg-[#dbe7f5] text-xs font-bold text-[#315f9e]">{user?.firstName?.[0]}{user?.lastName?.[0]}</div>
+            <div className="min-w-0 flex-1"><p className="truncate text-sm font-semibold text-slate-800">{user?.firstName} {user?.lastName}</p><p className="truncate text-[11px] text-slate-500">{user?.email || roleLabelFr(user?.role || '')}</p></div>
+            <Link href={user?.id ? `/dashboard/membres/${user.id}` : '/dashboard/parametres'} title="Gérer mon compte" aria-label="Gérer mon compte" className="grid h-8 w-8 shrink-0 place-items-center rounded-lg border border-slate-200 bg-white text-slate-600 hover:bg-slate-50 hover:text-blue-700"><KeyRound size={16} /></Link>
+            <button type="button" onClick={() => setLogoutOpen(true)} title="Déconnexion" aria-label="Déconnexion" className="grid h-8 w-8 shrink-0 place-items-center rounded-lg border border-slate-200 bg-white text-slate-600 hover:bg-red-50 hover:text-red-700"><LogOut size={16} /></button>
+          </div>
         </div>
       </aside>
 
       {/* Header mobile */}
       <header
-        className="lg:hidden sticky top-0 z-20 flex h-14 items-center justify-between border-b border-slate-700/50 px-4"
+        className="lg:hidden sticky top-0 z-20 flex h-16 items-center justify-between border-b border-slate-200 px-4 shadow-sm"
         style={{ background: 'var(--sidebar-bg)' }}
       >
         <button
           type="button"
           onClick={() => setMobileMenuOpen((o) => !o)}
-          className="p-2 rounded-lg text-[var(--sidebar-text-muted)] hover:bg-white/10 hover:text-white transition"
+          className="p-2 rounded-lg text-[var(--sidebar-text-muted)] hover:bg-white transition"
           aria-label="Menu"
         >
           {mobileMenuOpen ? <X size={24} /> : <Menu size={24} />}
         </button>
         <Link href="/dashboard" className="flex items-center justify-center gap-2 min-w-0 flex-1">
-          <img src="/images/afcimage.jpeg" alt="" className="h-9 w-9 shrink-0 object-cover rounded-lg" />
-          <span className="text-base font-bold text-[var(--sky-blue)] truncate">AFC</span>
+          <img src="/images/logo-afc.png" alt="Amicale Football Club" className="h-11 w-9 shrink-0 object-contain" />
+          <span className="text-base font-bold text-[var(--foreground)] truncate">Amicale FC</span>
         </Link>
         <Link
           href="/dashboard/notifications"
-          className="relative p-2 rounded-lg text-[var(--sidebar-text-muted)] hover:bg-white/10 hover:text-white transition"
+          className="relative p-2 rounded-lg text-[var(--sidebar-text-muted)] hover:bg-white transition"
           aria-label="Notifications"
         >
           <Bell size={22} />
@@ -381,10 +396,10 @@ export default function DashboardLayout({
       )}
       <div
         className={cn(
-          'lg:hidden fixed top-14 left-0 right-0 z-40 h-[calc(100vh-3.5rem)] overflow-y-auto transition-transform duration-200',
+          'lg:hidden fixed top-16 left-0 right-0 z-40 h-[calc(100vh-4rem)] overflow-y-auto transition-transform duration-200',
           mobileMenuOpen ? 'translate-x-0' : '-translate-x-full',
         )}
-        style={{ background: 'var(--sidebar-bg)', borderRight: '1px solid rgba(100,116,139,0.3)' }}
+        style={{ background: 'var(--sidebar-bg)', borderRight: '1px solid #e2e8f0' }}
       >
         <nav className="p-4 space-y-0.5">
           {nav.map((item) => (
@@ -417,6 +432,13 @@ export default function DashboardLayout({
             onClick={() => setMobileMenuOpen(false)}
           />
           <NavLink
+            href="/dashboard/parametres"
+            label="Paramètres"
+            icon={Settings}
+            isActive={isActive('/dashboard/parametres')}
+            onClick={() => setMobileMenuOpen(false)}
+          />
+          <NavLink
             href="/dashboard/notifications"
             label="Notifications"
             icon={Bell}
@@ -428,7 +450,7 @@ export default function DashboardLayout({
         <div className="p-4 border-t border-slate-600/50">
           <button
             type="button"
-            onClick={() => { setMobileMenuOpen(false); logout(); }}
+            onClick={() => { setMobileMenuOpen(false); setLogoutOpen(true); }}
             className="flex w-full items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-medium text-[var(--sidebar-text-muted)] hover:bg-red-500/20 hover:text-red-300"
           >
             <LogOut size={20} />
@@ -437,15 +459,26 @@ export default function DashboardLayout({
         </div>
       </div>
 
+      <ConfirmModal
+        open={logoutOpen}
+        title="Se déconnecter ?"
+        message="Voulez-vous vraiment fermer votre session ?"
+        confirmLabel="Se déconnecter"
+        cancelLabel="Rester connecté"
+        danger
+        onCancel={() => setLogoutOpen(false)}
+        onConfirm={() => { setLogoutOpen(false); logout(); }}
+      />
+
       {/* Main content */}
-      <main className="flex-1 lg:pl-64 flex flex-col min-h-screen bg-gradient-to-br from-slate-50 via-sky-50/30 to-white">
+      <main className="flex-1 lg:pl-72 flex flex-col min-h-screen bg-[#f7f9fb]">
         {user && !user.isSuspended && user.reactivatedAt && user.role !== 'ADMIN' && (
           <div className="bg-amber-50 border-b border-amber-200 px-4 py-3 text-center text-amber-800 text-sm font-medium">
             Vous avez été réactivé temporairement. Vous avez <strong>24 h</strong> pour régulariser votre cotisation, sinon votre compte sera désactivé à nouveau.{' '}
             <Link href="/dashboard/regulariser" className="underline font-semibold">Payer maintenant</Link>
           </div>
         )}
-        <div className="flex-1 max-w-6xl w-full mx-auto px-4 py-6 pb-24 lg:pb-8">
+        <div className="flex-1 w-full px-4 py-6 pb-24 sm:px-6 lg:px-8 lg:pb-10 xl:px-10">
           {children}
         </div>
       </main>

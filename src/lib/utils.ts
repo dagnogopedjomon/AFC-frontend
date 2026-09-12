@@ -24,9 +24,7 @@ export function roleLabelFr(role: string): string {
   return ROLE_LABELS_FR[role] ?? role.replace(/_/g, ' ').toLowerCase().replace(/\b\w/g, (c) => c.toUpperCase());
 }
 
-/** Libellé rôle + « Inactif (ancien membre) » si le membre ne paie pas sa cotisation. */
-export function memberRoleLabel(role: string, isSuspended: boolean): string {
-  const base = roleLabelFr(role);
-  if (isSuspended) return `${base} — Inactif (ancien membre)`;
-  return base;
+/** Le rôle et l’état du compte sont deux informations distinctes. */
+export function memberRoleLabel(role: string, _isSuspended = false): string {
+  return roleLabelFr(role);
 }

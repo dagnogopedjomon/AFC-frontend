@@ -7,7 +7,7 @@ import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
 import { useAuth } from '@/lib/auth-context';
-import { caisseApi, type CashBox } from '@/lib/api';
+import { administrationApi, caisseApi, type CashBox, type ExpenseCategory } from '@/lib/api';
 
 const CAN_CREATE = ['ADMIN', 'TREASURER'];
 
@@ -17,6 +17,8 @@ const schema = z.object({
   expenseDate: z.string().min(1, 'Date requise'),
   cashBoxId: z.string().optional(),
   beneficiary: z.string().optional(),
+  categoryId: z.string().optional(),
+  note: z.string().optional(),
 });
 
 type FormData = z.infer<typeof schema>;
@@ -26,13 +28,14 @@ export default function NouvelleDepensePage() {
   const router = useRouter();
   const [error, setError] = useState<string | null>(null);
   const [boxes, setBoxes] = useState<CashBox[]>([]);
+  const [categories, setCategories] = useState<ExpenseCategory[]>([]);
 
   const canCreate = user && CAN_CREATE.includes(user.role);
 
   const today = new Date().toISOString().slice(0, 10);
 
   useEffect(() => {
-    if (canCreate) caisseApi.boxes().then(setBoxes).catch(() => {});
+    if (canCreate) { caisseApi.boxes().then(setBoxes).catch(() => {}); administrationApi.categories().then(setCategories).catch(() => {}); }
   }, [canCreate]);
 
   const {
@@ -47,6 +50,8 @@ export default function NouvelleDepensePage() {
       expenseDate: today,
       cashBoxId: '',
       beneficiary: '',
+      categoryId: '',
+      note: '',
     },
   });
 
@@ -59,6 +64,8 @@ export default function NouvelleDepensePage() {
         expenseDate: data.expenseDate,
         ...(data.cashBoxId && { cashBoxId: data.cashBoxId }),
         ...(data.beneficiary?.trim() && { beneficiary: data.beneficiary.trim() }),
+        ...(data.categoryId && { categoryId: data.categoryId }),
+        ...(data.note?.trim() && { note: data.note.trim() }),
       });
       router.push('/dashboard/caisse?created=1');
     } catch (e) {
@@ -145,6 +152,11 @@ export default function NouvelleDepensePage() {
           </div>
 
           <div>
+            <label className="block text-sm font-medium text-gray-700 mb-1.5">Catégorie</label>
+            <select className="input-field" {...register('categoryId')}><option value="">Sans catégorie</option>{categories.map(category=><option key={category.id} value={category.id}>{category.name}</option>)}</select>
+          </div>
+
+          <div>
             <label className="block text-sm font-medium text-gray-700 mb-1.5">Bénéficiaire (optionnel)</label>
             <input
               type="text"
@@ -154,6 +166,8 @@ export default function NouvelleDepensePage() {
             />
             <p className="mt-1 text-xs text-gray-500">Pour qui ou pour quelle activité / collecte — visible par tous (transparence).</p>
           </div>
+
+          <div><label className="block text-sm font-medium text-gray-700 mb-1.5">Note interne (optionnelle)</label><textarea rows={2} className="input-field" {...register('note')}/></div>
 
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-1.5">Date de la dépense <span className="text-red-500">*</span></label>
