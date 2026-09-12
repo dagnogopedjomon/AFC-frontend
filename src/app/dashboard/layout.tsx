@@ -318,7 +318,7 @@ export default function DashboardLayout({
       <aside
         className={cn(
           'hidden lg:flex lg:flex-col lg:fixed lg:inset-y-0 lg:border-r lg:border-[#d2dae3] transition-[width] duration-200 overflow-hidden',
-          sidebarCollapsed ? 'lg:w-[76px] [&_p]:hidden [&_span]:hidden [&_button]:justify-center [&_button]:px-2 [&_a]:justify-center [&_a]:px-2' : 'lg:w-72',
+          sidebarCollapsed ? 'lg:w-[76px] [&_p]:hidden [&_span]:hidden [&_button]:justify-center [&_button]:px-2 [&_button>svg:last-child]:hidden [&_a]:justify-center [&_a]:px-2' : 'lg:w-72',
         )}
         style={{ background: 'var(--sidebar-bg)' }}
       >
