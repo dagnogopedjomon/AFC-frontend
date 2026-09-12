@@ -78,7 +78,7 @@ export default function LoginPage() {
 
         <main className="flex min-h-[100dvh] flex-col px-4 py-3 sm:px-10 sm:py-6 lg:px-14 xl:px-20">
           <div className="flex items-center justify-between lg:justify-end">
-            <img src="/images/logo-afc.png" alt="Amicale Football Club" className="h-12 w-10 object-contain lg:hidden" />
+            <img src="/images/logo-afc.png" alt="Amicale Football Club" className="h-16 w-14 object-contain lg:hidden" />
             <button type="button" onClick={() => setDark(v => !v)} className="inline-flex items-center gap-2 rounded-full border border-slate-200 bg-white px-4 py-2 text-sm text-slate-600 shadow-sm dark:border-white/10 dark:bg-white/5 dark:text-slate-200">{dark ? <Sun size={16}/> : <Moon size={16}/>} {dark ? 'Clair' : 'Sombre'}</button>
           </div>
           <div className="m-auto w-full max-w-md py-4 sm:py-10">
