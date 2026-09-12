@@ -511,7 +511,7 @@ export default function DashboardLayout({
             <Link href="/dashboard/regulariser" className="underline font-semibold">Payer maintenant</Link>
           </div>
         )}
-        <div className="flex-1 w-full px-4 py-6 pb-24 sm:px-6 lg:px-8 lg:pb-10 xl:px-10">
+        <div className={cn('flex-1 w-full px-4 py-6 pb-24 sm:px-6 lg:pb-10 xl:px-10', sidebarCollapsed ? 'lg:pl-20' : 'lg:px-8')}>
           {children}
         </div>
       </main>
