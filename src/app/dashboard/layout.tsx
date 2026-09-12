@@ -511,7 +511,10 @@ export default function DashboardLayout({
             <Link href="/dashboard/regulariser" className="underline font-semibold">Payer maintenant</Link>
           </div>
         )}
-        <div className={cn('flex-1 w-full px-4 py-6 pb-24 sm:px-6 lg:pb-10 xl:px-10', sidebarCollapsed ? 'lg:pl-20' : 'lg:px-8')}>
+        <div
+          className={cn('flex-1 w-full px-4 py-6 pb-24 sm:px-6 lg:pb-10 xl:px-10', sidebarCollapsed ? 'lg:pl-20' : 'lg:px-8')}
+          style={sidebarCollapsed ? { paddingLeft: '80px' } : undefined}
+        >
           {children}
         </div>
       </main>
