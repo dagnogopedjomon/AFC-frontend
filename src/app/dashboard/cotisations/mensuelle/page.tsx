@@ -5,7 +5,7 @@ import Link from 'next/link';
 import { useAuth } from '@/lib/auth-context';
 import { contributionsApi, notificationsApi, reportsApi, type Contribution, type AnnualContributionMatrix } from '@/lib/api';
 import { toast } from 'sonner';
-import { Bell, ChevronLeft, ChevronRight, ClipboardList, Download, Loader2, Search } from 'lucide-react';
+import { Bell, ChevronLeft, ChevronRight, ClipboardList, Copy, Download, Loader2, Search, X } from 'lucide-react';
 import { JekoPayButton } from '@/components/JekoPayButton';
 
 export default function CotisationMensuellePage() {
@@ -18,6 +18,8 @@ export default function CotisationMensuellePage() {
   const [matrix, setMatrix] = useState<AnnualContributionMatrix | null>(null);
   const [matrixFilter, setMatrixFilter] = useState<'ALL' | 'CURRENT' | 'LATE'>('ALL');
   const [query, setQuery] = useState('');
+  const [showRecap, setShowRecap] = useState(false);
+  const [recapText, setRecapText] = useState('');
 
   useEffect(() => {
     if (!user) return;
@@ -86,6 +88,15 @@ export default function CotisationMensuellePage() {
         toast.success(result.message);
       } catch (error) { toast.error(error instanceof Error ? error.message : 'Envoi des relances impossible'); }
     };
+    const openRecap = () => {
+      const monthLabel = new Date(currentYear, currentMonth - 1).toLocaleString('fr-FR', { month: 'long' });
+      const lines = visible.map((member) => {
+        const current = member.months[currentMonth - 1];
+        return `${member.firstName} ${member.lastName}  ${Number(current?.amountPaid ?? 0).toLocaleString('fr-FR')} F`;
+      });
+      setRecapText(`${monthLabel.charAt(0).toUpperCase() + monthLabel.slice(1)} ${currentYear} — récapitulatif\n\n${paidInstallments} mensualités encaissées\nTotal encaissé : ${totalCollected.toLocaleString('fr-FR')} F\nMensualités en retard : ${lateMembers}\n\n${lines.join('\n')}`);
+      setShowRecap(true);
+    };
     return (
       <div className="space-y-6">
         <div className="card space-y-4 p-4">
@@ -96,7 +107,7 @@ export default function CotisationMensuellePage() {
               <button className="rounded-lg border border-slate-200 bg-white p-2" onClick={() => setMatrixYear((y) => y + 1)} aria-label="Année suivante"><ChevronRight size={18}/></button>
             </div>
             <div className="flex flex-wrap items-center gap-2">
-              <Link href="/dashboard/cotisations/historique" className="inline-flex items-center gap-2 rounded-lg border border-slate-200 bg-white px-4 py-2 text-sm font-medium text-slate-700 hover:border-[var(--sky-blue)]"><ClipboardList size={16}/> Récap</Link>
+              <button type="button" onClick={openRecap} className="inline-flex items-center gap-2 rounded-lg border border-slate-200 bg-white px-4 py-2 text-sm font-medium text-slate-700 hover:border-[var(--sky-blue)]"><ClipboardList size={16}/> Récap</button>
               <button type="button" onClick={sendReminders} className="inline-flex items-center gap-2 rounded-lg border border-slate-200 bg-white px-4 py-2 text-sm font-medium text-slate-700 hover:border-[var(--sky-blue)]"><Bell size={16}/> Relances</button>
               <button type="button" onClick={() => reportsApi.downloadExcel(matrixYear)} className="inline-flex items-center gap-2 rounded-lg border border-slate-200 bg-white px-4 py-2 text-sm font-medium text-slate-700 hover:border-[var(--sky-blue)]"><Download size={16}/> Exporter</button>
               <Link href="/dashboard/cotisations/paiement" className="afc-button-primary">+ Enregistrer un paiement</Link>
@@ -104,6 +115,7 @@ export default function CotisationMensuellePage() {
           </div>
           <div className="border-t border-slate-100 pt-3 text-sm text-slate-500"><strong className="text-slate-800">{paidInstallments} mensualités encaissées en {matrixYear}</strong><span className="mx-2">·</span><strong className="text-[var(--sky-blue)]">{totalCollected.toLocaleString('fr-FR')} F</strong> total<span className="mx-2">·</span><strong className="text-slate-800">{lateMembers}</strong> mensualité{lateMembers === 1 ? '' : 's'} en retard</div>
         </div>
+        {showRecap && <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-950/30 p-4 backdrop-blur-sm" role="dialog" aria-modal="true" aria-labelledby="recap-title"><div className="flex max-h-[90vh] w-full max-w-3xl flex-col overflow-hidden rounded-3xl border border-slate-200 bg-white shadow-2xl"><div className="flex items-start justify-between px-6 py-5 sm:px-8"><div><h2 id="recap-title" className="font-serif text-3xl text-slate-900">Récap du mois</h2><p className="mt-2 text-sm text-slate-500">Texte prêt à copier-coller. Modifiable avant envoi.</p></div><button type="button" onClick={() => setShowRecap(false)} aria-label="Fermer" className="rounded-lg p-2 text-slate-600 hover:bg-slate-100"><X size={24}/></button></div><div className="px-6 pb-6 sm:px-8"><textarea value={recapText} onChange={(e) => setRecapText(e.target.value)} className="min-h-[340px] w-full resize-y rounded-2xl border border-slate-200 p-4 font-mono text-sm leading-7 text-slate-800 outline-none focus:border-[var(--sky-blue)] focus:ring-2 focus:ring-[var(--sky-blue-soft)]" /></div><div className="flex justify-end gap-3 border-t border-slate-100 bg-slate-50 px-6 py-4 sm:px-8"><button type="button" onClick={() => setShowRecap(false)} className="rounded-xl border border-slate-300 bg-white px-5 py-2.5 text-sm font-semibold text-slate-700 hover:bg-slate-100">Fermer</button><button type="button" onClick={() => { navigator.clipboard?.writeText(recapText); toast.success('Récapitulatif copié.'); }} className="inline-flex items-center gap-2 rounded-xl bg-[var(--sky-blue)] px-5 py-2.5 text-sm font-semibold text-white hover:bg-[var(--sky-blue-dark)]"><Copy size={17}/> Copier</button></div></div></div>}
         <div className="card p-4">
           <div className="flex flex-col gap-3 lg:flex-row lg:items-center lg:justify-between">
             <div className="relative w-full max-w-md"><Search aria-hidden="true" className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" size={18}/><input className="input-field w-full !pl-11" placeholder="Rechercher un membre…" value={query} onChange={(e) => setQuery(e.target.value)}/></div>
