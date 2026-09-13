@@ -57,6 +57,7 @@ export default function CaissePage() {
   const [newBoxName, setNewBoxName] = useState('');
   const [newBoxDescription, setNewBoxDescription] = useState('');
   const [newBoxDefault, setNewBoxDefault] = useState(false);
+  const [newBoxOpeningBalance, setNewBoxOpeningBalance] = useState('');
   const [managingBoxes, setManagingBoxes] = useState(false);
   const [transfers, setTransfers] = useState<CashBoxTransfer[]>([]);
   const [managingTransfers, setManagingTransfers] = useState(false);
@@ -256,11 +257,13 @@ export default function CaissePage() {
         name: newBoxName.trim(),
         description: newBoxDescription.trim() || undefined,
         isDefault: newBoxDefault,
+        openingBalance: newBoxOpeningBalance ? Number(newBoxOpeningBalance) : 0,
       })
       .then(() => {
         setNewBoxName('');
         setNewBoxDescription('');
         setNewBoxDefault(false);
+        setNewBoxOpeningBalance('');
         load();
       })
       .catch((e) => setError(e instanceof Error ? e.message : 'Erreur'));
@@ -269,6 +272,18 @@ export default function CaissePage() {
   const handleSetDefaultBox = (id: string) => {
     setError(null);
     caisseApi.updateCashBox(id, { isDefault: true }).then(() => load()).catch((e) => setError(e instanceof Error ? e.message : 'Erreur'));
+  };
+
+  const handleSetOpeningBalance = (box: CashBoxSummary) => {
+    const value = window.prompt(`Fonds déjà disponibles dans « ${box.name} » (FCFA) :`, String(box.openingBalance ?? 0));
+    if (value === null) return;
+    const amount = Number(value.replace(',', '.'));
+    if (!Number.isFinite(amount) || amount < 0) {
+      setError('Le montant initial doit être un nombre positif ou nul.');
+      return;
+    }
+    setError(null);
+    caisseApi.updateCashBox(box.id, { openingBalance: amount }).then(() => load()).catch((e) => setError(e instanceof Error ? e.message : 'Erreur'));
   };
 
   const handleDeleteCashBox = (id: string, name: string) => {
@@ -460,6 +475,18 @@ export default function CaissePage() {
                           />
                         </div>
                         <div className="min-w-[180px]">
+                          <label className="block text-sm font-medium text-gray-700 mb-1">Fonds déjà disponibles (FCFA)</label>
+                          <input
+                            type="number"
+                            min="0"
+                            step="1"
+                            value={newBoxOpeningBalance}
+                            onChange={(e) => setNewBoxOpeningBalance(e.target.value)}
+                            placeholder="0"
+                            className="input-field"
+                          />
+                        </div>
+                        <div className="min-w-[180px]">
                           <label className="block text-sm font-medium text-gray-700 mb-1">Description (optionnel)</label>
                           <input
                             type="text"
@@ -484,6 +511,15 @@ export default function CaissePage() {
                           <li key={box.id} className="py-3 flex items-center justify-between gap-4">
                             <span className="font-medium">{box.name}{box.isDefault ? ' (par défaut)' : ''}</span>
                             <div className="flex gap-2">
+                              {isAdmin && (
+                                <button
+                                  type="button"
+                                  onClick={() => handleSetOpeningBalance(box)}
+                                  className="text-sm text-[var(--sky-blue)] hover:underline"
+                                >
+                                  Modifier les fonds
+                                </button>
+                              )}
                               {!box.isDefault && (
                                 <button
                                   type="button"

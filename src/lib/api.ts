@@ -461,6 +461,7 @@ export type CashBox = {
   description: string | null;
   order: number;
   isDefault: boolean;
+  openingBalance: number;
   createdAt?: string;
   updatedAt?: string;
 };
@@ -717,9 +718,9 @@ export const caisseApi = {
   livre: (limit?: number) =>
     api<LivreEntry[]>(limit ? `/caisse/livre?limit=${limit}` : '/caisse/livre'),
   boxes: () => api<CashBox[]>('/caisse/boxes'),
-  createCashBox: (data: { name: string; description?: string; order?: number; isDefault?: boolean }) =>
+  createCashBox: (data: { name: string; description?: string; order?: number; isDefault?: boolean; openingBalance?: number }) =>
     api<CashBox>('/caisse/boxes', { method: 'POST', body: JSON.stringify(data) }),
-  updateCashBox: (id: string, data: { name?: string; description?: string; order?: number; isDefault?: boolean }) =>
+  updateCashBox: (id: string, data: { name?: string; description?: string; order?: number; isDefault?: boolean; openingBalance?: number }) =>
     api<CashBox>(`/caisse/boxes/${id}`, { method: 'PATCH', body: JSON.stringify(data) }),
   deleteCashBox: (id: string) =>
     api<{ success: boolean }>(`/caisse/boxes/${id}`, { method: 'DELETE' }),
