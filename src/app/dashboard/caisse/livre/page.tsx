@@ -49,37 +49,40 @@ export default function LivreDeCaissePage() {
   }
 
   return (
-    <div className="space-y-6">
-      <div>
-        <h1 className="text-2xl font-bold text-[var(--foreground)]">Livre de caisse</h1>
-        <p className="text-gray-500 text-sm mt-1">
+    <div className="space-y-8">
+      <header className="flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
+        <div>
+        <h1 className="text-2xl font-semibold text-slate-900">Livre de caisse</h1>
+        <p className="mt-1 text-sm text-slate-500">
           Historique unifié : cotisations, allocations vers sous-caisses, dépenses et retraits.
         </p>
-      </div>
+        </div>
+        <p className="text-xs font-semibold uppercase tracking-[.16em] text-slate-400">Journal des mouvements</p>
+      </header>
 
       {error && (
-        <div className="rounded-xl bg-red-50 text-red-700 px-4 py-3 text-sm">{error}</div>
+        <div className="rounded-xl border border-red-100 bg-red-50 px-4 py-3 text-sm text-red-700">{error}</div>
       )}
 
       {/* Livre de caisse */}
       <section className="card overflow-hidden p-0">
-        <h2 className="px-6 py-4 text-lg font-semibold text-[var(--foreground)] border-b border-gray-100">
+        <h2 className="border-b border-slate-100 px-6 py-4 text-lg font-semibold text-slate-900">
           Mouvements
         </h2>
         <div className="overflow-x-auto max-h-[520px] overflow-y-auto">
           <table className="w-full text-left">
-            <thead className="sticky top-0 bg-white border-b border-gray-100">
-              <tr className="bg-slate-50">
-                <th className="px-6 py-3 text-sm font-semibold text-gray-700">Date</th>
-                <th className="px-6 py-3 text-sm font-semibold text-gray-700">Type</th>
-                <th className="px-6 py-3 text-sm font-semibold text-gray-600">Libellé / Bénéficiaire</th>
-                <th className="px-6 py-3 text-sm font-semibold text-gray-600">Montant</th>
+            <thead className="sticky top-0 z-10 border-b border-slate-100">
+              <tr className="bg-[var(--sky-blue-soft)]">
+                <th className="px-6 py-3 text-left text-[.7rem] font-bold uppercase tracking-[.12em] text-slate-600">Date</th>
+                <th className="px-6 py-3 text-left text-[.7rem] font-bold uppercase tracking-[.12em] text-slate-600">Type</th>
+                <th className="px-6 py-3 text-left text-[.7rem] font-bold uppercase tracking-[.12em] text-slate-600">Libellé / Bénéficiaire</th>
+                <th className="px-6 py-3 text-right text-[.7rem] font-bold uppercase tracking-[.12em] text-slate-600">Montant</th>
               </tr>
             </thead>
             <tbody>
               {livre.map((entry) => (
-                <tr key={`${entry.type}-${entry.id}`} className="border-b border-gray-50 hover:bg-gray-50/50">
-                  <td className="px-6 py-3 text-gray-600 text-sm whitespace-nowrap">
+                <tr key={`${entry.type}-${entry.id}`} className="border-b border-slate-100 transition-colors hover:bg-slate-50/70">
+                  <td className="whitespace-nowrap px-6 py-3 text-sm text-slate-500">
                     {new Date(entry.date).toLocaleString('fr-FR', {
                       day: 'numeric',
                       month: 'short',
@@ -99,7 +102,7 @@ export default function LivreDeCaissePage() {
                       {entry.type === 'entree' ? 'Entrée' : 'Sortie'}
                     </span>
                   </td>
-                  <td className="px-6 py-3 text-[var(--foreground)]">
+                  <td className="px-6 py-3 text-slate-800">
                     {entry.type === 'entree' ? (
                       <>
                         {entry.label}
@@ -127,7 +130,7 @@ export default function LivreDeCaissePage() {
                       </>
                     )}
                   </td>
-                  <td className={`px-6 py-3 font-medium ${entry.type === 'entree' ? 'text-green-700' : 'text-red-700'}`}>
+                  <td className={`px-6 py-3 text-right font-semibold ${entry.type === 'entree' ? 'text-emerald-700' : 'text-rose-700'}`}>
                     {entry.type === 'entree' ? '+' : '−'}
                     {entry.amount.toLocaleString('fr-FR')} FCFA
                   </td>
@@ -154,21 +157,21 @@ export default function LivreDeCaissePage() {
 
       {/* Entrées récentes */}
       <div className="card overflow-hidden p-0">
-        <h2 className="px-6 py-4 text-lg font-semibold text-[var(--foreground)] border-b border-gray-100">
+        <h2 className="border-b border-slate-100 px-6 py-4 text-lg font-semibold text-slate-900">
           Entrées récentes
         </h2>
-        <p className="px-6 py-2 text-sm text-gray-500 border-b border-gray-50">
+        <p className="border-b border-slate-50 px-6 py-2 text-sm text-slate-500">
           Derniers paiements de cotisations enregistrés.
         </p>
         <div className="max-h-[520px] overflow-auto">
           <table className="w-full text-left">
             <thead className="sticky top-0 z-10">
-              <tr className="border-b border-gray-100 bg-emerald-50/80">
-                <th className="px-6 py-3 text-sm font-semibold text-gray-700">Membre</th>
-                <th className="px-6 py-3 text-sm font-semibold text-gray-600">Cotisation</th>
-                <th className="px-6 py-3 text-sm font-semibold text-gray-600">Période</th>
-                <th className="px-6 py-3 text-sm font-semibold text-gray-600">Montant</th>
-                <th className="px-6 py-3 text-sm font-semibold text-gray-600">Date paiement</th>
+              <tr className="border-b border-slate-100 bg-[var(--sky-blue-soft)]">
+                <th className="px-6 py-3 text-left text-[.7rem] font-bold uppercase tracking-[.12em] text-slate-600">Membre</th>
+                <th className="px-6 py-3 text-left text-[.7rem] font-bold uppercase tracking-[.12em] text-slate-600">Cotisation</th>
+                <th className="px-6 py-3 text-left text-[.7rem] font-bold uppercase tracking-[.12em] text-slate-600">Période</th>
+                <th className="px-6 py-3 text-right text-[.7rem] font-bold uppercase tracking-[.12em] text-slate-600">Montant</th>
+                <th className="px-6 py-3 text-left text-[.7rem] font-bold uppercase tracking-[.12em] text-slate-600">Date paiement</th>
               </tr>
             </thead>
             <tbody>

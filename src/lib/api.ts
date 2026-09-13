@@ -58,10 +58,10 @@ export async function api<T>(
 }
 
 export const authApi = {
-  login: (identifier: string, password: string) =>
+  login: (identifier: string, password: string, deviceId: string) =>
     api<{ access_token: string; user: AuthUser }>('/auth/login', {
       method: 'POST',
-      body: JSON.stringify({ phone: identifier, password }),
+      body: JSON.stringify({ phone: identifier, password, deviceId }),
     }),
   me: () => api<AuthUser>('/auth/me'),
   sendActivationOtp: (phone: string) =>
@@ -86,6 +86,7 @@ export const authApi = {
       method: 'POST',
       body: JSON.stringify({ currentPassword, newPassword }),
     }),
+  logout: () => api<{ ok: boolean }>('/auth/logout', { method: 'POST' }),
 };
 
 export const membersApi = {
@@ -385,7 +386,7 @@ export const contributionsApi = {
       body: JSON.stringify(data),
     }),
   /** Crée un lien de paiement Jeko (checkout avec carte bancaire + mobile money). */
-  jekoLink: (data: { contributionId: string; amount: number; periodYear?: number; periodMonth?: number; title: string; regularizationAgreementId?: string; advanceMonths?: number }) =>
+  jekoLink: (data: { contributionId: string; amount: number; periodYear?: number; periodMonth?: number; title: string; memberId?: string; regularizationAgreementId?: string; advanceMonths?: number }) =>
     api<{ reference: string; link: string }>('/contributions/payments/jeko/link', {
       method: 'POST',
       body: JSON.stringify(data),

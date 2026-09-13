@@ -27,6 +27,15 @@ function getCachedUser(): AuthUser | null {
   }
 }
 
+function getDeviceId() {
+  if (typeof window === 'undefined') return '';
+  const existing = localStorage.getItem('afc_device_id');
+  if (existing) return existing;
+  const id = crypto.randomUUID();
+  localStorage.setItem('afc_device_id', id);
+  return id;
+}
+
 export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [user, setUser] = useState<AuthUser | null>(null);
   const [token, setToken] = useState<string | null>(null);
@@ -84,7 +93,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
   const login = useCallback(
     async (identifier: string, password: string) => {
-      const { access_token, user: u } = await authApi.login(identifier, password);
+      const { access_token, user: u } = await authApi.login(identifier, password, getDeviceId());
       localStorage.setItem('afc_token', access_token);
       localStorage.setItem('afc_user', JSON.stringify(u));
       setToken(access_token);
@@ -101,6 +110,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   );
 
   const logout = useCallback((opts?: { redirectTo?: string }) => {
+    void authApi.logout().catch(() => undefined);
     localStorage.removeItem('afc_token');
     localStorage.removeItem('afc_user');
     setToken(null);

@@ -16,7 +16,6 @@ const demoMembers = [
 export default function LoginPage() {
   const { login, token, user, loading } = useAuth();
   const router = useRouter();
-  const [accountType, setAccountType] = useState<'member' | 'admin'>('member');
   const [identifier, setIdentifier] = useState('');
   const [password, setPassword] = useState('');
   const [remember, setRemember] = useState(true);
@@ -85,17 +84,13 @@ export default function LoginPage() {
             <p className="flex items-center gap-2 text-xs font-bold uppercase tracking-[.2em] text-[#315f9e]"><ShieldCheck size={16}/> Connexion sécurisée</p>
             <h2 className="mt-2 font-serif text-4xl sm:mt-4 sm:text-5xl">{greeting}.</h2>
             <p className="mt-2 text-sm leading-6 text-slate-500 sm:mt-4 sm:text-base sm:leading-7 dark:text-slate-300">Connectez-vous pour accéder aux cotisations de l&apos;Amicale Football Club.</p>
-            <div className="mt-4 grid grid-cols-2 rounded-xl bg-slate-100 p-1 sm:mt-8 dark:bg-white/10" role="tablist" aria-label="Type de compte">
-              {([['member','Membre'],['admin','Administration']] as const).map(([value,label]) => <button key={value} type="button" role="tab" aria-selected={accountType===value} onClick={() => {setAccountType(value);setIdentifier('');setError(null);}} className={`rounded-lg px-4 py-2.5 text-sm font-semibold transition ${accountType===value?'bg-white text-[#172033] shadow-sm dark:bg-slate-700 dark:text-white':'text-slate-500'}`}>{label}</button>)}
-            </div>
-            <form onSubmit={onSubmit} className="mt-4 space-y-3 sm:mt-7 sm:space-y-5">
+            <form onSubmit={onSubmit} className="mt-4 space-y-3 sm:mt-8 sm:space-y-5">
               {error && <div className="rounded-xl border border-rose-200 bg-rose-50 px-4 py-3 text-sm text-rose-700">{error}</div>}
-              <label className="block"><span className="mb-2 block text-sm font-semibold">{accountType==='admin'?'Email ou téléphone':'Téléphone'}</span><input value={identifier} onChange={e=>setIdentifier(e.target.value)} type={accountType==='admin'?'text':'tel'} autoComplete={accountType==='admin'?'username':'tel'} placeholder={accountType==='admin'?'admin@example.com ou 0600000000':'0612345678'} className="afc-input" required /></label>
+              <label className="block"><span className="mb-2 block text-sm font-semibold">Téléphone ou adresse e-mail</span><input value={identifier} onChange={e=>setIdentifier(e.target.value)} type="text" autoComplete="username" placeholder="0700000000 ou email@exemple.com" className="afc-input" required /></label>
               <label className="block"><span className="mb-2 block text-sm font-semibold">Mot de passe</span><span className="relative block"><input value={password} onChange={e=>setPassword(e.target.value)} type={showPassword?'text':'password'} autoComplete="current-password" placeholder="••••••••" className="afc-input pr-24" minLength={6} required /><button type="button" onClick={()=>setShowPassword(v=>!v)} className="absolute right-3 top-1/2 flex -translate-y-1/2 items-center gap-1 text-xs font-semibold text-slate-500">{showPassword?<EyeOff size={16}/>:<Eye size={16}/>} {showPassword?'Masquer':'Afficher'}</button></span></label>
               <label className="flex items-center gap-3 text-sm text-slate-600 dark:text-slate-300"><input type="checkbox" checked={remember} onChange={e=>setRemember(e.target.checked)} className="h-4 w-4 rounded border-slate-300 accent-[#315f9e]"/> Rester connecté</label>
               <button type="submit" disabled={submitting} className="afc-button-primary w-full">{submitting?'Connexion…':'Se connecter'}</button>
             </form>
-            {accountType==='member' && <p className="mt-3 text-xs leading-5 text-slate-500 sm:mt-6 sm:text-sm sm:leading-6">Première connexion ? Votre mot de passe est <strong>password</strong>. En cas d&apos;oubli, contactez un administrateur.</p>}
           </div>
           <footer className="text-center text-xs text-slate-400">© {new Date().getFullYear()} — Amicale FC</footer>
         </main>

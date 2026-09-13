@@ -10,6 +10,7 @@ export default function PaiementPage() {
   const { user } = useAuth();
   const [members, setMembers] = useState<Member[]>([]);
   const [monthly, setMonthly] = useState<Contribution | null>(null);
+  const [contributions, setContributions] = useState<Contribution[]>([]);
   const [memberId, setMemberId] = useState('');
   const [months, setMonths] = useState(1);
   const [method, setMethod] = useState('');
@@ -20,14 +21,45 @@ export default function PaiementPage() {
   const [success, setSuccess] = useState<string | null>(null);
   const [previewPeriods, setPreviewPeriods] = useState<Array<{ year: number; month: number }>>([]);
   const [previewLoading, setPreviewLoading] = useState(false);
+  const [linkContributionId, setLinkContributionId] = useState('');
+  const [linkAmount, setLinkAmount] = useState('');
+  const [linkTitle, setLinkTitle] = useState('');
+  const [generatedLink, setGeneratedLink] = useState('');
+  const [linkLoading, setLinkLoading] = useState(false);
 
   useEffect(() => {
     if (user?.role !== 'ADMIN') return;
-    Promise.all([membersApi.list(), contributionsApi.monthly()]).then(([rows, contribution]) => {
+    Promise.all([membersApi.list(), contributionsApi.monthly(), contributionsApi.list()]).then(([rows, contribution, allContributions]) => {
       setMembers(rows.filter((member) => member.role !== 'ADMIN'));
       setMonthly(contribution);
+      setContributions(allContributions.filter((item) => item.status === 'OPEN'));
+      setLinkContributionId(contribution.id);
+      setLinkAmount(contribution.amount ? String(contribution.amount) : '');
+      setLinkTitle(contribution.name);
     }).catch((e) => setError(e instanceof Error ? e.message : 'Chargement impossible'));
   }, [user?.role]);
+
+  const selectedLinkContribution = contributions.find((item) => item.id === linkContributionId);
+
+  async function createPaymentLink(event: React.FormEvent) {
+    event.preventDefault();
+    const amountValue = Number(linkAmount);
+    if (!linkContributionId || !Number.isFinite(amountValue) || amountValue < 100) {
+      setError('Choisissez une cotisation et un montant d’au moins 100 FCFA.');
+      return;
+    }
+    setLinkLoading(true); setError(null); setGeneratedLink('');
+    try {
+      const result = await contributionsApi.jekoLink({
+        contributionId: linkContributionId,
+        memberId: memberId || undefined,
+        amount: amountValue,
+        title: linkTitle.trim() || selectedLinkContribution?.name || 'Versement AFC',
+      });
+      setGeneratedLink(result.link);
+    } catch (e) { setError(e instanceof Error ? e.message : 'Création du lien impossible'); }
+    finally { setLinkLoading(false); }
+  }
 
   const amount = useMemo(() => Number(monthly?.amount ?? 0) * months, [monthly?.amount, months]);
 
@@ -79,6 +111,17 @@ export default function PaiementPage() {
       <div><Link href="/dashboard/cotisations" className="font-medium text-[var(--sky-blue-dark)] hover:underline">← Cotisations</Link><h1 className="mt-2 text-2xl font-bold">Paiement déjà reçu</h1><p className="mt-1 text-gray-600">Enregistrez rapidement un paiement encaissé hors de l’application.</p></div>
       {error && <div className="rounded-xl bg-red-50 px-4 py-3 text-red-700">{error}</div>}
       {success && <div className="flex items-center gap-2 rounded-xl bg-green-50 px-4 py-3 text-green-800"><CheckCircle2 size={19} />{success}</div>}
+      <section className="card border-l-4 border-l-emerald-500 space-y-4">
+        <div><h2 className="text-lg font-semibold text-slate-900">Créer un lien de versement</h2><p className="mt-1 text-sm text-slate-500">Envoyez un lien unique pour une cotisation, un don ou un autre motif.</p></div>
+        <form onSubmit={createPaymentLink} className="grid gap-4 sm:grid-cols-2">
+          <label className="block"><span className="mb-1 block text-sm font-medium">Motif</span><select className="input w-full" value={linkContributionId} onChange={(e) => { const next = contributions.find((item) => item.id === e.target.value); setLinkContributionId(e.target.value); setLinkAmount(next?.amount ? String(next.amount) : ''); setLinkTitle(next?.name ?? ''); }} required><option value="">Sélectionner un motif</option>{contributions.map((item) => <option key={item.id} value={item.id}>{item.name}</option>)}</select></label>
+          <label className="block"><span className="mb-1 block text-sm font-medium">Membre concerné</span><select className="input w-full" value={memberId} onChange={(e) => setMemberId(e.target.value)} required><option value="">Sélectionner le membre</option>{members.map((member) => <option key={member.id} value={member.id}>{member.firstName} {member.lastName}</option>)}</select></label>
+          <label className="block"><span className="mb-1 block text-sm font-medium">Montant (FCFA)</span><input className="input w-full" type="number" min={100} value={linkAmount} onChange={(e) => setLinkAmount(e.target.value)} required /></label>
+          <label className="block"><span className="mb-1 block text-sm font-medium">Titre du lien</span><input className="input w-full" value={linkTitle} onChange={(e) => setLinkTitle(e.target.value)} placeholder="Versement AFC" /></label>
+          <button type="submit" disabled={linkLoading} className="btn-primary sm:col-span-2 disabled:opacity-60">{linkLoading ? 'Création…' : 'Générer le lien'}</button>
+        </form>
+        {generatedLink && <div className="flex flex-col gap-2 rounded-xl border border-emerald-200 bg-emerald-50 p-3 sm:flex-row sm:items-center"><input readOnly value={generatedLink} className="min-w-0 flex-1 rounded-lg border-0 bg-transparent text-sm text-emerald-900 outline-none"/><button type="button" className="rounded-lg bg-emerald-700 px-3 py-2 text-sm font-semibold text-white" onClick={() => navigator.clipboard?.writeText(generatedLink)}>Copier le lien</button></div>}
+      </section>
       <form onSubmit={submit} className="card space-y-5">
         <div><label className="mb-1 block text-sm font-medium">Membre</label><select className="input w-full" value={memberId} onChange={(e) => setMemberId(e.target.value)} required><option value="">Sélectionner</option>{members.map((member) => <option key={member.id} value={member.id}>{member.firstName} {member.lastName} — {member.phone}</option>)}</select></div>
         <div><label className="mb-2 block text-sm font-medium">Durée couverte</label><div className="grid grid-cols-2 gap-2 sm:grid-cols-4">{[1, 3, 6, 12].map((value) => <button key={value} type="button" onClick={() => setMonths(value)} className={`rounded-xl border px-3 py-2 font-semibold ${months === value ? 'border-[var(--sky-blue)] bg-[var(--sky-blue-soft)] text-[var(--sky-blue-dark)]' : 'border-gray-200'}`}>{value === 12 ? '1 an' : `${value} mois`}</button>)}</div></div>

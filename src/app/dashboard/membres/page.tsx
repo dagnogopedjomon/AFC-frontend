@@ -3,7 +3,7 @@
 import { useEffect, useMemo, useState } from 'react';
 import Link from 'next/link';
 import { useSearchParams } from 'next/navigation';
-import { Search, Pencil, UserRound, KeyRound, Trash2 } from 'lucide-react';
+import { Search, Pencil, UserRound, KeyRound, PauseCircle } from 'lucide-react';
 import { toast } from 'sonner';
 import { API_BASE, authApi, membersApi, type Member } from '@/lib/api';
 import { useAuth } from '@/lib/auth-context';
@@ -32,13 +32,14 @@ export default function MembresPage() {
 
   useEffect(() => { if (!canList) { setLoading(false); return; } membersApi.list().then(setMembers).catch(() => setMembers([])).finally(() => setLoading(false)); }, [canList]);
 
-  async function deleteMember(member: Member) {
-    if (!window.confirm(`Supprimer définitivement le compte de ${member.firstName} ${member.lastName} ?`)) return;
+  async function toggleSuspension(member: Member) {
+    const next = !member.isSuspended;
+    if (!window.confirm(next ? `Geler le compte de ${member.firstName} ${member.lastName} ?` : `Réactiver le compte de ${member.firstName} ${member.lastName} ?`)) return;
     setActioning(member.id);
     try {
-      await membersApi.delete(member.id);
-      setMembers((current) => current.filter((item) => item.id !== member.id));
-      toast.success('Compte supprimé.');
+      const updated = await membersApi.update(member.id, { isSuspended: next });
+      setMembers((current) => current.map((item) => item.id === member.id ? { ...item, ...updated } : item));
+      toast.success(next ? 'Compte gelé.' : 'Compte réactivé.');
     } catch (error) { toast.error(error instanceof Error ? error.message : 'Suppression impossible'); }
     finally { setActioning(null); }
   }
@@ -96,7 +97,7 @@ export default function MembresPage() {
               <td className="px-5 py-3"><Badge tone={m.isSuspended ? 'red' : bureau ? 'gray' : former ? 'gray' : m.membershipStatus === 'PROSPECT' ? 'amber' : 'blue'}>{m.isSuspended ? 'Inactif' : bureau ? 'Bureau' : former ? 'Inactif' : m.membershipStatus === 'PROSPECT' ? 'Prospect' : 'Actif'}</Badge></td>
               <td className="px-5 py-3"><Badge tone={former ? 'gray' : 'blue'}>{former ? '—' : 'Payé'}</Badge></td>
               <td className="px-5 py-3"><Badge tone={m.isSuspended ? 'red' : 'blue'}>{m.isSuspended ? 'Inactif' : 'Actif'}</Badge></td>
-              <td className="px-5 py-3"><div className="flex justify-end gap-3 text-slate-600"><Link title="Modifier le membre" aria-label="Modifier le membre" href={`/dashboard/membres/${m.id}`} className="rounded p-1 hover:bg-slate-100 hover:text-blue-700"><Pencil size={16}/></Link><Link title="Voir le compte" aria-label="Voir le compte" href={`/dashboard/membres/${m.id}`} className="rounded p-1 hover:bg-slate-100 hover:text-blue-700"><UserRound size={16}/></Link><button title="Renvoyer la clé d’activation" aria-label="Renvoyer la clé d’activation" type="button" disabled={actioning === m.id} onClick={() => sendActivation(m)} className="rounded p-1 hover:bg-slate-100 hover:text-blue-700 disabled:opacity-50"><KeyRound size={16}/></button>{user?.role === 'ADMIN' && <button title="Supprimer le membre" aria-label="Supprimer le membre" className="rounded p-1 text-red-500 hover:bg-red-50 disabled:opacity-50" type="button" disabled={actioning === m.id} onClick={() => deleteMember(m)}><Trash2 size={16}/></button>}</div></td>
+              <td className="px-5 py-3"><div className="flex justify-end gap-3 text-slate-600"><Link title="Modifier le membre" aria-label="Modifier le membre" href={`/dashboard/membres/${m.id}`} className="rounded p-1 hover:bg-slate-100 hover:text-blue-700"><Pencil size={16}/></Link><Link title="Voir le compte" aria-label="Voir le compte" href={`/dashboard/membres/${m.id}`} className="rounded p-1 hover:bg-slate-100 hover:text-blue-700"><UserRound size={16}/></Link><button title="Renvoyer la clé d’activation" aria-label="Renvoyer la clé d’activation" type="button" disabled={actioning === m.id} onClick={() => sendActivation(m)} className="rounded p-1 hover:bg-slate-100 hover:text-blue-700 disabled:opacity-50"><KeyRound size={16}/></button>{user?.role === 'ADMIN' && <button title={m.isSuspended ? 'Réactiver le compte' : 'Geler le compte'} aria-label={m.isSuspended ? 'Réactiver le compte' : 'Geler le compte'} className={`rounded p-1 hover:bg-slate-100 disabled:opacity-50 ${m.isSuspended ? 'text-emerald-600 hover:text-emerald-700' : 'text-amber-600 hover:text-amber-700'}`} type="button" disabled={actioning === m.id} onClick={() => toggleSuspension(m)}><PauseCircle size={16}/></button>}</div></td>
             </tr>;
           })}</tbody>
         </table>
