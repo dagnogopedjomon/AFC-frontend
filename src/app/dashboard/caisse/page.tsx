@@ -56,7 +56,6 @@ export default function CaissePage() {
   const [livreLimit, setLivreLimit] = useState(100);
   const [newBoxName, setNewBoxName] = useState('');
   const [newBoxDescription, setNewBoxDescription] = useState('');
-  const [newBoxDefault, setNewBoxDefault] = useState(false);
   const [newBoxOpeningBalance, setNewBoxOpeningBalance] = useState('');
   const [managingBoxes, setManagingBoxes] = useState(false);
   const [transfers, setTransfers] = useState<CashBoxTransfer[]>([]);
@@ -256,13 +255,11 @@ export default function CaissePage() {
       .createCashBox({
         name: newBoxName.trim(),
         description: newBoxDescription.trim() || undefined,
-        isDefault: newBoxDefault,
         openingBalance: newBoxOpeningBalance ? Number(newBoxOpeningBalance) : 0,
       })
       .then(() => {
         setNewBoxName('');
         setNewBoxDescription('');
-        setNewBoxDefault(false);
         setNewBoxOpeningBalance('');
         load();
       })
@@ -496,14 +493,6 @@ export default function CaissePage() {
                             className="input-field"
                           />
                         </div>
-                        <label className="flex items-center gap-2">
-                          <input
-                            type="checkbox"
-                            checked={newBoxDefault}
-                            onChange={(e) => setNewBoxDefault(e.target.checked)}
-                          />
-                          <span className="text-sm text-gray-700">Par défaut</span>
-                        </label>
                         <button type="submit" className="btn-primary">Ajouter</button>
                       </form>
                       <ul className="divide-y divide-gray-100">
