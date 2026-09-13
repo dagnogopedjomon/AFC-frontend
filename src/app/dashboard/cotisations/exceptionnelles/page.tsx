@@ -3,14 +3,17 @@
 import { useEffect, useState } from 'react';
 import Link from 'next/link';
 import { useAuth } from '@/lib/auth-context';
-import { contributionsApi, membersApi, type Contribution, type Member } from '@/lib/api';
+import { contributionsApi, membersApi, type Contribution, type Member, type Payment } from '@/lib/api';
 import { toast } from 'sonner';
-import { Loader2 } from 'lucide-react';
+import { Download, Loader2, Search } from 'lucide-react';
 import { JekoPayButton } from '@/components/JekoPayButton';
 
 export default function CotisationsExceptionnellesPage() {
   const { user } = useAuth();
   const [contributions, setContributions] = useState<Contribution[]>([]);
+  const [payments, setPayments] = useState<Payment[]>([]);
+  const [paymentQuery, setPaymentQuery] = useState('');
+  const [paymentContributionId, setPaymentContributionId] = useState('ALL');
   const [loading, setLoading] = useState(true);
   const [members, setMembers] = useState<Member[]>([]);
   const [canAct, setCanAct] = useState(false);
@@ -29,7 +32,12 @@ export default function CotisationsExceptionnellesPage() {
     if (!user) return;
     setCanAct(user.role === 'ADMIN' || user.role === 'TREASURER');
     load();
-    membersApi.list().then(setMembers).catch(() => setMembers([]));
+    Promise.all([membersApi.list(), contributionsApi.payments({ limit: 500 })])
+      .then(([memberRows, paymentRows]) => {
+        setMembers(memberRows);
+        setPayments(paymentRows.filter((payment) => payment.contribution?.type === 'EXCEPTIONAL'));
+      })
+      .catch(() => { setMembers([]); setPayments([]); });
   }, [user]);
 
   async function load() {
@@ -78,6 +86,27 @@ export default function CotisationsExceptionnellesPage() {
     }));
   }
 
+  const visiblePayments = payments.filter((payment) => {
+    if (paymentContributionId !== 'ALL' && payment.contributionId !== paymentContributionId) return false;
+    const query = paymentQuery.trim().toLowerCase();
+    if (!query) return true;
+    return `${payment.member?.firstName ?? ''} ${payment.member?.lastName ?? ''} ${payment.member?.phone ?? ''}`.toLowerCase().includes(query);
+  });
+  const totalPayments = visiblePayments.reduce((sum, payment) => sum + Number(payment.amount), 0);
+
+  function exportPayments() {
+    const rows = [['Date', 'Membre', 'Cotisation', 'Montant'], ...visiblePayments.map((payment) => [
+      new Date(payment.paidAt).toLocaleDateString('fr-FR'),
+      payment.member ? `${payment.member.firstName} ${payment.member.lastName}` : '—',
+      payment.contribution?.name ?? '—',
+      `${Number(payment.amount).toLocaleString('fr-FR')} FCFA`,
+    ])];
+    const csv = rows.map((row) => row.map((value) => `"${String(value).replaceAll('"', '""')}"`).join(';')).join('\n');
+    const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+    const url = URL.createObjectURL(blob);
+    const anchor = document.createElement('a'); anchor.href = url; anchor.download = 'journal-paiements-exceptionnels.csv'; anchor.click(); URL.revokeObjectURL(url);
+  }
+
   if (loading) {
     return (
       <div className="flex items-center justify-center py-12">
@@ -87,14 +116,14 @@ export default function CotisationsExceptionnellesPage() {
   }
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-8">
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <div>
           <div className="flex items-center gap-3 mb-2">
             <Link href="/dashboard/cotisations" className="text-[var(--sky-blue-dark)] hover:underline font-medium">← Cotisations</Link>
           </div>
-          <h1 className="text-2xl font-bold text-[var(--foreground)]">Cotisations exceptionnelles</h1>
-          <p className="text-gray-600 mt-1">Cadeaux, équipements, événements, actions surprises.</p>
+          <h1 className="text-2xl font-semibold text-slate-900">Cotisations exceptionnelles</h1>
+          <p className="mt-1 text-sm text-slate-500">Cadeaux, équipements, événements, actions surprises.</p>
         </div>
         {canAct && (
           <button
@@ -190,8 +219,8 @@ export default function CotisationsExceptionnellesPage() {
       )}
 
       {contributions.length === 0 ? (
-        <div className="card text-center py-12">
-          <p className="text-gray-500">Aucune cotisation exceptionnelle disponible pour l'instant.</p>
+        <div className="card py-12 text-center">
+          <p className="text-slate-500">Aucune cotisation exceptionnelle disponible pour l’instant.</p>
         </div>
       ) : (
         <div className="grid gap-4">
@@ -247,6 +276,20 @@ export default function CotisationsExceptionnellesPage() {
           })}
         </div>
       )}
+
+      <section className="card overflow-hidden p-0">
+        <div className="flex flex-col gap-4 border-b border-slate-100 px-6 py-5 xl:flex-row xl:items-center xl:justify-between">
+          <h2 className="text-xl font-semibold text-slate-900">Journal des paiements exceptionnels</h2>
+          <div className="flex flex-wrap items-center gap-2">
+            <select aria-label="Filtrer par cotisation" className="input-field !w-auto min-w-52" value={paymentContributionId} onChange={(e) => setPaymentContributionId(e.target.value)}><option value="ALL">Toutes les cotisations</option>{contributions.map((c) => <option key={c.id} value={c.id}>{c.name}</option>)}</select>
+            <div className="relative"><Search size={17} className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-slate-400"/><input aria-label="Rechercher un membre" className="input-field !w-64 !pl-10" placeholder="Rechercher membre…" value={paymentQuery} onChange={(e) => setPaymentQuery(e.target.value)} /></div>
+            <button type="button" onClick={exportPayments} disabled={visiblePayments.length === 0} className="inline-flex items-center gap-2 rounded-lg border border-slate-200 px-4 py-2 text-sm font-medium text-slate-600 disabled:opacity-50"><Download size={16}/> CSV</button>
+          </div>
+        </div>
+        <div className="flex items-center justify-between border-b border-slate-100 bg-slate-50 px-6 py-3 text-sm text-slate-500"><span>{visiblePayments.length} paiement{visiblePayments.length === 1 ? '' : 's'}</span><strong className="font-mono text-[var(--sky-blue)]">Total : {totalPayments.toLocaleString('fr-FR')} F</strong></div>
+        <div className="overflow-x-auto"><table className="w-full text-left text-sm"><thead><tr className="bg-[var(--sky-blue-soft)]"><th className="px-6 py-3 text-[.7rem] font-bold uppercase tracking-[.12em] text-slate-600">Date</th><th className="px-6 py-3 text-[.7rem] font-bold uppercase tracking-[.12em] text-slate-600">Membre</th><th className="px-6 py-3 text-[.7rem] font-bold uppercase tracking-[.12em] text-slate-600">Cotisation</th><th className="px-6 py-3 text-right text-[.7rem] font-bold uppercase tracking-[.12em] text-slate-600">Montant</th></tr></thead><tbody>{visiblePayments.map((payment) => <tr key={payment.id} className="border-b border-slate-100 hover:bg-slate-50/70"><td className="whitespace-nowrap px-6 py-3 text-slate-500">{new Date(payment.paidAt).toLocaleDateString('fr-FR')}</td><td className="px-6 py-3 font-medium text-slate-800">{payment.member ? `${payment.member.firstName} ${payment.member.lastName}` : '—'}</td><td className="px-6 py-3 text-slate-600">{payment.contribution?.name ?? '—'}</td><td className="px-6 py-3 text-right font-semibold text-emerald-700">{Number(payment.amount).toLocaleString('fr-FR')} FCFA</td></tr>)}</tbody></table></div>
+        {visiblePayments.length === 0 && <p className="py-12 text-center text-slate-500">Aucun paiement ne correspond à ce filtre.</p>}
+      </section>
     </div>
   );
 }
