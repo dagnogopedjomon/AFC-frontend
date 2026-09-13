@@ -91,14 +91,13 @@ export default function DepensesPage() {
   }
 
   return (
-    <div className="space-y-6">
+    <div className="min-w-0 space-y-6 overflow-x-hidden">
       <div className="flex flex-wrap items-center justify-between gap-4">
         <div>
           <h1 className="text-2xl font-bold text-[var(--foreground)]">Dépenses</h1>
           <p className="text-gray-500 text-sm mt-1">Sorties de caisse</p>
         </div>
         <div className="flex max-w-full flex-wrap items-center justify-end gap-3">
-          <Link href="/dashboard/cotisations/paiement" className="afc-button-primary">+ Nouveau paiement</Link>
           {canCreate && (
             <Link href="/dashboard/caisse/nouvelle-depense" className="btn-primary flex items-center gap-2">
               <Plus size={18} /> Ajouter une dépense
@@ -116,18 +115,18 @@ export default function DepensesPage() {
             <select className="input-field min-w-56" value={statusFilter} onChange={(e)=>setStatusFilter(e.target.value)}><option value="ALL">Tous les statuts</option><option value="PENDING_TREASURER">En attente trésorier</option><option value="PENDING_COMMISSIONER">En attente commissaire</option><option value="APPROVED">Approuvées</option><option value="REJECTED">Rejetées</option></select>
           </div>
           <div className="overflow-x-auto">
-            <table className="w-full text-left">
+            <table className="w-full table-fixed text-left">
               <thead>
                 <tr className="border-b border-gray-100 bg-[var(--sky-blue-soft)]">
                   <th className="px-6 py-4 text-sm font-semibold text-[var(--sky-blue-dark)]">Date</th>
                   <th className="px-6 py-4 text-sm font-semibold text-gray-600">Sous-caisse</th>
                   <th className="px-6 py-4 text-sm font-semibold text-gray-600">Description</th>
-                  <th className="px-6 py-4 text-sm font-semibold text-gray-600">Catégorie</th>
-                  <th className="px-6 py-4 text-sm font-semibold text-gray-600">Bénéficiaire</th>
+                  <th className="hidden px-6 py-4 text-sm font-semibold text-gray-600 xl:table-cell">Catégorie</th>
+                  <th className="hidden px-6 py-4 text-sm font-semibold text-gray-600 2xl:table-cell">Bénéficiaire</th>
                   <th className="px-6 py-4 text-sm font-semibold text-gray-600">Montant</th>
-                  <th className="px-6 py-4 text-sm font-semibold text-gray-600">Demandé par</th>
+                  <th className="hidden px-6 py-4 text-sm font-semibold text-gray-600 2xl:table-cell">Demandé par</th>
                   <th className="px-6 py-4 text-sm font-semibold text-gray-600">Statut</th>
-                  <th className="px-6 py-4 text-sm font-semibold text-gray-600">Motif rejet</th>
+                  <th className="hidden px-6 py-4 text-sm font-semibold text-gray-600 2xl:table-cell">Motif rejet</th>
                   {canAct && <th className="px-6 py-4 text-sm font-semibold text-gray-600">Actions</th>}
                 </tr>
               </thead>
@@ -142,22 +141,22 @@ export default function DepensesPage() {
                       <td className="px-6 py-4 text-gray-600 text-sm">
                         {e.cashBox?.name ?? 'Caisse par défaut'}
                       </td>
-                      <td className="px-6 py-4 font-medium text-[var(--foreground)]">
+                      <td className="max-w-0 px-4 py-4 font-medium text-[var(--foreground)]">
                         <button
                           type="button"
                           onClick={() => setExpenseDetail(e)}
-                          className="text-left truncate max-w-[200px] hover:text-[var(--sky-blue-dark)] hover:underline"
+                          className="block max-w-full truncate text-left hover:text-[var(--sky-blue-dark)] hover:underline"
                           title="Cliquer pour voir la description complète"
                         >
                           {e.description}
                         </button>
                       </td>
-                      <td className="px-6 py-4 text-gray-600 text-sm">{e.category?.name ?? '—'}</td>
-                      <td className="px-6 py-4 text-gray-600 text-sm">{e.beneficiary ?? '—'}</td>
-                      <td className="px-6 py-4 text-gray-700">
+                      <td className="hidden px-6 py-4 text-sm text-gray-600 xl:table-cell">{e.category?.name ?? '—'}</td>
+                      <td className="hidden px-6 py-4 text-sm text-gray-600 2xl:table-cell">{e.beneficiary ?? '—'}</td>
+                      <td className="whitespace-nowrap px-4 py-4 text-gray-700">
                         {Number(e.amount).toLocaleString('fr-FR')} FCFA
                       </td>
-                      <td className="px-6 py-4 text-gray-600 text-sm">
+                      <td className="hidden px-6 py-4 text-sm text-gray-600 2xl:table-cell">
                         {e.requestedBy.firstName} {e.requestedBy.lastName}
                       </td>
                       <td className="px-6 py-4">
@@ -165,7 +164,7 @@ export default function DepensesPage() {
                           {status.text}
                         </span>
                       </td>
-                      <td className="px-6 py-4 text-sm text-gray-600 max-w-[200px] truncate" title={e.rejectReason ?? undefined}>
+                      <td className="hidden max-w-[200px] truncate px-6 py-4 text-sm text-gray-600 2xl:table-cell" title={e.rejectReason ?? undefined}>
                         {e.status === 'REJECTED' && e.rejectReason ? e.rejectReason : '—'}
                       </td>
                       {canAct && (
