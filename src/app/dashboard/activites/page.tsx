@@ -3,6 +3,7 @@
 import { useEffect, useState } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
+import { Plus } from 'lucide-react';
 import { useAuth } from '@/lib/auth-context';
 import { activitiesApi, type Activity, type Announcement } from '@/lib/api';
 
@@ -53,10 +54,10 @@ export default function ActivitesPage() {
         {canCreate && (
           <div className="flex gap-2">
             <Link href="/dashboard/activites/nouvelle" className="btn-primary text-sm">
-              Nouvelle activité
+              <Plus size={16} aria-hidden="true" /> Nouvelle activité
             </Link>
-            <Link href="/dashboard/activites/annonce" className="px-4 py-2 rounded-xl border border-gray-200 text-gray-700 hover:bg-gray-50 text-sm font-medium">
-              Nouvelle annonce
+            <Link href="/dashboard/activites/annonce" className="inline-flex min-h-11 items-center justify-center gap-2 rounded-xl border border-gray-200 px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50">
+              <Plus size={16} aria-hidden="true" /> Nouvelle annonce
             </Link>
           </div>
         )}

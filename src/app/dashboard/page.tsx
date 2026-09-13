@@ -3,7 +3,7 @@
 import { useEffect, useMemo, useState } from 'react';
 import Link from 'next/link';
 import { ResponsiveContainer, BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend } from 'recharts';
-import { ArrowUpRight, Wallet, Users, CalendarDays } from 'lucide-react';
+import { ArrowUpRight, Wallet, Users, CalendarDays, Plus } from 'lucide-react';
 import { useAuth } from '@/lib/auth-context';
 import { caisseApi, contributionsApi, membersApi, reportsApi, activitiesApi, type CaisseSummary, type AnnualContributionMatrix, type AnnualReport, type Member, type Payment, type Expense, type Activity } from '@/lib/api';
 
@@ -57,7 +57,7 @@ export default function DashboardPage() {
   return <div className="space-y-6">
     <header className="flex items-center justify-between gap-4 border-b border-slate-200 pb-5">
       <div><h1 className="font-serif text-3xl text-slate-900">Tableau de bord</h1><p className="mt-1 text-sm text-slate-500">Vue d'ensemble</p></div>
-      <Link href="/dashboard/cotisations/paiement" className="afc-button-primary">＋ Nouveau paiement</Link>
+      <Link href="/dashboard/cotisations/paiement" className="afc-button-primary"><Plus size={16} aria-hidden="true" /> Nouveau paiement</Link>
     </header>
     {loading ? <div className="card grid min-h-64 place-items-center"><div className="h-8 w-8 animate-spin rounded-full border-4 border-[#3269ac] border-r-transparent" /></div> : <>
       <div className="grid gap-4">

@@ -3,7 +3,7 @@
 import { useEffect, useMemo, useState } from 'react';
 import Link from 'next/link';
 import { useSearchParams } from 'next/navigation';
-import { Search, Pencil, UserRound, KeyRound, PauseCircle } from 'lucide-react';
+import { Search, Pencil, UserRound, KeyRound, PauseCircle, Plus } from 'lucide-react';
 import { toast } from 'sonner';
 import { API_BASE, authApi, membersApi, type Member } from '@/lib/api';
 import { useAuth } from '@/lib/auth-context';
@@ -72,7 +72,7 @@ export default function MembresPage() {
   return <div className="space-y-6">
     <header className="flex flex-wrap items-start justify-between gap-4">
       <div><h1 className="text-2xl font-semibold text-slate-900">Membres</h1><p className="mt-1 text-sm text-slate-500">Liste & suivi des joueurs du club</p></div>
-      <div className="flex gap-3"><Link href="/dashboard/cotisations/paiement" className="afc-button-primary">+ Nouveau paiement</Link>{user?.role === 'ADMIN' && <Link href="/dashboard/membres/new" className="btn-primary">Nouveau membre</Link>}</div>
+      <div className="flex flex-wrap gap-3"><Link href="/dashboard/cotisations/paiement" className="afc-button-primary"><Plus size={16} aria-hidden="true" /> Nouveau paiement</Link>{user?.role === 'ADMIN' && <Link href="/dashboard/membres/new" className="btn-primary"><Plus size={16} aria-hidden="true" /> Nouveau membre</Link>}</div>
     </header>
     {params.get('created') === '1' && <div className="rounded-xl bg-emerald-50 px-4 py-3 text-sm text-emerald-800">Compte créé avec succès.</div>}
     <section className="card p-4">

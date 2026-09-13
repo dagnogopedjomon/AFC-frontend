@@ -2,7 +2,7 @@
 
 import { useEffect, useState, useMemo } from 'react';
 import Link from 'next/link';
-import { Search } from 'lucide-react';
+import { Plus, Search } from 'lucide-react';
 import { useAuth } from '@/lib/auth-context';
 import { contributionsApi, membersApi, type HistorySummary, type MemberHistory, type Member, type Payment } from '@/lib/api';
 
@@ -97,7 +97,7 @@ export default function HistoriquePage() {
       </div>
       <div className="flex items-start justify-between gap-4">
         <div><h1 className="text-2xl font-bold text-[var(--foreground)]">Historique</h1><p className="text-gray-600 mt-1">Tous les paiements enregistrés.</p></div>
-        <Link href="/dashboard/cotisations/paiement" className="afc-button-primary shrink-0">+ Nouveau paiement</Link>
+        <Link href="/dashboard/cotisations/paiement" className="afc-button-primary shrink-0"><Plus size={16} aria-hidden="true" /> Nouveau paiement</Link>
       </div>
 
       {/* Recherche des paiements — tracer qui a payé */}

@@ -6,6 +6,7 @@ import { useForm, Controller } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
 import { toast } from 'sonner';
+import { Plus } from 'lucide-react';
 import { useAuth } from '@/lib/auth-context';
 import {
   contributionsApi,
@@ -136,7 +137,7 @@ export default function GererCotisationsPage() {
               onClick={() => setShowForm(!showForm)}
               className="btn-primary text-sm"
             >
-              Nouvelle cotisation exceptionnelle
+              <Plus size={16} aria-hidden="true" /> Nouvelle cotisation exceptionnelle
             </button>
           </div>
 
@@ -430,4 +431,3 @@ function ExceptionalForm({
     </div>
   );
 }
-

@@ -5,7 +5,7 @@ import Link from 'next/link';
 import { useAuth } from '@/lib/auth-context';
 import { contributionsApi, membersApi, type Contribution, type Member, type Payment } from '@/lib/api';
 import { toast } from 'sonner';
-import { Download, Loader2, Search } from 'lucide-react';
+import { Download, Loader2, Plus, Search } from 'lucide-react';
 import { JekoPayButton } from '@/components/JekoPayButton';
 
 export default function CotisationsExceptionnellesPage() {
@@ -131,7 +131,7 @@ export default function CotisationsExceptionnellesPage() {
             onClick={() => setShowForm((v) => !v)}
             className="btn-primary"
           >
-            {showForm ? 'Annuler' : 'Nouvelle cotisation'}
+            {showForm ? 'Annuler' : <><Plus size={16} aria-hidden="true" /> Nouvelle cotisation</>}
           </button>
         )}
       </div>
