@@ -58,11 +58,23 @@ export async function api<T>(
 }
 
 export const authApi = {
-  login: (identifier: string, password: string, deviceId: string) =>
-    api<{ access_token: string; user: AuthUser }>('/auth/login', {
-      method: 'POST',
-      body: JSON.stringify({ phone: identifier, password, deviceId }),
-    }),
+  login: async (identifier: string, password: string, deviceId: string) => {
+    try {
+      return await api<{ access_token: string; user: AuthUser }>('/auth/login', {
+        method: 'POST',
+        body: JSON.stringify({ phone: identifier, password, deviceId }),
+      });
+    } catch (error) {
+      // Compatibilité temporaire avec un backend qui n'a pas encore reçu la migration deviceId.
+      if (error instanceof ApiError && error.status === 400 && error.message.toLowerCase().includes('deviceid')) {
+        return api<{ access_token: string; user: AuthUser }>('/auth/login', {
+          method: 'POST',
+          body: JSON.stringify({ phone: identifier, password }),
+        });
+      }
+      throw error;
+    }
+  },
   me: () => api<AuthUser>('/auth/me'),
   sendActivationOtp: (phone: string) =>
     api<{ ok: boolean; message?: string; demoCode?: string }>('/auth/send-activation-otp', {
