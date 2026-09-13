@@ -1,7 +1,7 @@
 'use client';
 
 import { FormEvent, useEffect, useState } from 'react';
-import { KeyRound, Pencil, Plus, Settings, Trash2 } from 'lucide-react';
+import { KeyRound, Pencil, Plus, Trash2 } from 'lucide-react';
 import { toast } from 'sonner';
 import { administrationApi, authApi, type ExpenseCategory } from '@/lib/api';
 
@@ -40,7 +40,7 @@ export default function ParametresPage() {
   }
 
   return <div className="space-y-8">
-    <div className="flex items-start gap-4 border-b border-slate-200 pb-6"><div className="mt-1 text-slate-700"><Settings size={28}/></div><div><h1 className="font-serif text-4xl text-slate-900">Paramètres</h1><p className="mt-1 text-base text-slate-500">Configuration du club et de l&apos;application</p></div></div>
+    <div className="border-b border-slate-200 pb-5"><h1 className="text-2xl font-bold text-[var(--foreground)]">Paramètres</h1><p className="mt-1 text-sm text-slate-500">Configuration du club et de l&apos;application</p></div>
     <div className="card max-w-2xl">
       <div className="mb-6 flex items-start gap-3"><div className="rounded-lg bg-blue-50 p-2 text-blue-700"><KeyRound size={20}/></div><div><h2 className="font-semibold text-slate-900">Modifier le mot de passe</h2><p className="text-sm text-slate-500">Utilisez au moins 8 caractères.</p></div></div>
       <form onSubmit={submit} className="space-y-4">
