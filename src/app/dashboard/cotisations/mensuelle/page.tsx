@@ -3,9 +3,9 @@
 import { useEffect, useState } from 'react';
 import Link from 'next/link';
 import { useAuth } from '@/lib/auth-context';
-import { contributionsApi, type Contribution, type AnnualContributionMatrix } from '@/lib/api';
+import { contributionsApi, notificationsApi, reportsApi, type Contribution, type AnnualContributionMatrix } from '@/lib/api';
 import { toast } from 'sonner';
-import { ChevronLeft, ChevronRight, Loader2, Search } from 'lucide-react';
+import { Bell, ChevronLeft, ChevronRight, ClipboardList, Download, Loader2, Search } from 'lucide-react';
 import { JekoPayButton } from '@/components/JekoPayButton';
 
 export default function CotisationMensuellePage() {
@@ -75,16 +75,34 @@ export default function CotisationMensuellePage() {
       const current = member.months[currentMonth - 1];
       return matches && (matrixFilter === 'ALL' || (matrixFilter === 'CURRENT' ? ['PAID', 'ADVANCE'].includes(current?.status) : current?.status === 'LATE'));
     });
+    const totalCollected = visible.reduce((sum, member) => sum + member.months.reduce((s, cell) => s + cell.amountPaid, 0), 0);
+    const paidInstallments = visible.reduce((sum, member) => sum + member.months.filter((cell) => cell.status === 'PAID' || cell.status === 'ADVANCE').length, 0);
+    const lateMembers = visible.filter((member) => member.months[currentMonth - 1]?.status === 'LATE').length;
+    const sendReminders = async () => {
+      const confirmed = window.confirm(`Envoyer une relance aux ${lateMembers} membre(s) en retard pour le mois en cours ?`);
+      if (!confirmed) return;
+      try {
+        const result = await notificationsApi.remindAllArrears({ year: currentYear, month: currentMonth, message: `Votre cotisation du mois est en retard. Merci de procéder au règlement dès que possible.` });
+        toast.success(result.message);
+      } catch (error) { toast.error(error instanceof Error ? error.message : 'Envoi des relances impossible'); }
+    };
     return (
       <div className="space-y-6">
-        <div className="flex flex-col gap-4 xl:flex-row xl:items-end xl:justify-between">
-          <div><h1 className="text-2xl font-semibold text-slate-900">Cotisations mensuelles</h1><p className="mt-1 text-sm text-slate-500">Suivi mois par mois.</p></div>
-          <div className="flex flex-wrap items-center gap-2">
-            <Link href="/dashboard/cotisations/paiement" className="afc-button-primary">+ Nouveau paiement</Link>
-            <button className="rounded-lg border border-slate-200 bg-white p-2" onClick={() => setMatrixYear((y) => y - 1)} aria-label="Année précédente"><ChevronLeft size={18}/></button>
-            <span className="min-w-20 text-center font-semibold">{matrixYear}</span>
-            <button className="rounded-lg border border-slate-200 bg-white p-2" onClick={() => setMatrixYear((y) => y + 1)} aria-label="Année suivante"><ChevronRight size={18}/></button>
+        <div className="card space-y-4 p-4">
+          <div className="flex flex-col gap-4 xl:flex-row xl:items-center xl:justify-between">
+            <div className="flex items-center gap-2">
+              <button className="rounded-lg border border-slate-200 bg-white p-2" onClick={() => setMatrixYear((y) => y - 1)} aria-label="Année précédente"><ChevronLeft size={18}/></button>
+              <span className="min-w-20 text-center text-lg font-semibold">{matrixYear}</span>
+              <button className="rounded-lg border border-slate-200 bg-white p-2" onClick={() => setMatrixYear((y) => y + 1)} aria-label="Année suivante"><ChevronRight size={18}/></button>
+            </div>
+            <div className="flex flex-wrap items-center gap-2">
+              <Link href="/dashboard/cotisations/historique" className="inline-flex items-center gap-2 rounded-lg border border-slate-200 bg-white px-4 py-2 text-sm font-medium text-slate-700 hover:border-[var(--sky-blue)]"><ClipboardList size={16}/> Récap</Link>
+              <button type="button" onClick={sendReminders} className="inline-flex items-center gap-2 rounded-lg border border-slate-200 bg-white px-4 py-2 text-sm font-medium text-slate-700 hover:border-[var(--sky-blue)]"><Bell size={16}/> Relances</button>
+              <button type="button" onClick={() => reportsApi.downloadExcel(matrixYear)} className="inline-flex items-center gap-2 rounded-lg border border-slate-200 bg-white px-4 py-2 text-sm font-medium text-slate-700 hover:border-[var(--sky-blue)]"><Download size={16}/> Exporter</button>
+              <Link href="/dashboard/cotisations/paiement" className="afc-button-primary">+ Enregistrer un paiement</Link>
+            </div>
           </div>
+          <div className="border-t border-slate-100 pt-3 text-sm text-slate-500"><strong className="text-slate-800">{paidInstallments} mensualités encaissées en {matrixYear}</strong><span className="mx-2">·</span><strong className="text-[var(--sky-blue)]">{totalCollected.toLocaleString('fr-FR')} F</strong> total<span className="mx-2">·</span><strong className="text-slate-800">{lateMembers}</strong> mensualité{lateMembers === 1 ? '' : 's'} en retard</div>
         </div>
         <div className="card p-4">
           <div className="flex flex-col gap-3 lg:flex-row lg:items-center lg:justify-between">
@@ -94,7 +112,7 @@ export default function CotisationMensuellePage() {
             </div>
           </div>
           <div className="mt-4 flex flex-wrap gap-2 text-xs">{Object.entries(statusLabel).map(([key,label]) => <span key={key} className="inline-flex items-center gap-2 text-slate-500"><span className={`grid h-8 w-8 place-items-center rounded-lg text-sm font-semibold ${statusClass[key as keyof typeof statusClass]}`}>{statusSymbol[key as keyof typeof statusSymbol]}</span>{label}</span>)}</div>
-          <div className="mt-4 border-t border-slate-100 pt-3 text-sm text-slate-500"><strong className="text-slate-800">{visible.reduce((sum, member) => sum + member.months.reduce((s, cell) => s + cell.amountPaid, 0), 0).toLocaleString('fr-FR')} F</strong> encaissés sur {matrixYear} <span className="mx-2">·</span> {visible.length} membre{visible.length === 1 ? '' : 's'} affiché{visible.length === 1 ? '' : 's'}</div>
+          <div className="mt-4 border-t border-slate-100 pt-3 text-sm text-slate-500"><strong className="text-slate-800">{totalCollected.toLocaleString('fr-FR')} F</strong> encaissés sur {matrixYear} <span className="mx-2">·</span> {visible.length} membre{visible.length === 1 ? '' : 's'} affiché{visible.length === 1 ? '' : 's'}</div>
         </div>
         <div className="card overflow-hidden p-0">
           <div className="overflow-x-auto">
