@@ -18,6 +18,7 @@ import {
 } from 'recharts';
 import { Plus } from 'lucide-react';
 import { useAuth } from '@/lib/auth-context';
+import { confirmAction } from '@/lib/swal';
 import { caisseApi, contributionsApi, type CaisseSummary, type Expense, type LivreEntry, type Payment, type CashBoxSummary, type CashBoxTransfer } from '@/lib/api';
 
 const CAISSE_ROLES = ['ADMIN', 'TREASURER', 'COMMISSIONER'];
@@ -173,8 +174,9 @@ export default function CaissePage() {
       .finally(() => setActioning(null));
   };
 
-  const handleReject = (id: string) => {
-    if (!confirm('Rejeter cette dépense ?')) return;
+  const handleReject = async (id: string) => {
+    const confirmation = await confirmAction('Rejeter cette dépense ?', 'Vous pourrez préciser le motif juste après.');
+    if (!confirmation.isConfirmed) return;
     const motif = window.prompt('Motif du rejet (optionnel, 500 caractères max) :');
     if (motif !== null) {
       setError(null);
@@ -207,8 +209,9 @@ export default function CaissePage() {
       .finally(() => setActioning(null));
   };
 
-  const handleRejectTransfer = (id: string) => {
-    if (!confirm('Rejeter ce mouvement entre caisses ?')) return;
+  const handleRejectTransfer = async (id: string) => {
+    const confirmation = await confirmAction('Rejeter ce mouvement ?', 'Vous pourrez préciser le motif juste après.');
+    if (!confirmation.isConfirmed) return;
     const motif = window.prompt('Motif du rejet (optionnel) :');
     if (motif !== null) {
       setError(null);
@@ -283,8 +286,9 @@ export default function CaissePage() {
     caisseApi.updateCashBox(box.id, { openingBalance: amount }).then(() => load()).catch((e) => setError(e instanceof Error ? e.message : 'Erreur'));
   };
 
-  const handleDeleteCashBox = (id: string, name: string) => {
-    if (!confirm(`Supprimer la sous-caisse « ${name} » ? Les mouvements seront rattachés à la caisse par défaut.`)) return;
+  const handleDeleteCashBox = async (id: string, name: string) => {
+    const confirmation = await confirmAction('Supprimer cette sous-caisse ?', `« ${name} » sera supprimée et ses mouvements seront rattachés à la caisse par défaut.`);
+    if (!confirmation.isConfirmed) return;
     setError(null);
     caisseApi.deleteCashBox(id).then(() => load()).catch((e) => setError(e instanceof Error ? e.message : 'Erreur'));
   };

@@ -6,6 +6,7 @@ import { useParams, useRouter } from 'next/navigation';
 import { useAuth } from '@/lib/auth-context';
 import { activitiesApi, type Activity, type Photo } from '@/lib/api';
 import { Pencil, Trash2, Upload, X } from 'lucide-react';
+import { confirmAction } from '@/lib/swal';
 
 const CAN_EDIT = ['ADMIN', 'PRESIDENT', 'SECRETARY_GENERAL', 'TREASURER', 'COMMISSIONER', 'GENERAL_MEANS_MANAGER'];
 
@@ -49,7 +50,8 @@ export default function ActivityDetailPage() {
 
   const handleDelete = async () => {
     if (!activity) return;
-    if (!confirm(`Supprimer l'activité « ${activity.title} » ?`)) return;
+    const confirmation = await confirmAction('Supprimer cette activité ?', `« ${activity.title} » sera définitivement supprimée.`);
+    if (!confirmation.isConfirmed) return;
     setError(null);
     try {
       await activitiesApi.delete(activity.id);
@@ -97,7 +99,8 @@ export default function ActivityDetailPage() {
   };
 
   const handleDeletePhoto = async (photoId: string) => {
-    if (!confirm('Supprimer cette photo ?')) return;
+    const confirmation = await confirmAction('Supprimer cette photo ?', 'Cette action est irréversible.');
+    if (!confirmation.isConfirmed) return;
     setDeletingPhoto(photoId);
     setError(null);
     try {
@@ -240,4 +243,3 @@ export default function ActivityDetailPage() {
     </div>
   );
 }
-

@@ -5,6 +5,7 @@ import Link from 'next/link';
 import { CheckCircle2 } from 'lucide-react';
 import { contributionsApi, membersApi, type Contribution, type Member } from '@/lib/api';
 import { useAuth } from '@/lib/auth-context';
+import { confirmAction, showSuccess } from '@/lib/swal';
 
 export default function PaiementPage() {
   const { user } = useAuth();
@@ -90,15 +91,17 @@ export default function PaiementPage() {
     const selectedMember = members.find((member) => member.id === memberId);
     const firstPeriod = periodLabel(previewPeriods[0]);
     const lastPeriod = periodLabel(previewPeriods[previewPeriods.length - 1]);
-    const confirmed = window.confirm(
-      `Confirmer le paiement hors application ?\n\nMembre : ${selectedMember?.firstName ?? ''} ${selectedMember?.lastName ?? ''}\nMontant : ${amount.toLocaleString('fr-FR')} FCFA\nPériode : ${firstPeriod}${months > 1 ? ` à ${lastPeriod}` : ''}\n\nCette opération ajoutera une entrée dans la caisse.`,
+    const confirmation = await confirmAction(
+      'Confirmer le paiement',
+      `Membre : ${selectedMember?.firstName ?? ''} ${selectedMember?.lastName ?? ''}\nMontant : ${amount.toLocaleString('fr-FR')} FCFA\nPériode : ${firstPeriod}${months > 1 ? ` à ${lastPeriod}` : ''}\n\nCette opération ajoutera une entrée dans la caisse.`,
     );
-    if (!confirmed) return;
+    if (!confirmation.isConfirmed) return;
     setSaving(true); setError(null); setSuccess(null);
     try {
       const result = await contributionsApi.recordExternalAdvance({ memberId, months, amount, paymentMethod: method || undefined, reference: reference || undefined, note: note || undefined });
       const last = result.paidThrough;
       setSuccess(`Paiement enregistré. Le membre est payé jusqu’en ${new Date(last.year, last.month - 1).toLocaleString('fr-FR', { month: 'long', year: 'numeric' })}.`);
+      await showSuccess('Paiement enregistré', 'Le paiement a été ajouté à la caisse.');
       setReference(''); setNote('');
     } catch (e) { setError(e instanceof Error ? e.message : 'Enregistrement impossible'); }
     finally { setSaving(false); }

@@ -7,6 +7,7 @@ import { Search, Pencil, UserRound, KeyRound, PauseCircle, Plus } from 'lucide-r
 import { toast } from 'sonner';
 import { API_BASE, authApi, membersApi, type Member } from '@/lib/api';
 import { useAuth } from '@/lib/auth-context';
+import { confirmAction } from '@/lib/swal';
 
 const BUREAU = ['ADMIN','PRESIDENT','SECRETARY_GENERAL','TREASURER','COMMISSIONER','GENERAL_MEANS_MANAGER'];
 
@@ -34,7 +35,8 @@ export default function MembresPage() {
 
   async function toggleSuspension(member: Member) {
     const next = !member.isSuspended;
-    if (!window.confirm(next ? `Geler le compte de ${member.firstName} ${member.lastName} ?` : `Réactiver le compte de ${member.firstName} ${member.lastName} ?`)) return;
+    const confirmation = await confirmAction(next ? 'Geler ce compte ?' : 'Réactiver ce compte ?', `${member.firstName} ${member.lastName}`);
+    if (!confirmation.isConfirmed) return;
     setActioning(member.id);
     try {
       const updated = await membersApi.update(member.id, { isSuspended: next });
