@@ -99,7 +99,7 @@ export default function DepensesPage() {
         </div>
         <div className="flex max-w-full flex-wrap items-center justify-end gap-3">
           {canCreate && (
-            <Link href="/dashboard/caisse/nouvelle-depense" className="btn-primary flex items-center gap-2">
+            <Link href="/dashboard/caisse/nouvelle-depense" className="btn-primary w-full sm:w-auto">
               <Plus size={18} /> Ajouter une dépense
             </Link>
           )}
@@ -112,9 +112,20 @@ export default function DepensesPage() {
         <div className="card overflow-hidden p-0">
           <div className="flex flex-col gap-3 border-b border-slate-100 p-4 sm:flex-row">
             <div className="relative flex-1"><Search className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" size={18}/><input className="input-field w-full pl-10" placeholder="Libellé, bénéficiaire ou demandeur…" value={query} onChange={(e)=>setQuery(e.target.value)}/></div>
-            <select className="input-field min-w-56" value={statusFilter} onChange={(e)=>setStatusFilter(e.target.value)}><option value="ALL">Tous les statuts</option><option value="PENDING_TREASURER">En attente trésorier</option><option value="PENDING_COMMISSIONER">En attente commissaire</option><option value="APPROVED">Approuvées</option><option value="REJECTED">Rejetées</option></select>
+            <select className="input-field w-full min-w-0 sm:min-w-56" value={statusFilter} onChange={(e)=>setStatusFilter(e.target.value)}><option value="ALL">Tous les statuts</option><option value="PENDING_TREASURER">En attente trésorier</option><option value="PENDING_COMMISSIONER">En attente commissaire</option><option value="APPROVED">Approuvées</option><option value="REJECTED">Rejetées</option></select>
           </div>
-          <div className="overflow-x-auto">
+          <div className="space-y-3 p-3 md:hidden">
+            {visibleExpenses.map((e) => {
+              const status = statusLabel(e.status);
+              return <article key={e.id} className="rounded-xl border border-slate-200 bg-white p-4 shadow-sm">
+                <div className="flex items-start justify-between gap-3"><div className="min-w-0"><p className="text-xs text-slate-500">{new Date(e.expenseDate).toLocaleDateString('fr-FR')} · {e.cashBox?.name ?? 'Caisse par défaut'}</p><button type="button" onClick={() => setExpenseDetail(e)} className="mt-1 block max-w-full truncate text-left font-semibold text-[var(--foreground)]">{e.description}</button></div><span className={`shrink-0 rounded-full px-2.5 py-1 text-xs font-medium ${status.color}`}>{status.text}</span></div>
+                <div className="mt-3 flex items-center justify-between gap-3 border-t border-slate-100 pt-3"><span className="font-semibold text-slate-800">{Number(e.amount).toLocaleString('fr-FR')} FCFA</span><span className="truncate text-right text-xs text-slate-500">{e.requestedBy.firstName} {e.requestedBy.lastName}</span></div>
+                {e.status === 'REJECTED' && e.rejectReason && <p className="mt-2 text-xs text-red-600">Motif : {e.rejectReason}</p>}
+                {canAct && <div className="mt-3 flex flex-wrap gap-2">{e.status === 'PENDING_TREASURER' && (isTreasurer || isAdmin) && <><button type="button" onClick={() => handleValidateTreasurer(e.id)} disabled={actioning === e.id} className="rounded-lg bg-emerald-50 px-3 py-2 text-xs font-semibold text-emerald-700 disabled:opacity-60">Valider</button><button type="button" onClick={() => handleReject(e.id)} disabled={actioning === e.id} className="rounded-lg bg-red-50 px-3 py-2 text-xs font-semibold text-red-600 disabled:opacity-60">Rejeter</button></>}{e.status === 'PENDING_COMMISSIONER' && (isCommissioner || isAdmin) && <><button type="button" onClick={() => handleValidateCommissioner(e.id)} disabled={actioning === e.id} className="rounded-lg bg-emerald-50 px-3 py-2 text-xs font-semibold text-emerald-700 disabled:opacity-60">Valider</button><button type="button" onClick={() => handleReject(e.id)} disabled={actioning === e.id} className="rounded-lg bg-red-50 px-3 py-2 text-xs font-semibold text-red-600 disabled:opacity-60">Rejeter</button></>}</div>}
+              </article>;
+            })}
+          </div>
+          <div className="hidden overflow-x-auto md:block">
             <table className="w-full table-fixed text-left">
               <thead>
                 <tr className="border-b border-gray-100 bg-[var(--sky-blue-soft)]">
