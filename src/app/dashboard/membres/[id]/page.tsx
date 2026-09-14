@@ -14,6 +14,7 @@ import { ConfirmModal } from '@/components/ConfirmModal';
 const BUREAU_OR_ADMIN = ['ADMIN', 'PRESIDENT', 'SECRETARY_GENERAL', 'TREASURER', 'COMMISSIONER', 'GENERAL_MEANS_MANAGER'];
 
 const ROLES_EDIT: { value: string; label: string }[] = [
+  { value: 'ADMIN', label: 'Administrateur' },
   { value: 'PLAYER', label: 'Membre' },
   { value: 'FORMER_PLAYER', label: 'Ancien membre' },
   { value: 'SUPPORTER', label: 'Supporter' },
