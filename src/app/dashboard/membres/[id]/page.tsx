@@ -10,6 +10,7 @@ import { useAuth } from '@/lib/auth-context';
 import { API_BASE, membersApi, type Member, type MemberAuditLogEntry } from '@/lib/api';
 import { roleLabelFr, memberRoleLabel } from '@/lib/utils';
 import { ConfirmModal } from '@/components/ConfirmModal';
+import { confirmAction } from '@/lib/swal';
 
 const BUREAU_OR_ADMIN = ['ADMIN', 'PRESIDENT', 'SECRETARY_GENERAL', 'TREASURER', 'COMMISSIONER', 'GENERAL_MEANS_MANAGER'];
 
@@ -97,6 +98,15 @@ export default function MemberDetailPage() {
 
   const onSubmit = async (data: EditFormData) => {
     if (!id || !isAdmin) return;
+
+    if (data.role === 'ADMIN' && member?.role !== 'ADMIN') {
+      const confirmation = await confirmAction(
+        'Transférer les droits d\'administrateur ?',
+        `${data.firstName} ${data.lastName} deviendra le seul administrateur. Vous perdrez immédiatement vos propres droits d'administrateur et redeviendrez membre simple.`,
+      );
+      if (!confirmation.isConfirmed) return;
+    }
+
     setError(null);
     setSuccess(null);
     try {
