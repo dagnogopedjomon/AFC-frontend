@@ -27,14 +27,16 @@ import { cn, roleLabelFr } from '@/lib/utils';
 import { ConfirmModal } from '@/components/ConfirmModal';
 
 const CAISSE_ROLES = ['ADMIN', 'TREASURER', 'COMMISSIONER'];
+const BUREAU_OR_ADMIN = ['ADMIN', 'PRESIDENT', 'SECRETARY_GENERAL', 'TREASURER', 'COMMISSIONER', 'GENERAL_MEANS_MANAGER'];
+const FINES_ROLES = ['ADMIN', 'TREASURER'];
 
 // Redirection « Régulariser » désactivée pour l’instant (comptes actuels). Réactiver avec des comptes de test adaptés.
 
 const baseNav = [
   { href: '/dashboard', label: 'Tableau de bord', icon: LayoutDashboard },
-  { href: '/dashboard/membres', label: 'Membres', icon: Users },
-  { href: '/dashboard/caisse/depenses', label: 'Dépenses', icon: Wallet },
-  { href: '/dashboard/amendes', label: 'Amendes', icon: Gavel },
+  { href: '/dashboard/membres', label: 'Membres', icon: Users, roles: BUREAU_OR_ADMIN },
+  { href: '/dashboard/caisse/depenses', label: 'Dépenses', icon: Wallet, roles: CAISSE_ROLES },
+  { href: '/dashboard/amendes', label: 'Amendes', icon: Gavel, roles: FINES_ROLES },
 ];
 
 const systemNav = [
@@ -44,10 +46,10 @@ const systemNav = [
 const COTISATIONS_SUB = [
   { href: '/dashboard/cotisations/mensuelle', label: 'Cotisations mensuelles' },
   { href: '/dashboard/cotisations/exceptionnelles', label: 'Cotisations exceptionnelles' },
-  { href: '/dashboard/cotisations/historique', label: 'Historique' },
 ];
 
 const COTISATIONS_ADMIN_SUB = [
+  { href: '/dashboard/cotisations/historique', label: 'Historique' },
   { href: '/dashboard/cotisations/gerer', label: 'Gérer' },
   { href: '/dashboard/regularisations', label: 'Régularisations' },
   { href: '/dashboard/cotisations/paiement', label: 'Paiement déjà reçu' },
@@ -57,6 +59,12 @@ const COTISATIONS_ADMIN_SUB = [
 const CAISSE_SUB = [
   { href: '/dashboard/caisse', label: 'Vue d’ensemble', exact: true },
   { href: '/dashboard/caisse/livre', label: 'Livre de caisse', exact: false },
+];
+
+const memberNav = [
+  { href: '/dashboard/mes-paiements', label: 'Mes paiements', icon: Wallet },
+  { href: '/dashboard/mes-amendes', label: 'Mes amendes', icon: Gavel },
+  { href: '/dashboard/caisse/livre', label: 'La caisse du club', icon: PiggyBank },
 ];
 
 function NavGroupClient({
@@ -211,7 +219,12 @@ export default function DashboardLayout({
     });
   };
 
-  const nav = baseNav;
+  const isBureauOrAdmin = !!user && BUREAU_OR_ADMIN.includes(user.role);
+  const nav = [
+    ...baseNav.filter((item) => !item.roles || (user && item.roles.includes(user.role))),
+    ...(user && !isBureauOrAdmin ? memberNav : []),
+  ];
+  const canViewCaisse = !!user && CAISSE_ROLES.includes(user.role);
 
   const caisseBadge =
     user && CAISSE_ROLES.includes(user.role)
@@ -347,15 +360,19 @@ export default function DashboardLayout({
             adminItems={COTISATIONS_ADMIN_SUB}
             isAdmin={user?.role === 'ADMIN' || user?.role === 'TREASURER' || user?.role === 'COMMISSIONER'}
           />
-          <p className="px-3 pb-2 pt-5 text-[10px] font-bold uppercase tracking-[.18em] text-slate-400">Trésorerie</p>
-          <NavGroupClient
-            label="Caisse"
-            icon={Wallet}
-            pathname={pathname}
-            items={CAISSE_SUB}
-            adminItems={[]}
-            isAdmin={false}
-          />
+          {canViewCaisse && (
+            <>
+              <p className="px-3 pb-2 pt-5 text-[10px] font-bold uppercase tracking-[.18em] text-slate-400">Trésorerie</p>
+              <NavGroupClient
+                label="Caisse"
+                icon={Wallet}
+                pathname={pathname}
+                items={CAISSE_SUB}
+                adminItems={[]}
+                isAdmin={false}
+              />
+            </>
+          )}
           <p className="px-3 pb-2 pt-5 text-[10px] font-bold uppercase tracking-[.18em] text-slate-400">Système</p>
           {systemNav.map((item) => (
             <NavLink key={item.href} href={item.href} label={item.label} icon={item.icon} isActive={isActive(item.href)} />
@@ -445,15 +462,17 @@ export default function DashboardLayout({
             isAdmin={user?.role === 'ADMIN' || user?.role === 'TREASURER' || user?.role === 'COMMISSIONER'}
             onClick={() => setMobileMenuOpen(false)}
           />
-          <NavGroupClient
-            label="Caisse"
-            icon={Wallet}
-            pathname={pathname}
-            items={CAISSE_SUB}
-            adminItems={[]}
-            isAdmin={false}
-            onClick={() => setMobileMenuOpen(false)}
-          />
+          {canViewCaisse && (
+            <NavGroupClient
+              label="Caisse"
+              icon={Wallet}
+              pathname={pathname}
+              items={CAISSE_SUB}
+              adminItems={[]}
+              isAdmin={false}
+              onClick={() => setMobileMenuOpen(false)}
+            />
+          )}
           <NavLink
             href="/dashboard/parametres"
             label="Paramètres"

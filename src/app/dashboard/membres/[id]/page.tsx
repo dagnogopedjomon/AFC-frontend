@@ -56,7 +56,9 @@ export default function MemberDetailPage() {
   const [showReactivateModal, setShowReactivateModal] = useState(false);
   const [showDeleteModal, setShowDeleteModal] = useState(false);
 
-  const canView = user && BUREAU_OR_ADMIN.includes(user.role);
+  const isSelf = !!user && user.id === id;
+  const canViewBureau = user && BUREAU_OR_ADMIN.includes(user.role);
+  const canView = canViewBureau || isSelf;
   const isAdmin = user?.role === 'ADMIN';
 
   const {
@@ -74,8 +76,8 @@ export default function MemberDetailPage() {
       return;
     }
     Promise.all([
-      membersApi.one(id),
-      membersApi.auditLog(id).catch(() => []),
+      canViewBureau ? membersApi.one(id) : membersApi.me(),
+      canViewBureau ? membersApi.auditLog(id).catch(() => []) : Promise.resolve([]),
     ])
       .then(([m, log]) => {
         setMember(m);
@@ -94,7 +96,7 @@ export default function MemberDetailPage() {
       })
       .catch((e) => setError(e instanceof Error ? e.message : 'Erreur'))
       .finally(() => setLoading(false));
-  }, [id, canView, reset]);
+  }, [id, canView, canViewBureau, reset]);
 
   const onSubmit = async (data: EditFormData) => {
     if (!id || !isAdmin) return;

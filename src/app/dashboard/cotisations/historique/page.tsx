@@ -6,9 +6,12 @@ import { Plus, Search } from 'lucide-react';
 import { useAuth } from '@/lib/auth-context';
 import { contributionsApi, membersApi, type HistorySummary, type MemberHistory, type Member, type Payment } from '@/lib/api';
 
+const HISTORY_ROLES = ['ADMIN', 'TREASURER', 'COMMISSIONER'];
+
 export default function HistoriquePage() {
   const paymentsPerPage = 10;
   const { user } = useAuth();
+  const canView = !!user && HISTORY_ROLES.includes(user.role);
   const [summary, setSummary] = useState<HistorySummary | null>(null);
   const [members, setMembers] = useState<Member[]>([]);
   const [payments, setPayments] = useState<Payment[]>([]);
@@ -57,7 +60,7 @@ export default function HistoriquePage() {
   }, [filteredPayments, currentPaymentsPage]);
 
   useEffect(() => {
-    if (!user) return;
+    if (!user || !canView) return;
     setLoading(true);
     contributionsApi
       .historySummary()
@@ -65,17 +68,17 @@ export default function HistoriquePage() {
       .catch((e) => setError(e instanceof Error ? e.message : 'Erreur'))
       .finally(() => setLoading(false));
     membersApi.list().then(setMembers).catch(() => {});
-  }, [user]);
+  }, [user, canView]);
 
   useEffect(() => {
-    if (!user) return;
+    if (!user || !canView) return;
     setPaymentsLoading(true);
     contributionsApi
       .payments({ limit: 500 })
       .then(setPayments)
       .catch(() => setPayments([]))
       .finally(() => setPaymentsLoading(false));
-  }, [user]);
+  }, [user, canView]);
 
   useEffect(() => {
     if (!selectedMemberId) {
@@ -87,6 +90,15 @@ export default function HistoriquePage() {
       .then(setMemberHistory)
       .catch(() => setMemberHistory(null));
   }, [selectedMemberId]);
+
+  if (!canView) {
+    return (
+      <div className="card">
+        <h1 className="text-xl font-bold text-[var(--foreground)] mb-2">Historique</h1>
+        <p className="text-gray-600">L’accès à cette page est réservé à l’Admin et au bureau. Consultez vos paiements dans « Mes paiements ».</p>
+      </div>
+    );
+  }
 
   return (
     <div className="space-y-8">

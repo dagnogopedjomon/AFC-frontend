@@ -4,8 +4,6 @@ import { useEffect, useState } from 'react';
 import { useAuth } from '@/lib/auth-context';
 import { caisseApi, contributionsApi, type LivreEntry, type Payment } from '@/lib/api';
 
-const CAISSE_ROLES = ['ADMIN', 'TREASURER', 'COMMISSIONER'];
-
 export default function LivreDeCaissePage() {
   const { user } = useAuth();
   const [livre, setLivre] = useState<LivreEntry[]>([]);
@@ -15,7 +13,7 @@ export default function LivreDeCaissePage() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
-  const canAccess = user && CAISSE_ROLES.includes(user.role);
+  const canAccess = !!user;
 
   useEffect(() => {
     if (!user) return;

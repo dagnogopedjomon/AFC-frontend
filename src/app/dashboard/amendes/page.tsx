@@ -5,22 +5,30 @@ import { Plus, X } from 'lucide-react';
 import { toast } from 'sonner';
 import { administrationApi, membersApi, type Fine, type Member } from '@/lib/api';
 import { confirmAction } from '@/lib/swal';
+import { useAuth } from '@/lib/auth-context';
 
 const reasons = ['Retard de paiement', 'Absence', 'Comportement', 'Autre'];
 const statusLabel: Record<string, string> = { UNPAID: 'À régler', PAID: 'Réglée', CANCELLED: 'Annulée' };
 const date = (value: string | null) => value ? new Date(value).toLocaleDateString('fr-FR', { day: '2-digit', month: 'short', year: 'numeric' }) : '—';
+const FINES_ROLES = ['ADMIN', 'TREASURER'];
 
 export default function AmendesPage() {
+  const { user } = useAuth();
+  const canManage = !!user && FINES_ROLES.includes(user.role);
   const [fines, setFines] = useState<Fine[]>([]); const [members, setMembers] = useState<Member[]>([]);
   const [show, setShow] = useState(false); const [statusFilter, setStatusFilter] = useState('ALL'); const [reasonFilter, setReasonFilter] = useState('ALL'); const [memberFilter, setMemberFilter] = useState('ALL');
   const [memberId, setMemberId] = useState(''); const [reason, setReason] = useState(reasons[0]); const [amount, setAmount] = useState(0); const [note, setNote] = useState('');
   const load = () => administrationApi.fines().then(setFines).catch((e) => toast.error(e.message));
-  useEffect(() => { load(); membersApi.list().then(setMembers).catch(() => setMembers([])); }, []);
+  useEffect(() => { if (canManage) { load(); membersApi.list().then(setMembers).catch(() => setMembers([])); } }, [canManage]);
   const visible = useMemo(() => fines.filter((fine) => (statusFilter === 'ALL' || fine.status === statusFilter) && (reasonFilter === 'ALL' || fine.reason === reasonFilter) && (memberFilter === 'ALL' || fine.member.id === memberFilter)), [fines, statusFilter, reasonFilter, memberFilter]);
   function openWizard() { setMemberId(''); setReason(reasons[0]); setAmount(0); setNote(''); setShow(true); }
   async function submit(event: FormEvent) { event.preventDefault(); if (!memberId || amount <= 0) return; try { await administrationApi.createFine({ memberId, reason, amount, note }); toast.success('Amende enregistrée'); setShow(false); setMemberId(''); setAmount(0); setNote(''); load(); } catch (error) { toast.error(error instanceof Error ? error.message : 'Erreur'); } }
   async function settleFine(id: string) { const confirmation = await confirmAction('Marquer cette amende comme réglée ?', 'Le règlement sera enregistré dans la caisse.'); if (!confirmation.isConfirmed) return; administrationApi.settleFine(id).then(() => { toast.success('Règlement encaissé'); load(); }).catch((error) => toast.error(error instanceof Error ? error.message : 'Erreur')); }
   async function cancelFine(id: string) { const confirmation = await confirmAction('Annuler cette amende ?', 'Cette action peut être auditée par le bureau.'); if (!confirmation.isConfirmed) return; administrationApi.cancelFine(id).then(() => { toast.success('Amende annulée'); load(); }).catch((error) => toast.error(error instanceof Error ? error.message : 'Erreur')); }
+
+  if (!canManage) {
+    return <div className="card"><h1 className="text-xl font-bold text-[var(--foreground)] mb-2">Amendes</h1><p className="text-gray-600">L’accès à cette page est réservé à l’Admin et au trésorier.</p></div>;
+  }
 
   return <div className="space-y-6">
     <header className="flex flex-wrap items-start justify-between gap-4"><div><h1 className="text-2xl font-semibold text-slate-900">Amendes</h1><p className="mt-1 text-sm text-slate-500">Suivi des pénalités et des règlements.</p></div><button className="btn-primary w-full sm:w-auto" onClick={openWizard}><Plus size={18} />Nouvelle amende</button></header>

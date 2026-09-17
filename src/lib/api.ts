@@ -645,6 +645,7 @@ export const administrationApi = {
   createCategory: (name: string) => api<ExpenseCategory>('/administration/expense-categories', { method: 'POST', body: JSON.stringify({ name }) }),
   updateCategory: (id: string, data: { name?: string; isActive?: boolean }) => api<ExpenseCategory>(`/administration/expense-categories/${id}`, { method: 'PATCH', body: JSON.stringify(data) }),
   fines: () => api<Fine[]>('/administration/fines'),
+  myFines: () => api<Fine[]>('/administration/fines/me'),
   createFine: (data: { memberId: string; reason: string; amount: number; note?: string }) => api<Fine>('/administration/fines', { method: 'POST', body: JSON.stringify(data) }),
   settleFine: (id: string) => api<Fine>(`/administration/fines/${id}/settle`, { method: 'PATCH' }),
   cancelFine: (id: string) => api<Fine>(`/administration/fines/${id}/cancel`, { method: 'PATCH' }),

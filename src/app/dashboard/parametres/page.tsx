@@ -4,8 +4,11 @@ import { FormEvent, useEffect, useState } from 'react';
 import { KeyRound, Pencil, Plus, Trash2 } from 'lucide-react';
 import { toast } from 'sonner';
 import { administrationApi, authApi, type ExpenseCategory } from '@/lib/api';
+import { useAuth } from '@/lib/auth-context';
 
 export default function ParametresPage() {
+  const { user } = useAuth();
+  const isAdmin = user?.role === 'ADMIN';
   const [currentPassword, setCurrentPassword] = useState('');
   const [newPassword, setNewPassword] = useState('');
   const [confirmation, setConfirmation] = useState('');
@@ -15,7 +18,7 @@ export default function ParametresPage() {
   const [editingCategoryId,setEditingCategoryId]=useState<string|null>(null);
   const [showCategoryForm,setShowCategoryForm]=useState(false);
   const loadCategories=()=>administrationApi.categories(true).then(setCategories).catch(()=>setCategories([]));
-  useEffect(()=>{loadCategories();},[]);
+  useEffect(()=>{ if (isAdmin) loadCategories(); },[isAdmin]);
 
   async function submit(event: FormEvent) {
     event.preventDefault();
@@ -50,11 +53,11 @@ export default function ParametresPage() {
         <button disabled={submitting} className="btn-primary disabled:opacity-60">{submitting ? 'Mise à jour…' : 'Mettre à jour le mot de passe'}</button>
       </form>
     </div>
-    <section className="card max-w-4xl p-5">
+    {isAdmin && <section className="card max-w-4xl p-5">
       <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between"><div><h2 className="text-xl font-semibold text-slate-900">Catégories de dépense</h2><p className="mt-1 max-w-2xl text-sm leading-6 text-slate-500">Liste des catégories proposées lors de l&apos;enregistrement d&apos;une dépense courante.<br/>Désactivez plutôt que de supprimer si des dépenses y sont déjà liées.</p></div><button type="button" onClick={()=>{setEditingCategoryId(null);setCategoryName('');setShowCategoryForm((v)=>!v);}} className="afc-button-primary shrink-0"><Plus size={16}/> Ajouter</button></div>
       {showCategoryForm && <form className="mt-6 flex flex-col gap-2 rounded-xl border border-slate-200 bg-slate-50 p-4 sm:flex-row" onSubmit={saveCategory}><input className="input-field flex-1" placeholder="Nom de la catégorie" value={categoryName} onChange={e=>setCategoryName(e.target.value)} required autoFocus/><button className="btn-primary">{editingCategoryId ? 'Enregistrer' : 'Ajouter'}</button><button type="button" onClick={()=>{setShowCategoryForm(false);setEditingCategoryId(null);}} className="rounded-lg border border-slate-200 px-4 py-2 text-sm font-medium">Annuler</button></form>}
       <ul className="mt-5 overflow-hidden rounded-xl border border-slate-200 divide-y divide-slate-200">{categories.map(category=><li key={category.id} className="flex items-center justify-between gap-4 px-5 py-4"><span className={`text-base font-medium ${category.isActive?'text-slate-800':'text-slate-400 line-through'}`}>{category.name}</span><div className="flex items-center gap-4"><button type="button" title={category.isActive?'Désactiver':'Réactiver'} aria-label={category.isActive?'Désactiver':'Réactiver'} onClick={()=>administrationApi.updateCategory(category.id,{isActive:!category.isActive}).then(loadCategories)} className={`relative h-8 w-14 rounded-full transition ${category.isActive?'bg-[var(--sky-blue)]':'bg-slate-300'}`}><span className={`absolute top-1 h-6 w-6 rounded-full bg-white shadow-sm transition ${category.isActive?'right-1':'left-1'}`}/></button><button type="button" title="Modifier" aria-label="Modifier" onClick={()=>{setEditingCategoryId(category.id);setCategoryName(category.name);setShowCategoryForm(true);}} className="text-slate-700 hover:text-[var(--sky-blue)]"><Pencil size={18}/></button><button type="button" title="Désactiver la catégorie" aria-label="Désactiver la catégorie" onClick={()=>administrationApi.updateCategory(category.id,{isActive:false}).then(loadCategories)} className="text-orange-600 hover:text-orange-700"><Trash2 size={18}/></button></div></li>)}</ul>
       {categories.length===0 && <p className="mt-8 rounded-xl bg-slate-50 py-8 text-center text-slate-500">Aucune catégorie configurée.</p>}
-    </section>
+    </section>}
   </div>;
 }
