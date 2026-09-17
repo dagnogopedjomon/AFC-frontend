@@ -21,6 +21,7 @@ export default function NewMemberPage() {
   const { user } = useAuth();
   const router = useRouter();
   const [error, setError] = useState<string | null>(null);
+  const [activationLink, setActivationLink] = useState<string | null>(null);
 
   const canCreate = user?.role === 'ADMIN';
 
@@ -41,14 +42,16 @@ export default function NewMemberPage() {
       });
       if (result.smsSent === true) {
         toast.success('Invitation envoyée par SMS.');
+        router.push('/dashboard/membres?invited=1');
       } else if (result.smsError) {
         toast.warning(
           `Invitation créée mais le SMS n'a pas été envoyé : ${result.smsError}`,
         );
+        setActivationLink(result.activationLink ?? null);
       } else {
         toast.success('Invitation envoyée.');
+        router.push('/dashboard/membres?invited=1');
       }
-      router.push('/dashboard/membres?invited=1');
     } catch (e) {
       setError(e instanceof Error ? e.message : 'Erreur lors de l’invitation');
     }
@@ -88,6 +91,31 @@ export default function NewMemberPage() {
           Saisissez le téléphone. La personne sera créée comme membre ; le rôle (Président, Trésorier, etc.) pourra être attribué après élections depuis sa fiche.
         </p>
       </div>
+
+      {activationLink && (
+        <div className="card max-w-xl border-l-4 border-l-amber-400 bg-amber-50">
+          <h2 className="font-semibold text-amber-900">SMS non envoyé — lien d’activation à transmettre manuellement</h2>
+          <p className="mt-1 text-sm text-amber-800">
+            Copiez ce lien et transmettez-le au membre (WhatsApp, email…). Il expire dans 24h.
+          </p>
+          <div className="mt-3 flex flex-col gap-2 sm:flex-row">
+            <input readOnly value={activationLink} className="input-field flex-1 text-sm" onFocus={(e) => e.target.select()} />
+            <button
+              type="button"
+              onClick={() => {
+                navigator.clipboard.writeText(activationLink);
+                toast.success('Lien copié.');
+              }}
+              className="btn-primary shrink-0"
+            >
+              Copier
+            </button>
+          </div>
+          <Link href="/dashboard/membres?invited=1" className="mt-4 inline-block text-sm font-medium text-[var(--sky-blue-dark)] hover:underline">
+            ← Retour aux membres
+          </Link>
+        </div>
+      )}
 
       <div className="card max-w-xl">
         <form onSubmit={handleSubmit(onSubmit)} className="space-y-5">
