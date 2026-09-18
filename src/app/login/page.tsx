@@ -51,7 +51,7 @@ export default function LoginPage() {
 
   return (
     <div
-      className="relative flex min-h-[100dvh] items-start justify-center overflow-hidden px-4 pb-10 pt-8 text-[#F5F1E8]"
+      className="relative flex min-h-[100dvh] items-start justify-center overflow-hidden px-4 pb-4 pt-4 text-[#F5F1E8] sm:pb-10 sm:pt-8"
       style={{ fontFamily: 'var(--font-technical)', background: pageBg }}
     >
       <svg className="pointer-events-none absolute inset-0 z-0 h-full w-full" viewBox="0 0 1440 900" preserveAspectRatio="xMidYMid slice" aria-hidden="true">
@@ -62,33 +62,33 @@ export default function LoginPage() {
       </svg>
 
       <div className="relative z-10 flex w-full flex-col items-center">
-        <div className="relative z-[2] mb-[-24px]">
-          <img src="/images/logo-afc.png" alt="Amicale Football Club" className="block h-[92px] w-auto object-contain" />
+        <div className="relative z-[2] mb-[-16px] sm:mb-[-24px]">
+          <img src="/images/logo-afc.png" alt="Amicale Football Club" className="block h-14 w-auto object-contain sm:h-[92px]" />
         </div>
 
-        <div className="mb-6 pt-9 text-center">
-          <div className="text-[30px] font-semibold tracking-[-0.5px]" style={{ color: pageBg === '#FFFFFF' ? '#10162A' : '#F5F1E8' }}>La trésorerie du club</div>
+        <div className="mb-3 pt-4 text-center sm:mb-6 sm:pt-9">
+          <div className="text-xl font-semibold tracking-[-0.5px] sm:text-[30px]" style={{ color: pageBg === '#FFFFFF' ? '#10162A' : '#F5F1E8' }}>La trésorerie du club</div>
         </div>
 
         <div className="relative w-full max-w-[500px]">
           <div
-            className="pointer-events-none absolute top-1/2 hidden h-px -translate-y-1/2 sm:block"
-            style={{ background: 'rgba(201,160,72,0.45)', right: '100%', width: '50vw' }}
+            className="pointer-events-none fixed hidden h-px sm:block"
+            style={{ background: 'rgba(201,160,72,0.45)', left: 0, width: 'calc(50vw - 250px)', top: '50vh' }}
           />
           <div
-            className="pointer-events-none absolute top-1/2 hidden h-px -translate-y-1/2 sm:block"
-            style={{ background: 'rgba(201,160,72,0.45)', left: '100%', width: '50vw' }}
+            className="pointer-events-none fixed hidden h-px sm:block"
+            style={{ background: 'rgba(201,160,72,0.45)', right: 0, width: 'calc(50vw - 250px)', top: '50vh' }}
           />
           <div
-            className="relative z-10 box-border w-full overflow-hidden border border-[rgba(201,160,72,0.22)] bg-[#161D33] px-14 pb-14 pt-16"
+            className="relative z-10 box-border w-full overflow-hidden border border-[rgba(201,160,72,0.22)] bg-[#161D33] px-6 pb-8 pt-9 sm:px-14 sm:pb-14 sm:pt-16"
             style={{ clipPath: 'polygon(0 0, calc(100% - 36px) 0, 100% 36px, 100% 100%, 0 100%)' }}
           >
-          <h1 className="relative z-[1] m-0 text-2xl font-semibold text-[#F5F1E8]">Content de vous revoir</h1>
-          <p className="relative z-[1] mb-[30px] mt-2 text-sm text-[#9C9585]">Connectez-vous pour accéder à votre espace.</p>
+          <h1 className="relative z-[1] m-0 text-xl font-semibold text-[#F5F1E8] sm:text-2xl">Content de vous revoir</h1>
+          <p className="relative z-[1] mb-4 mt-2 text-sm text-[#9C9585] sm:mb-[30px]">Connectez-vous pour accéder à votre espace.</p>
 
           <form onSubmit={onSubmit} className="relative z-[1] space-y-0">
             {error && (
-              <div className="mb-5 rounded border border-rose-500/30 bg-rose-500/10 px-4 py-3 text-sm text-rose-300">
+              <div className="mb-4 rounded border border-rose-500/30 bg-rose-500/10 px-4 py-3 text-sm text-rose-300 sm:mb-5">
                 {error}
               </div>
             )}
@@ -108,7 +108,7 @@ export default function LoginPage() {
               />
             </div>
 
-            <div className="mt-5">
+            <div className="mt-3 sm:mt-5">
               <label htmlFor="password" className="mb-[7px] block text-xs font-medium tracking-[0.5px] text-[#9C9585]">
                 MOT DE PASSE
               </label>
@@ -146,7 +146,7 @@ export default function LoginPage() {
               </div>
             </div>
 
-            <div className="mt-[18px] flex items-center justify-between text-[13px]">
+            <div className="mt-3 flex items-center justify-between text-[13px] sm:mt-[18px]">
               <label className="flex items-center gap-2 text-[#9C9585]">
                 <input
                   type="checkbox"
@@ -164,7 +164,7 @@ export default function LoginPage() {
             <button
               type="submit"
               disabled={submitting}
-              className="mt-7 w-full box-border rounded-lg border-none bg-[#C9A048] py-[15px] text-[15px] font-semibold tracking-[0.3px] text-[#12140F] transition-opacity hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-55"
+              className="mt-4 w-full box-border rounded-lg border-none bg-[#C9A048] py-[15px] text-[15px] font-semibold tracking-[0.3px] text-[#12140F] transition-opacity hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-55 sm:mt-7"
             >
               {submitting ? 'CONNEXION…' : 'SE CONNECTER'}
             </button>
@@ -172,7 +172,7 @@ export default function LoginPage() {
           </div>
         </div>
 
-        <div className="mt-7 text-xs tracking-[0.5px]" style={{ color: pageBg === '#FFFFFF' ? '#8A8578' : '#6B665A' }}>Besoin d&apos;aide ? Contactez le bureau.</div>
+        <div className="mt-3 text-xs tracking-[0.5px] sm:mt-7" style={{ color: pageBg === '#FFFFFF' ? '#8A8578' : '#6B665A' }}>Besoin d&apos;aide ? Contactez le bureau.</div>
       </div>
     </div>
   );
