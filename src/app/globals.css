@@ -23,9 +23,98 @@
   --sidebar-accent: #ffffff;
   --sidebar-text: #172033;
   --sidebar-text-muted: #64748b;
-  --font-interface: "Inter", "Inter Fallback", "Segoe UI", Arial, sans-serif;
-  --font-editorial: "Fraunces", "Fraunces Fallback", Georgia, serif;
+  --font-interface: "Poppins", "Poppins Fallback", "Segoe UI", Arial, sans-serif;
+  --font-editorial: "Poppins", "Poppins Fallback", "Segoe UI", Arial, sans-serif;
   --font-technical: "Poppins", "Poppins Fallback", "Segoe UI", Arial, sans-serif;
+  --afc-navy-deep: #10162a;
+  --afc-navy-panel: #171f38;
+  --afc-navy-line: rgba(255, 255, 255, 0.08);
+  --afc-gold: #c9a048;
+  --afc-gold-dark: #a9843a;
+
+  /* Palette du dashboard (sombre par défaut) — basculée par [data-theme="light"] */
+  --afc-bg: #0e1116;
+  --afc-sidebar: #0b0e13;
+  --afc-card: #171c27;
+  --afc-text: #edeff3;
+  --afc-text-soft: #c3c7d1;
+  --afc-muted: #6b7280;
+  --afc-muted-2: #9ca3af;
+  --afc-muted-3: #4b505c;
+  --afc-muted-4: #8a8f9b;
+  --afc-hl: 255, 255, 255;
+  --afc-tooltip-bg: #1d2431;
+  --afc-border: rgba(255, 255, 255, 0.08);
+
+  /* Badges de statut — tons ajustés par thème pour rester lisibles */
+  --afc-badge-blue-bg: rgba(46, 95, 163, 0.4);
+  --afc-badge-blue-text: #8fb4e8;
+  --afc-badge-blue-border: rgba(59, 130, 246, 0.3);
+  --afc-badge-emerald-bg: rgba(6, 95, 70, 0.3);
+  --afc-badge-emerald-text: #52c08a;
+  --afc-badge-emerald-border: rgba(16, 185, 129, 0.3);
+  --afc-badge-amber-bg: rgba(120, 53, 15, 0.3);
+  --afc-badge-amber-text: #e3a84e;
+  --afc-badge-amber-border: rgba(217, 119, 6, 0.3);
+  --afc-badge-red-bg: rgba(127, 29, 29, 0.3);
+  --afc-badge-red-text: #e28a87;
+  --afc-badge-red-border: rgba(220, 38, 38, 0.3);
+  --afc-badge-violet-bg: rgba(76, 29, 149, 0.3);
+  --afc-badge-violet-text: #b39ce8;
+  --afc-badge-violet-border: rgba(124, 58, 237, 0.3);
+
+  --afc-avatar-bg: rgba(46, 95, 163, 0.35);
+  --afc-avatar-text: #8fb4e8;
+}
+
+/* La sidebar reste toujours sombre, même en thème clair (voir data-theme="dark" sur l'aside/header mobile) */
+[data-theme='dark'] {
+  --afc-bg: #0e1116;
+  --afc-sidebar: #0b0e13;
+  --afc-card: #171c27;
+  --afc-text: #edeff3;
+  --afc-text-soft: #c3c7d1;
+  --afc-muted: #6b7280;
+  --afc-muted-2: #9ca3af;
+  --afc-muted-3: #4b505c;
+  --afc-muted-4: #8a8f9b;
+  --afc-hl: 255, 255, 255;
+  --afc-tooltip-bg: #1d2431;
+  --afc-border: rgba(255, 255, 255, 0.08);
+}
+
+[data-theme='light'] {
+  --afc-bg: #f5f6f8;
+  --afc-sidebar: #ffffff;
+  --afc-card: #ffffff;
+  --afc-text: #172033;
+  --afc-text-soft: #475569;
+  --afc-muted: #64748b;
+  --afc-muted-2: #6b7280;
+  --afc-muted-3: #94a3b8;
+  --afc-muted-4: #64748b;
+  --afc-hl: 15, 23, 42;
+  --afc-tooltip-bg: #ffffff;
+  --afc-navy-line: rgba(15, 23, 42, 0.12);
+  --afc-border: #e2e5ea;
+  --afc-avatar-bg: #dbeafe;
+  --afc-avatar-text: #1d4ed8;
+
+  --afc-badge-blue-bg: #eff6ff;
+  --afc-badge-blue-text: #1d4ed8;
+  --afc-badge-blue-border: #bfdbfe;
+  --afc-badge-emerald-bg: #ecfdf5;
+  --afc-badge-emerald-text: #047857;
+  --afc-badge-emerald-border: #a7f3d0;
+  --afc-badge-amber-bg: #fffbeb;
+  --afc-badge-amber-text: #b45309;
+  --afc-badge-amber-border: #fde68a;
+  --afc-badge-red-bg: #fef2f2;
+  --afc-badge-red-text: #b91c1c;
+  --afc-badge-red-border: #fecaca;
+  --afc-badge-violet-bg: #f5f3ff;
+  --afc-badge-violet-text: #6d28d9;
+  --afc-badge-violet-border: #ddd6fe;
 }
 
 @theme inline {
@@ -85,16 +174,17 @@ button, input, select, textarea { font: inherit; }
   justify-content: center;
   gap: .5rem;
   min-height: 2.75rem;
-  border-radius: .7rem;
-  background: #315f9e;
+  border-radius: 9999px;
+  background: linear-gradient(180deg, #DDB65C 0%, #C9A048 100%);
   padding: .7rem 1.15rem;
-  color: white;
+  color: #171308;
   font-size: .875rem;
   font-weight: 700;
-  box-shadow: 0 1px 2px rgba(15,23,42,.1);
-  transition: background .18s ease, transform .18s ease;
+  box-shadow: 0 4px 14px rgba(201,160,72,.3);
+  transition: box-shadow .18s ease, transform .18s ease;
 }
-.afc-button-primary:hover { background: #254a7c; }
+.afc-button-primary:hover { box-shadow: 0 6px 18px rgba(201,160,72,.4); transform: translateY(-1px); }
+.afc-button-primary:active { transform: translateY(0); }
 .afc-button-primary:disabled { cursor: not-allowed; opacity: .55; }
 
 /* Safe area pour iPhone (encoche + barre de gestes) en mode PWA */
@@ -111,17 +201,18 @@ button, input, select, textarea { font: inherit; }
   justify-content: center;
   gap: .5rem;
   min-height: 2.75rem;
-  border-radius: .7rem;
-  background: var(--sky-blue);
+  border-radius: 9999px;
+  background: linear-gradient(180deg, #DDB65C 0%, #C9A048 100%);
   padding: .7rem 1.15rem;
-  color: #fff;
+  color: #171308;
   font-size: .875rem;
   font-weight: 700;
-  box-shadow: 0 1px 2px rgba(15,23,42,.1);
-  transition: background .18s ease, transform .18s ease;
+  box-shadow: 0 4px 14px rgba(201,160,72,.3);
+  transition: box-shadow .18s ease, transform .18s ease;
 }
-.btn-primary:hover { background: var(--sky-blue-dark); }
-.btn-primary:focus-visible { outline: 2px solid var(--sky-blue); outline-offset: 2px; }
+.btn-primary:hover { box-shadow: 0 6px 18px rgba(201,160,72,.4); transform: translateY(-1px); }
+.btn-primary:active { transform: translateY(0); }
+.btn-primary:focus-visible { outline: 2px solid var(--afc-gold); outline-offset: 2px; }
 .btn-primary:disabled { cursor: not-allowed; opacity: .55; }
 
 .input-field,
@@ -149,6 +240,51 @@ button, input, select, textarea { font: inherit; }
   transition: background-color 99999s ease-out;
 }
 
+/* Écran de connexion — thème sombre navy/gold validé */
+.afc-login-input {
+  width: 100%;
+  border: 1px solid var(--afc-navy-line);
+  border-radius: 0.75rem;
+  background: rgba(var(--afc-hl), 0.04);
+  padding: 0.85rem 1rem;
+  color: var(--afc-text);
+  outline: none;
+  transition: border-color .18s ease, box-shadow .18s ease, background .18s ease;
+}
+.afc-login-input::placeholder { color: var(--afc-muted); }
+.afc-login-input:focus {
+  border-color: var(--afc-gold);
+  background: rgba(255, 255, 255, 0.06);
+  box-shadow: 0 0 0 3px rgba(201, 160, 72, .16);
+}
+.afc-login-input:-webkit-autofill,
+.afc-login-input:-webkit-autofill:hover,
+.afc-login-input:-webkit-autofill:focus {
+  -webkit-text-fill-color: #edeff3 !important;
+  caret-color: var(--afc-gold);
+  box-shadow: 0 0 0 1000px var(--afc-navy-panel) inset !important;
+  transition: background-color 99999s ease-out;
+}
+
+.afc-login-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: .5rem;
+  min-height: 2.85rem;
+  border-radius: .6rem;
+  background: linear-gradient(180deg, #DDB65C 0%, var(--afc-gold) 100%);
+  padding: .75rem 1.2rem;
+  color: #171308;
+  font-size: .875rem;
+  font-weight: 700;
+  box-shadow: 0 4px 14px rgba(201,160,72,.3);
+  transition: box-shadow .18s ease, transform .18s ease;
+}
+.afc-login-button:hover { box-shadow: 0 6px 18px rgba(201,160,72,.4); transform: translateY(-1px); }
+.afc-login-button:active { transform: translateY(0); }
+.afc-login-button:disabled { cursor: not-allowed; opacity: .55; }
+
 .card {
   @apply bg-white rounded-xl shadow-sm border border-slate-200/80 p-6 transition-all duration-200;
 }
@@ -157,6 +293,19 @@ button, input, select, textarea { font: inherit; }
 }
 
 main table { border-collapse: separate; border-spacing: 0; font-size: .875rem; }
+/* Tables sombres (écrans redesign) : neutralise les règles main/thead/th du thème clair */
+main table.afc-table-dark thead { background: transparent !important; }
+main table.afc-table-dark th { color: var(--afc-muted) !important; }
+main table.afc-table-dark th, main table.afc-table-dark td { border-bottom-color: rgba(var(--afc-hl),0.05) !important; }
+main table.afc-table-dark tbody tr:hover { background: rgba(var(--afc-hl),0.03); }
+
+/* Badges de statut — mêmes classes en clair et en sombre, couleurs ajustées par thème */
+.afc-badge-blue { background-color: var(--afc-badge-blue-bg); color: var(--afc-badge-blue-text); border-color: var(--afc-badge-blue-border); }
+.afc-badge-emerald { background-color: var(--afc-badge-emerald-bg); color: var(--afc-badge-emerald-text); border-color: var(--afc-badge-emerald-border); }
+.afc-badge-amber { background-color: var(--afc-badge-amber-bg); color: var(--afc-badge-amber-text); border-color: var(--afc-badge-amber-border); }
+.afc-badge-red { background-color: var(--afc-badge-red-bg); color: var(--afc-badge-red-text); border-color: var(--afc-badge-red-border); }
+.afc-badge-violet { background-color: var(--afc-badge-violet-bg); color: var(--afc-badge-violet-text); border-color: var(--afc-badge-violet-border); }
+.afc-badge-gray { background-color: rgba(var(--afc-hl),0.06); color: var(--afc-muted-2); border-color: rgba(var(--afc-hl),0.08); }
 /* Les données tabulaires suivent la même typographie Poppins partout. */
 main table tbody { font-family: var(--font-technical); }
 main thead { background: #eef3f7; }

@@ -15,11 +15,14 @@ import {
   Menu,
   X,
   ChevronDown,
+  ChevronRight,
   Settings,
   Gavel,
   KeyRound,
   PanelLeftClose,
   PanelLeftOpen,
+  Sun,
+  Moon,
 } from 'lucide-react';
 import { useAuth } from '@/lib/auth-context';
 import { notificationsApi, caisseApi, activitiesApi } from '@/lib/api';
@@ -67,6 +70,25 @@ const memberNav = [
   { href: '/dashboard/caisse/livre', label: 'La caisse du club', icon: PiggyBank },
 ];
 
+const BREADCRUMB_LABELS: { href: string; label: string }[] = [
+  ...baseNav,
+  ...systemNav,
+  ...COTISATIONS_SUB,
+  ...COTISATIONS_ADMIN_SUB,
+  ...CAISSE_SUB,
+  ...memberNav,
+  { href: '/dashboard/membres/new', label: 'Nouveau membre' },
+  { href: '/dashboard/notifications', label: 'Notifications' },
+  { href: '/dashboard/regulariser', label: 'Régulariser' },
+  { href: '/dashboard/activites', label: 'Activités' },
+  { href: '/dashboard/regularisations', label: 'Régularisations' },
+].sort((a, b) => b.href.length - a.href.length);
+
+function breadcrumbLabel(pathname: string): string {
+  const match = BREADCRUMB_LABELS.find((item) => pathname === item.href || pathname.startsWith(item.href + '/'));
+  return match?.label ?? 'Détail';
+}
+
 function NavGroupClient({
   label,
   icon: Icon,
@@ -78,7 +100,7 @@ function NavGroupClient({
   collapsed = false,
 }: {
   label: string;
-  icon: React.ComponentType<{ className?: string; size?: number }>;
+  icon: React.ComponentType<{ className?: string; size?: number; strokeWidth?: number }>;
   pathname: string;
   items: { href: string; label: string; exact?: boolean }[];
   adminItems?: { href: string; label: string; exact?: boolean }[];
@@ -112,13 +134,13 @@ function NavGroupClient({
           'flex w-full items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium transition',
           collapsed && 'justify-center px-2',
           isParentActive
-            ? 'bg-white text-[var(--sky-blue-dark)] shadow-sm'
-            : 'text-[var(--sidebar-text-muted)] hover:bg-white hover:text-[var(--sidebar-text)]',
+            ? 'border border-[#C9A048]/50 text-[#C9A048] bg-[#C9A048]/[0.08]'
+            : 'border border-transparent text-[var(--afc-text-soft)] hover:bg-[rgba(var(--afc-hl),0.06)] hover:text-[var(--afc-text)]',
         )}
       >
-        <Icon className="shrink-0" size={20} />
+        <Icon className="shrink-0" size={19} strokeWidth={1.6} />
         {!collapsed && <span className="flex-1 min-w-0 truncate text-left">{label}</span>}
-        {!collapsed && <ChevronDown size={16} className={cn('shrink-0 transition-transform', open && 'rotate-180')} />}
+        {!collapsed && <ChevronDown size={15} strokeWidth={1.8} className={cn('shrink-0 transition-transform', open && 'rotate-180')} />}
       </button>
       {open && !collapsed && (
         <div className="mt-0.5 ml-8 space-y-0.5">
@@ -130,8 +152,8 @@ function NavGroupClient({
               className={cn(
                 'flex items-center gap-2 rounded-lg px-3 py-2 text-sm font-medium transition',
                 (item.exact ? pathname === item.href.split('#')[0] : pathname.startsWith(item.href.split('#')[0]))
-                  ? 'bg-white text-[var(--sky-blue-dark)] shadow-sm'
-                  : 'text-[var(--sidebar-text-muted)] hover:bg-white hover:text-[var(--sidebar-text)]',
+                  ? 'bg-[#C9A048] text-[#171308]'
+                  : 'text-[var(--afc-text-soft)] hover:bg-[rgba(var(--afc-hl),0.06)] hover:text-[var(--afc-text)]',
               )}
             >
               {item.label}
@@ -155,7 +177,7 @@ function NavLink({
 }: {
   href: string;
   label: string;
-  icon: React.ComponentType<{ className?: string; size?: number }>;
+  icon: React.ComponentType<{ className?: string; size?: number; strokeWidth?: number }>;
   isActive: boolean;
   onClick?: () => void;
   className?: string;
@@ -170,18 +192,18 @@ function NavLink({
         'flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium transition',
         collapsed && 'justify-center px-2',
         isActive
-          ? 'bg-white text-[var(--sky-blue-dark)] shadow-sm'
-          : 'text-[var(--sidebar-text-muted)] hover:bg-white hover:text-[var(--sidebar-text)]',
+          ? 'bg-[#C9A048] text-[#171308]'
+          : 'text-[var(--afc-text-soft)] hover:bg-[rgba(var(--afc-hl),0.06)] hover:text-[var(--afc-text)]',
         className,
       )}
     >
-      <Icon className="shrink-0" size={20} />
+      <Icon className="shrink-0" size={19} strokeWidth={1.6} />
       {!collapsed && <span className="flex-1 min-w-0 truncate">{label}</span>}
       {badge > 0 && !collapsed && (
         <span
           className={cn(
             'shrink-0 flex items-center justify-center rounded-full min-w-[1.25rem] h-5 px-1.5 text-xs font-bold',
-            isActive ? 'bg-white/25 text-white' : 'bg-[var(--sky-blue)] text-white',
+            isActive ? 'bg-black/20 text-[#171308]' : 'bg-[#2E5FA3] text-white',
           )}
         >
           {badge > 99 ? '99+' : badge}
@@ -206,10 +228,21 @@ export default function DashboardLayout({
   const [pendingCommissioner, setPendingCommissioner] = useState(0);
   const [activitiesRecentCount, setActivitiesRecentCount] = useState(0);
   const [logoutOpen, setLogoutOpen] = useState(false);
+  const [theme, setTheme] = useState<'dark' | 'light'>('dark');
 
   useEffect(() => {
     setSidebarCollapsed(window.localStorage.getItem('afc_sidebar_collapsed') === '1');
+    const storedTheme = window.localStorage.getItem('afc_theme');
+    if (storedTheme === 'light' || storedTheme === 'dark') setTheme(storedTheme);
   }, []);
+
+  const toggleTheme = () => {
+    setTheme((current) => {
+      const next = current === 'dark' ? 'light' : 'dark';
+      window.localStorage.setItem('afc_theme', next);
+      return next;
+    });
+  };
 
   const toggleSidebar = () => {
     setSidebarCollapsed((collapsed) => {
@@ -326,21 +359,22 @@ export default function DashboardLayout({
   }
 
   return (
-    <div className="min-h-screen flex flex-col lg:flex-row">
-      {/* Sidebar — desktop */}
+    <div data-theme={theme} className="min-h-screen flex flex-col lg:flex-row">
+      {/* Sidebar — desktop (toujours sombre, indépendante du thème clair/sombre du contenu) */}
       <aside
+        data-theme="dark"
         className={cn(
-          'hidden lg:flex lg:flex-col lg:fixed lg:inset-y-0 lg:border-r lg:border-[#d2dae3] transition-[width] duration-200 overflow-hidden',
+          'hidden lg:flex lg:flex-col lg:fixed lg:inset-y-0 transition-[width] duration-200 overflow-hidden',
           sidebarCollapsed ? 'lg:w-[76px] [&_p]:hidden [&_span]:hidden [&_button]:justify-center [&_button]:px-2 [&_button>svg:last-child]:hidden [&_a]:justify-center [&_a]:px-2' : 'lg:w-72',
         )}
-        style={{ background: 'var(--sidebar-bg)' }}
+        style={{ background: 'var(--afc-sidebar)' }}
       >
-        <Link href="/dashboard" className="flex h-20 items-center gap-3 px-5 border-b border-[#d2dae3]">
-          <img src="/images/logo-afc.png" alt="Amicale Football Club" className="h-14 w-12 shrink-0 object-contain" />
-          {!sidebarCollapsed && <div><span className="block text-base font-bold text-[var(--foreground)] tracking-tight">Amicale FC</span><span className="text-[11px] text-slate-500">Trésorerie du club</span></div>}
+        <Link href="/dashboard" className="flex h-20 items-center gap-3 px-5">
+          <img src="/images/logo-afc.png" alt="Amicale Football Club" className="h-[68px] w-[58px] shrink-0 object-contain" />
+          {!sidebarCollapsed && <div><span className="block text-base font-bold text-[var(--afc-text)] tracking-tight">Amicale FC</span><span className="text-[11px] text-[var(--afc-muted)]">Trésorerie du club</span></div>}
         </Link>
         <nav className="flex-1 overflow-y-auto p-3 space-y-0.5">
-          <p className="px-3 pb-2 pt-2 text-[10px] font-bold uppercase tracking-[.18em] text-slate-400">Pilotage</p>
+          <p className="px-3 pb-2 pt-2 text-[10px] font-bold uppercase tracking-[.18em] text-[var(--afc-muted-3)]">Pilotage</p>
           {nav.map((item) => (
             <NavLink
               key={item.href}
@@ -351,7 +385,7 @@ export default function DashboardLayout({
               badge={item.href === '/dashboard/activites' ? activitiesRecentCount : 0}
             />
           ))}
-          <p className="px-3 pb-2 pt-5 text-[10px] font-bold uppercase tracking-[.18em] text-slate-400">Cotisations</p>
+          <p className="px-3 pb-2 pt-5 text-[10px] font-bold uppercase tracking-[.18em] text-[var(--afc-muted-3)]">Cotisations</p>
           <NavGroupClient
             label="Cotisations"
             icon={PiggyBank}
@@ -362,7 +396,7 @@ export default function DashboardLayout({
           />
           {canViewCaisse && (
             <>
-              <p className="px-3 pb-2 pt-5 text-[10px] font-bold uppercase tracking-[.18em] text-slate-400">Trésorerie</p>
+              <p className="px-3 pb-2 pt-5 text-[10px] font-bold uppercase tracking-[.18em] text-[var(--afc-muted-3)]">Trésorerie</p>
               <NavGroupClient
                 label="Caisse"
                 icon={Wallet}
@@ -373,7 +407,7 @@ export default function DashboardLayout({
               />
             </>
           )}
-          <p className="px-3 pb-2 pt-5 text-[10px] font-bold uppercase tracking-[.18em] text-slate-400">Système</p>
+          <p className="px-3 pb-2 pt-5 text-[10px] font-bold uppercase tracking-[.18em] text-[var(--afc-muted-3)]">Système</p>
           {systemNav.map((item) => (
             <NavLink key={item.href} href={item.href} label={item.label} icon={item.icon} isActive={isActive(item.href)} />
           ))}
@@ -385,45 +419,57 @@ export default function DashboardLayout({
             badge={inAppUnreadCount}
           />
         </nav>
-        <div className="border-t border-slate-200 p-3">
-          <div className="flex items-center gap-2 rounded-lg bg-white/70 p-2">
-            <div className="grid h-9 w-9 shrink-0 place-items-center rounded-full bg-[#dbe7f5] text-xs font-bold text-[#315f9e]">{user?.firstName?.[0]}{user?.lastName?.[0]}</div>
-            {!sidebarCollapsed && <div className="min-w-0 flex-1"><p className="truncate text-sm font-semibold text-slate-800">{user?.firstName} {user?.lastName}</p><p className="truncate text-[11px] text-slate-500">{user?.email || roleLabelFr(user?.role || '')}</p></div>}
-            {!sidebarCollapsed && <Link href={user?.id ? `/dashboard/membres/${user.id}` : '/dashboard/parametres'} title="Gérer mon compte" aria-label="Gérer mon compte" className="grid h-8 w-8 shrink-0 place-items-center rounded-lg border border-slate-200 bg-white text-slate-600 hover:bg-slate-50 hover:text-blue-700"><KeyRound size={16} /></Link>}
-            <button type="button" onClick={() => setLogoutOpen(true)} title="Déconnexion" aria-label="Déconnexion" className="grid h-8 w-8 shrink-0 place-items-center rounded-lg border border-slate-200 bg-white text-slate-600 hover:bg-red-50 hover:text-red-700"><LogOut size={16} /></button>
+        <div className="border-t border-[rgba(var(--afc-hl),0.08)] p-3">
+          <div className="flex items-center gap-2 rounded-lg bg-[rgba(var(--afc-hl),0.04)] p-2">
+            <div className="grid h-9 w-9 shrink-0 place-items-center rounded-full bg-[var(--afc-avatar-bg)] text-xs font-bold text-[var(--afc-avatar-text)]">{user?.firstName?.[0]}{user?.lastName?.[0]}</div>
+            {!sidebarCollapsed && <div className="min-w-0 flex-1"><p className="truncate text-sm font-semibold text-[var(--afc-text)]">{user?.firstName} {user?.lastName}</p><p className="truncate text-[11px] text-[var(--afc-muted)]">{user?.email || roleLabelFr(user?.role || '')}</p></div>}
+            {!sidebarCollapsed && <Link href={user?.id ? `/dashboard/membres/${user.id}` : '/dashboard/parametres'} title="Gérer mon compte" aria-label="Gérer mon compte" className="grid h-8 w-8 shrink-0 place-items-center rounded-lg border border-white/10 bg-[rgba(var(--afc-hl),0.03)] text-[var(--afc-muted-4)] hover:bg-[rgba(var(--afc-hl),0.08)] hover:text-[var(--afc-text)]"><KeyRound size={16} /></Link>}
+            <button type="button" onClick={toggleTheme} title={theme === 'dark' ? 'Passer au thème clair' : 'Passer au thème sombre'} aria-label={theme === 'dark' ? 'Passer au thème clair' : 'Passer au thème sombre'} className="grid h-8 w-8 shrink-0 place-items-center rounded-lg border border-white/10 bg-[rgba(var(--afc-hl),0.03)] text-[var(--afc-muted-4)] hover:bg-[rgba(var(--afc-hl),0.08)] hover:text-[#C9A048]">{theme === 'dark' ? <Sun size={16} strokeWidth={1.6} /> : <Moon size={16} strokeWidth={1.6} />}</button>
+            <button type="button" onClick={() => setLogoutOpen(true)} title="Déconnexion" aria-label="Déconnexion" className="grid h-8 w-8 shrink-0 place-items-center rounded-lg border border-white/10 bg-[rgba(var(--afc-hl),0.03)] text-[var(--afc-muted-4)] hover:bg-red-500/10 hover:text-red-300"><LogOut size={16} strokeWidth={1.6} /></button>
           </div>
         </div>
       </aside>
 
-      {/* Header mobile */}
+      {/* Header mobile (toujours sombre) */}
       <header
-        className="lg:hidden sticky top-0 z-20 flex h-16 items-center justify-between border-b border-slate-200 px-4 shadow-sm"
-        style={{ background: 'var(--sidebar-bg)' }}
+        data-theme="dark"
+        className="lg:hidden sticky top-0 z-20 flex h-16 items-center justify-between border-b border-[rgba(var(--afc-hl),0.08)] px-4"
+        style={{ background: 'var(--afc-sidebar)' }}
       >
         <button
           type="button"
           onClick={() => setMobileMenuOpen((o) => !o)}
-          className="p-2 rounded-lg text-[var(--sidebar-text-muted)] hover:bg-white transition"
+          className="p-2 rounded-lg text-[var(--afc-text-soft)] hover:bg-[rgba(var(--afc-hl),0.06)] transition"
           aria-label="Menu"
         >
-          {mobileMenuOpen ? <X size={24} /> : <Menu size={24} />}
+          {mobileMenuOpen ? <X size={22} strokeWidth={1.7} /> : <Menu size={22} strokeWidth={1.7} />}
         </button>
         <Link href="/dashboard" className="flex items-center justify-center gap-2 min-w-0 flex-1">
           <img src="/images/logo-afc.png" alt="Amicale Football Club" className="h-11 w-9 shrink-0 object-contain" />
-          <span className="text-base font-bold text-[var(--foreground)] truncate">Amicale FC</span>
+          <span className="text-base font-bold text-[var(--afc-text)] truncate">Amicale FC</span>
         </Link>
-        <Link
-          href="/dashboard/notifications"
-          className="relative p-2 rounded-lg text-[var(--sidebar-text-muted)] hover:bg-white transition"
-          aria-label="Notifications"
-        >
-          <Bell size={22} />
-          {inAppUnreadCount > 0 && (
-            <span className="absolute -top-0.5 -right-0.5 flex h-5 min-w-[1.25rem] items-center justify-center rounded-full bg-red-500 px-1.5 text-[10px] font-bold text-white">
-              {inAppUnreadCount > 99 ? '99+' : inAppUnreadCount}
-            </span>
-          )}
-        </Link>
+        <div className="flex items-center gap-1">
+          <button
+            type="button"
+            onClick={toggleTheme}
+            className="p-2 rounded-lg text-[var(--afc-text-soft)] hover:bg-[rgba(var(--afc-hl),0.06)] transition"
+            aria-label={theme === 'dark' ? 'Passer au thème clair' : 'Passer au thème sombre'}
+          >
+            {theme === 'dark' ? <Sun size={20} strokeWidth={1.6} /> : <Moon size={20} strokeWidth={1.6} />}
+          </button>
+          <Link
+            href="/dashboard/notifications"
+            className="relative p-2 rounded-lg text-[var(--afc-text-soft)] hover:bg-[rgba(var(--afc-hl),0.06)] transition"
+            aria-label="Notifications"
+          >
+            <Bell size={21} strokeWidth={1.6} />
+            {inAppUnreadCount > 0 && (
+              <span className="absolute -top-0.5 -right-0.5 flex h-5 min-w-[1.25rem] items-center justify-center rounded-full bg-red-500 px-1.5 text-[10px] font-bold text-white">
+                {inAppUnreadCount > 99 ? '99+' : inAppUnreadCount}
+              </span>
+            )}
+          </Link>
+        </div>
       </header>
 
       {/* Drawer mobile */}
@@ -435,11 +481,12 @@ export default function DashboardLayout({
         />
       )}
       <div
+        data-theme="dark"
         className={cn(
           'lg:hidden fixed top-16 left-0 right-0 z-40 h-[calc(100vh-4rem)] overflow-y-auto transition-transform duration-200',
           mobileMenuOpen ? 'translate-x-0' : '-translate-x-full',
         )}
-        style={{ background: 'var(--sidebar-bg)', borderRight: '1px solid #e2e8f0' }}
+        style={{ background: 'var(--afc-sidebar)', borderRight: '1px solid rgba(var(--afc-hl),0.08)' }}
       >
         <nav className="p-4 space-y-0.5">
           {nav.map((item) => (
@@ -489,13 +536,13 @@ export default function DashboardLayout({
             badge={inAppUnreadCount}
           />
         </nav>
-        <div className="p-4 border-t border-slate-600/50">
+        <div className="p-4 border-t border-[rgba(var(--afc-hl),0.08)]">
           <button
             type="button"
             onClick={() => { setMobileMenuOpen(false); setLogoutOpen(true); }}
-            className="flex w-full items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-medium text-[var(--sidebar-text-muted)] hover:bg-red-500/20 hover:text-red-300"
+            className="flex w-full items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-medium text-[var(--afc-text-soft)] hover:bg-red-500/20 hover:text-red-300"
           >
-            <LogOut size={20} />
+            <LogOut size={19} strokeWidth={1.6} />
             Déconnexion
           </button>
         </div>
@@ -513,17 +560,34 @@ export default function DashboardLayout({
       />
 
       {/* Main content */}
-      <main className={cn('flex-1 flex flex-col min-h-screen bg-[#f7f9fb] transition-[padding] duration-200', sidebarCollapsed ? 'lg:pl-[76px]' : 'lg:pl-72')}>
-        <button
-          type="button"
-          onClick={toggleSidebar}
-          title={sidebarCollapsed ? 'Afficher la barre latérale' : 'Réduire la barre latérale'}
-          aria-label={sidebarCollapsed ? 'Afficher la barre latérale' : 'Réduire la barre latérale'}
-          className="fixed top-4 z-30 hidden h-9 w-9 place-items-center rounded-lg border border-slate-200 bg-white text-slate-600 shadow-sm transition hover:border-[var(--sky-blue)] hover:text-[var(--sky-blue)] lg:grid"
-          style={{ left: sidebarCollapsed ? '92px' : '304px' }}
-        >
-          {sidebarCollapsed ? <PanelLeftOpen size={17} /> : <PanelLeftClose size={17} />}
-        </button>
+      <main className={cn('flex-1 flex flex-col min-h-screen bg-[var(--afc-bg)] text-[var(--afc-text)] transition-[padding] duration-200', sidebarCollapsed ? 'lg:pl-[76px]' : 'lg:pl-72')}>
+        {pathname === '/dashboard' ? (
+          <button
+            type="button"
+            onClick={toggleSidebar}
+            title={sidebarCollapsed ? 'Afficher la barre latérale' : 'Réduire la barre latérale'}
+            aria-label={sidebarCollapsed ? 'Afficher la barre latérale' : 'Réduire la barre latérale'}
+            className="fixed top-4 z-30 hidden h-9 w-9 place-items-center rounded-lg border border-white/10 bg-[var(--afc-card)] text-[var(--afc-muted-4)] shadow-sm transition hover:border-[#C9A048] hover:text-[#C9A048] lg:grid"
+            style={{ left: sidebarCollapsed ? '92px' : '304px' }}
+          >
+            {sidebarCollapsed ? <PanelLeftOpen size={16} strokeWidth={1.6} /> : <PanelLeftClose size={16} strokeWidth={1.6} />}
+          </button>
+        ) : (
+          <div className="sticky top-0 z-20 hidden h-16 items-center gap-3 border-b border-[var(--afc-border)] bg-[var(--afc-bg)] px-6 lg:flex">
+            <button
+              type="button"
+              onClick={toggleSidebar}
+              title={sidebarCollapsed ? 'Afficher la barre latérale' : 'Réduire la barre latérale'}
+              aria-label={sidebarCollapsed ? 'Afficher la barre latérale' : 'Réduire la barre latérale'}
+              className="grid h-8 w-8 shrink-0 place-items-center rounded-lg text-[var(--afc-muted)] transition hover:bg-[rgba(var(--afc-hl),0.06)] hover:text-[#C9A048]"
+            >
+              {sidebarCollapsed ? <PanelLeftOpen size={18} strokeWidth={1.6} /> : <PanelLeftClose size={18} strokeWidth={1.6} />}
+            </button>
+            <span className="text-[15px] text-[var(--afc-muted)]">Amicale FC</span>
+            <span className="select-none text-[15px] text-[#3A3F4C]">/</span>
+            <span className="text-[15px] font-medium text-[var(--afc-text)]">{breadcrumbLabel(pathname)}</span>
+          </div>
+        )}
         {user && !user.isSuspended && user.reactivatedAt && user.role !== 'ADMIN' && (
           <div className="bg-amber-50 border-b border-amber-200 px-4 py-3 text-center text-amber-800 text-sm font-medium">
             Vous avez été réactivé temporairement. Vous avez <strong>24 h</strong> pour régulariser votre cotisation, sinon votre compte sera désactivé à nouveau.{' '}
@@ -536,7 +600,7 @@ export default function DashboardLayout({
       </main>
 
       {/* Bottom navigation — mobile (4 principaux + Plus) */}
-      <nav className="lg:hidden fixed bottom-0 left-0 right-0 z-10 flex items-center justify-around border-t border-slate-200 bg-white/95 backdrop-blur py-2 safe-area-pb shadow-[0_-4px_20px_rgba(0,0,0,0.06)]">
+      <nav data-theme="dark" className="lg:hidden fixed bottom-0 left-0 right-0 z-10 flex items-center justify-around border-t border-[rgba(var(--afc-hl),0.08)] bg-[var(--afc-sidebar)]/95 backdrop-blur py-2 safe-area-pb">
         {nav.slice(0, 4).map((item) => {
           const Icon = item.icon;
           const active = isActive(item.href);
@@ -546,10 +610,10 @@ export default function DashboardLayout({
               href={item.href}
               className={cn(
                 'flex flex-col items-center gap-0.5 rounded-xl px-3 py-2 min-w-[72px] transition touch-manipulation',
-                active ? 'text-[var(--sky-blue-dark)] bg-[var(--sky-blue-soft)] font-medium' : 'text-slate-500 hover:text-slate-700',
+                active ? 'text-[#171308] bg-[#C9A048] font-medium' : 'text-[var(--afc-muted-4)] hover:text-[var(--afc-text)]',
               )}
             >
-              <Icon size={22} />
+              <Icon size={21} strokeWidth={1.6} />
               <span className="text-[10px] font-medium truncate max-w-[80px]">{item.label}</span>
             </Link>
           );
@@ -560,12 +624,12 @@ export default function DashboardLayout({
           className={cn(
             'flex flex-col items-center gap-0.5 rounded-xl px-3 py-2 min-w-[72px] transition touch-manipulation',
             pathname !== '/dashboard' && nav.slice(4).some((item) => isActive(item.href))
-              ? 'text-[var(--sky-blue-dark)] bg-[var(--sky-blue-soft)] font-medium'
-              : 'text-slate-500 hover:text-slate-700',
+              ? 'text-[#171308] bg-[#C9A048] font-medium'
+              : 'text-[var(--afc-muted-4)] hover:text-[var(--afc-text)]',
           )}
           aria-label="Plus de menus"
         >
-          <Menu size={22} />
+          <Menu size={21} strokeWidth={1.6} />
           <span className="text-[10px] font-medium">Plus</span>
         </button>
       </nav>

@@ -35,66 +35,66 @@ export default function MesPaiementsPage() {
   }, [payments, typeFilter, startDate, endDate]);
 
   return (
-    <div className="space-y-6">
-      <div>
-        <h1 className="text-2xl font-bold text-[var(--foreground)]">Mes paiements</h1>
-        <p className="text-gray-600 mt-1">Historique de vos paiements de cotisations.</p>
-      </div>
+    <div className="space-y-5">
+      <header className="pt-1">
+        <h1 className="text-[28px] font-light tracking-[-0.02em] text-[var(--afc-text)]">Mes paiements</h1>
+        <p className="mt-0.5 text-sm text-[var(--afc-muted)]">Historique de vos paiements de cotisations.</p>
+      </header>
 
-      <div className="card">
-        <div className="mb-4 flex w-fit flex-wrap gap-1 rounded-lg bg-slate-100 p-1 text-sm">
+      <div className="rounded-xl border border-[var(--afc-border)] bg-[var(--afc-card)] p-5">
+        <div className="mb-4 flex w-fit flex-wrap gap-1 rounded-lg bg-[rgba(var(--afc-hl),0.04)] p-1 text-sm">
           {([['ALL', 'Tous'], ['MONTHLY', 'Mensuelles'], ['EXCEPTIONAL', 'Exceptionnelles']] as const).map(([value, label]) => (
             <button
               key={value}
               type="button"
               onClick={() => setTypeFilter(value)}
-              className={`rounded-md px-4 py-2 font-medium ${typeFilter === value ? 'bg-white text-blue-700 shadow-sm' : 'text-slate-500'}`}
+              className={`rounded-md px-4 py-2 font-medium transition ${typeFilter === value ? 'bg-[#C9A048] text-[#171308]' : 'text-[var(--afc-muted-2)] hover:text-[var(--afc-text)]'}`}
             >
               {label}
             </button>
           ))}
         </div>
         <div className="mb-4 grid gap-3 sm:grid-cols-3">
-          <input type="date" className="input-field" aria-label="Date de début" value={startDate} onChange={(e) => setStartDate(e.target.value)} />
-          <input type="date" className="input-field" aria-label="Date de fin" value={endDate} onChange={(e) => setEndDate(e.target.value)} />
-          <button type="button" className="rounded-lg border border-slate-200 px-4 py-2 text-sm font-medium" onClick={() => { setStartDate(''); setEndDate(''); setTypeFilter('ALL'); }}>
+          <input type="date" className="afc-login-input text-sm" aria-label="Date de début" value={startDate} onChange={(e) => setStartDate(e.target.value)} />
+          <input type="date" className="afc-login-input text-sm" aria-label="Date de fin" value={endDate} onChange={(e) => setEndDate(e.target.value)} />
+          <button type="button" className="rounded-lg border border-[rgba(var(--afc-hl),0.1)] bg-[rgba(var(--afc-hl),0.03)] px-4 py-2 text-sm font-medium text-[var(--afc-text-soft)] transition hover:bg-[rgba(var(--afc-hl),0.06)]" onClick={() => { setStartDate(''); setEndDate(''); setTypeFilter('ALL'); }}>
             Réinitialiser
           </button>
         </div>
 
         {loading ? (
-          <div className="py-8 flex justify-center">
-            <div className="inline-block h-8 w-8 animate-spin rounded-full border-4 border-[var(--sky-blue)] border-r-transparent" />
+          <div className="flex justify-center py-8">
+            <div className="inline-block h-8 w-8 animate-spin rounded-full border-4 border-[#C9A048] border-r-transparent" />
           </div>
         ) : (
-          <div className="overflow-x-auto">
-            <table className="w-full text-left text-sm">
+          <div className="overflow-x-auto rounded-lg border border-[var(--afc-border)]">
+            <table className="afc-table-dark w-full text-left text-sm">
               <thead>
-                <tr className="border-b border-gray-100 bg-[var(--sky-blue-soft)]">
-                  <th className="px-4 py-3 text-[var(--sky-blue-dark)]">Date</th>
-                  <th className="px-4 py-3 text-gray-600">Type</th>
-                  <th className="px-4 py-3 text-gray-600">Objet</th>
-                  <th className="px-4 py-3 text-right text-gray-600">Montant</th>
+                <tr>
+                  <th className="px-4 py-3 text-[11px] font-semibold uppercase tracking-wider text-[var(--afc-muted)]">Date</th>
+                  <th className="px-4 py-3 text-[11px] font-semibold uppercase tracking-wider text-[var(--afc-muted)]">Type</th>
+                  <th className="px-4 py-3 text-[11px] font-semibold uppercase tracking-wider text-[var(--afc-muted)]">Objet</th>
+                  <th className="px-4 py-3 text-right text-[11px] font-semibold uppercase tracking-wider text-[var(--afc-muted)]">Montant</th>
                 </tr>
               </thead>
               <tbody>
                 {filtered.length === 0 ? (
                   <tr>
-                    <td colSpan={4} className="px-4 py-6 text-center text-gray-500">
+                    <td colSpan={4} className="px-4 py-6 text-center text-[var(--afc-muted)]">
                       Aucun paiement enregistré.
                     </td>
                   </tr>
                 ) : (
                   filtered.map((p) => (
-                    <tr key={p.id} className={`border-b border-gray-50 ${p.cancelledAt ? 'opacity-50' : ''}`}>
-                      <td className="px-4 py-3 text-gray-600 whitespace-nowrap">
+                    <tr key={p.id} className={`border-t border-[rgba(var(--afc-hl),0.04)] transition hover:bg-[rgba(var(--afc-hl),0.02)] ${p.cancelledAt ? 'opacity-50' : ''}`}>
+                      <td className="whitespace-nowrap px-4 py-3 text-[var(--afc-muted-2)]">
                         {new Date(p.paidAt).toLocaleDateString('fr-FR', { day: 'numeric', month: 'short', year: 'numeric' })}
                       </td>
-                      <td className="px-4 py-3 text-gray-600">{typeLabel[p.contribution?.type ?? ''] ?? '—'}</td>
-                      <td className="px-4 py-3 font-medium text-[var(--foreground)]">{p.contribution?.name ?? '—'}</td>
-                      <td className="px-4 py-3 text-right font-medium">
+                      <td className="px-4 py-3 text-[var(--afc-muted-2)]">{typeLabel[p.contribution?.type ?? ''] ?? '—'}</td>
+                      <td className="px-4 py-3 font-medium text-[var(--afc-text)]">{p.contribution?.name ?? '—'}</td>
+                      <td className="px-4 py-3 text-right font-medium text-[var(--afc-text)]">
                         {Number(p.amount).toLocaleString('fr-FR')} FCFA
-                        {p.cancelledAt && <span className="ml-2 text-xs font-semibold text-red-600">Annulé</span>}
+                        {p.cancelledAt && <span className="ml-2 text-xs font-semibold text-red-400">Annulé</span>}
                       </td>
                     </tr>
                   ))

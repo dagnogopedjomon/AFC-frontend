@@ -1,7 +1,6 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import Link from 'next/link';
 import { useForm, Controller } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
@@ -21,6 +20,11 @@ const TYPE_LABELS: Record<string, string> = {
   MONTHLY: 'Mensuelle',
   EXCEPTIONAL: 'Exceptionnelle',
   PROJECT: 'Projet',
+};
+const TYPE_TONE: Record<string, string> = {
+  MONTHLY: 'afc-badge-blue border',
+  EXCEPTIONAL: 'afc-badge-amber border',
+  PROJECT: 'afc-badge-emerald border',
 };
 
 const schemaExceptional = z.object({
@@ -63,56 +67,48 @@ export default function GererCotisationsPage() {
 
   if (!canAccess) {
     return (
-      <div className="card">
-        <h1 className="text-xl font-bold text-[var(--foreground)] mb-2">Gérer les cotisations</h1>
-        <p className="text-gray-600 mb-4">Réservé à l’Admin et au Trésorier.</p>
-        <Link href="/dashboard/cotisations" className="text-[var(--sky-blue-dark)] hover:underline">
-          ← Cotisations
-        </Link>
+      <div className="rounded-xl border border-[var(--afc-border)] bg-[var(--afc-card)] p-6">
+        <h1 className="mb-2 text-xl font-semibold text-[var(--afc-text)]">Gérer les cotisations</h1>
+        <p className="text-sm text-[var(--afc-muted)]">Réservé à l&rsquo;Admin et au Trésorier.</p>
       </div>
     );
   }
 
   return (
-    <div className="space-y-8">
-      <div className="flex items-center gap-4">
-        <Link href="/dashboard/cotisations" className="text-[var(--sky-blue-dark)] hover:underline font-medium">
-          ← Cotisations
-        </Link>
-      </div>
-      <div>
-        <h1 className="text-2xl font-bold text-[var(--foreground)]">Gérer les cotisations</h1>
-        <p className="text-gray-600 mt-1">Liste des cotisations et création d’exceptionnelles.</p>
-      </div>
+    <div className="space-y-5">
+      <header className="pt-1">
+        <h1 className="text-[28px] font-light tracking-[-0.02em] text-[var(--afc-text)]">Gérer les cotisations</h1>
+        <p className="mt-0.5 text-sm text-[var(--afc-muted)]">Liste des cotisations et création d&rsquo;exceptionnelles.</p>
+      </header>
 
       {error && (
-        <div className="rounded-xl bg-red-50 text-red-700 px-4 py-3">{error}</div>
+        <div className="rounded-xl border border-red-700/30 bg-red-900/20 px-4 py-3 text-red-400">{error}</div>
       )}
 
       {loading ? (
-        <div className="card flex justify-center py-12">
-          <div className="inline-block h-10 w-10 animate-spin rounded-full border-4 border-[var(--sky-blue)] border-r-transparent" />
+        <div className="flex justify-center rounded-xl border border-[var(--afc-border)] bg-[var(--afc-card)] py-12">
+          <div className="inline-block h-10 w-10 animate-spin rounded-full border-4 border-[#C9A048] border-r-transparent" />
         </div>
       ) : (
         <>
           {monthly && (
-            <div className="card border-l-4 border-l-[var(--sky-blue)]">
-              <h2 className="text-lg font-semibold text-[var(--foreground)] mb-4">Cotisation de base (mensuelle)</h2>
+            <div className="rounded-xl border border-[var(--afc-border)] bg-[var(--afc-card)] p-5">
+              <h2 className="mb-4 text-lg font-semibold text-[var(--afc-text)]">Cotisation de base (mensuelle)</h2>
               {!editingMonthly ? (
                 <div className="flex flex-wrap items-center justify-between gap-4">
                   <div>
-                    <p className="font-medium text-[var(--foreground)]">{monthly.name}</p>
-                    <p className="text-gray-600 mt-1">
+                    <p className="font-medium text-[var(--afc-text)]">{monthly.name}</p>
+                    <p className="mt-1 text-[var(--afc-muted-2)]">
                       {monthly.amount != null ? `${Number(monthly.amount).toLocaleString('fr-FR')} FCFA / mois` : 'Montant non défini'}
                     </p>
-                    <p className="text-sm text-gray-500 mt-1">
-                      Les membres doivent payer au moins ce montant. Un paiement manuel (montant différent) peut être enregistré par l'admin/trésorier.
+                    <p className="mt-1 text-sm text-[var(--afc-muted)]">
+                      Les membres doivent payer au moins ce montant. Un paiement manuel (montant différent) peut être enregistré par l&apos;admin/trésorier.
                     </p>
                   </div>
                   <button
                     type="button"
                     onClick={() => setEditingMonthly(true)}
-                    className="px-4 py-2 rounded-xl border border-[var(--sky-blue)] text-[var(--sky-blue-dark)] hover:bg-[var(--sky-blue-soft)] font-medium"
+                    className="rounded-xl border border-[#C9A048]/40 px-4 py-2 font-medium text-[#C9A048] transition hover:bg-[#C9A048]/10"
                   >
                     Modifier
                   </button>
@@ -135,9 +131,9 @@ export default function GererCotisationsPage() {
             <button
               type="button"
               onClick={() => setShowForm(!showForm)}
-              className="btn-primary text-sm"
+              className="afc-button-primary text-sm"
             >
-              <Plus size={16} aria-hidden="true" /> Nouvelle cotisation exceptionnelle
+              <Plus size={15} strokeWidth={2} aria-hidden="true" /> Nouvelle cotisation exceptionnelle
             </button>
           </div>
 
@@ -152,48 +148,42 @@ export default function GererCotisationsPage() {
             />
           )}
 
-          <div className="card">
-            <h2 className="text-lg font-semibold text-[var(--foreground)] mb-4">Toutes les cotisations</h2>
+          <div className="overflow-hidden rounded-xl border border-[var(--afc-border)] bg-[var(--afc-card)]">
+            <div className="p-5 pb-0">
+              <h2 className="mb-4 text-lg font-semibold text-[var(--afc-text)]">Toutes les cotisations</h2>
+            </div>
             <div className="overflow-x-auto">
-              <table className="w-full text-left">
+              <table className="afc-table-dark w-full text-left">
                 <thead>
-                  <tr className="border-b border-gray-100 bg-[var(--sky-blue-soft)]">
-                    <th className="px-4 py-3 text-sm font-semibold text-[var(--sky-blue-dark)]">Nom</th>
-                    <th className="px-4 py-3 text-sm font-semibold text-gray-600">Type</th>
-                    <th className="px-4 py-3 text-sm font-semibold text-gray-600">Montant / Objectif</th>
-                    <th className="px-4 py-3 text-sm font-semibold text-gray-600">Période / Reçu</th>
-                    <th className="px-4 py-3 text-sm font-semibold text-gray-600">Paiements</th>
+                  <tr>
+                    <th className="px-5 py-3 text-[11px] font-semibold uppercase tracking-wider text-[var(--afc-muted)]">Nom</th>
+                    <th className="px-5 py-3 text-[11px] font-semibold uppercase tracking-wider text-[var(--afc-muted)]">Type</th>
+                    <th className="px-5 py-3 text-[11px] font-semibold uppercase tracking-wider text-[var(--afc-muted)]">Montant / Objectif</th>
+                    <th className="px-5 py-3 text-[11px] font-semibold uppercase tracking-wider text-[var(--afc-muted)]">Période / Reçu</th>
+                    <th className="px-5 py-3 text-[11px] font-semibold uppercase tracking-wider text-[var(--afc-muted)]">Paiements</th>
                   </tr>
                 </thead>
                 <tbody>
                   {contributions.map((c) => (
-                    <tr key={c.id} className="border-b border-gray-50">
-                      <td className="px-4 py-3 font-medium text-[var(--foreground)]">{c.name}</td>
-                      <td className="px-4 py-3">
-                        <span
-                          className={
-                            c.type === 'MONTHLY'
-                              ? 'px-2 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800'
-                              : c.type === 'EXCEPTIONAL'
-                                ? 'px-2 py-0.5 rounded-full text-xs font-medium bg-amber-100 text-amber-800'
-                                : 'px-2 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800'
-                          }
-                        >
+                    <tr key={c.id} className="border-t border-[rgba(var(--afc-hl),0.04)] transition hover:bg-[rgba(var(--afc-hl),0.02)]">
+                      <td className="px-5 py-3.5 font-medium text-[var(--afc-text)]">{c.name}</td>
+                      <td className="px-5 py-3.5">
+                        <span className={`rounded-full px-2.5 py-0.5 text-xs font-medium ${TYPE_TONE[c.type] ?? 'afc-badge-gray border'}`}>
                           {TYPE_LABELS[c.type] ?? c.type}
                         </span>
                       </td>
-                      <td className="px-4 py-3 text-gray-600">
+                      <td className="px-5 py-3.5 text-[var(--afc-muted-2)]">
                         {c.amount != null && `${Number(c.amount).toLocaleString('fr-FR')} FCFA`}
                         {c.type === 'PROJECT' && c.targetAmount != null && `${Number(c.targetAmount).toLocaleString('fr-FR')} FCFA`}
                         {c.type === 'EXCEPTIONAL' && c.amount == null && '—'}
                       </td>
-                      <td className="px-4 py-3 text-gray-600 text-sm">
+                      <td className="px-5 py-3.5 text-sm text-[var(--afc-muted-2)]">
                         {c.type === 'EXCEPTIONAL' &&
                           c.startDate &&
                           c.endDate && (
                             <>
                               {new Date(c.endDate) < new Date() ? (
-                                <span className="text-slate-500">Clôturée — {new Date(c.startDate).toLocaleDateString('fr-FR')} → {new Date(c.endDate).toLocaleDateString('fr-FR')}</span>
+                                <span className="text-[var(--afc-muted)]">Clôturée — {new Date(c.startDate).toLocaleDateString('fr-FR')} → {new Date(c.endDate).toLocaleDateString('fr-FR')}</span>
                               ) : (
                                 `${new Date(c.startDate).toLocaleDateString('fr-FR')} → ${new Date(c.endDate).toLocaleDateString('fr-FR')}`
                               )}
@@ -204,14 +194,14 @@ export default function GererCotisationsPage() {
                           `${Number(c.receivedAmount).toLocaleString('fr-FR')} / ${c.targetAmount != null ? Number(c.targetAmount).toLocaleString('fr-FR') : '—'} FCFA`}
                         {c.type === 'MONTHLY' && '—'}
                       </td>
-                      <td className="px-4 py-3 text-gray-600">{c._count?.payments ?? 0}</td>
+                      <td className="px-5 py-3.5 text-[var(--afc-muted-2)]">{c._count?.payments ?? 0}</td>
                     </tr>
                   ))}
                 </tbody>
               </table>
             </div>
             {contributions.length === 0 && (
-              <p className="py-6 text-gray-500 text-center">Aucune cotisation. Créez une cotisation mensuelle en base si besoin.</p>
+              <p className="py-6 text-center text-[var(--afc-muted)]">Aucune cotisation. Créez une cotisation mensuelle en base si besoin.</p>
             )}
           </div>
         </>
@@ -259,34 +249,34 @@ function EditMonthlyForm({
 
   return (
     <form onSubmit={handleSubmit} className="space-y-4">
-      {err && <div className="rounded-xl bg-red-50 text-red-700 px-4 py-2 text-sm">{err}</div>}
+      {err && <div className="rounded-xl border border-red-700/30 bg-red-900/20 px-4 py-2 text-sm text-red-400">{err}</div>}
       <div>
-        <label className="block text-sm font-medium text-gray-700 mb-1.5">Nom</label>
+        <label className="mb-1.5 block text-sm font-medium text-[var(--afc-text-soft)]">Nom</label>
         <input
           type="text"
-          className="input-field w-full"
+          className="afc-login-input w-full text-sm"
           value={name}
           onChange={(e) => setName(e.target.value)}
           placeholder="Ex. Cotisation mensuelle"
         />
       </div>
       <div>
-        <label className="block text-sm font-medium text-gray-700 mb-1.5">Montant (FCFA / mois)</label>
+        <label className="mb-1.5 block text-sm font-medium text-[var(--afc-text-soft)]">Montant (FCFA / mois)</label>
         <input
           type="number"
           min="0"
           step="1"
-          className="input-field w-full"
+          className="afc-login-input w-full text-sm"
           value={amount}
           onChange={(e) => setAmount(Number(e.target.value) || 0)}
         />
-        <p className="text-xs text-gray-500 mt-1">Montant minimum exigé. Un enregistrement manuel permet un montant différent.</p>
+        <p className="mt-1 text-xs text-[var(--afc-muted)]">Montant minimum exigé. Un enregistrement manuel permet un montant différent.</p>
       </div>
       <div className="flex gap-3">
-        <button type="submit" disabled={submitting} className="btn-primary disabled:opacity-60">
+        <button type="submit" disabled={submitting} className="afc-button-primary disabled:opacity-60">
           {submitting ? 'Enregistrement…' : 'Enregistrer'}
         </button>
-        <button type="button" onClick={onCancel} className="px-4 py-2 rounded-xl border border-gray-200 text-gray-700 hover:bg-gray-50">
+        <button type="button" onClick={onCancel} className="rounded-xl border border-[rgba(var(--afc-hl),0.1)] bg-[rgba(var(--afc-hl),0.03)] px-4 py-2 text-[var(--afc-text-soft)] transition hover:bg-[rgba(var(--afc-hl),0.06)]">
           Annuler
         </button>
       </div>
@@ -356,35 +346,35 @@ function ExceptionalForm({
   }
 
   return (
-    <div className="card border-l-4 border-l-amber-500">
-      <h2 className="text-lg font-semibold text-[var(--foreground)] mb-4">Nouvelle cotisation exceptionnelle</h2>
+    <div className="rounded-xl border border-[var(--afc-border)] bg-[var(--afc-card)] p-5">
+      <h2 className="mb-4 text-lg font-semibold text-[var(--afc-text)]">Nouvelle cotisation exceptionnelle</h2>
       <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1.5">Nom <span className="text-red-500">*</span></label>
-          <input className="input-field w-full" placeholder="Ex. Cadeau naissance" {...register('name')} />
-          {errors.name && <p className="mt-1 text-sm text-red-600">{errors.name.message}</p>}
+          <label className="mb-1.5 block text-sm font-medium text-[var(--afc-text-soft)]">Nom <span className="text-red-400">*</span></label>
+          <input className="afc-login-input w-full text-sm" placeholder="Ex. Cadeau naissance" {...register('name')} />
+          {errors.name && <p className="mt-1 text-sm text-red-400">{errors.name.message}</p>}
         </div>
         <div className="grid grid-cols-2 gap-4">
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1.5">Montant suggéré (FCFA)</label>
-            <input type="number" min="0" step="1" disabled={isOpenAmount} className="input-field w-full disabled:opacity-50" {...register('amount', { valueAsNumber: true })} />
+            <label className="mb-1.5 block text-sm font-medium text-[var(--afc-text-soft)]">Montant suggéré (FCFA)</label>
+            <input type="number" min="0" step="1" disabled={isOpenAmount} className="afc-login-input w-full text-sm disabled:opacity-50" {...register('amount', { valueAsNumber: true })} />
           </div>
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1.5">Date de clôture</label>
-            <input type="datetime-local" className="input-field w-full" {...register('deadline')} />
+            <label className="mb-1.5 block text-sm font-medium text-[var(--afc-text-soft)]">Date de clôture</label>
+            <input type="datetime-local" className="afc-login-input w-full text-sm" {...register('deadline')} />
           </div>
         </div>
-        <label className="flex items-center gap-2 text-sm text-gray-700">
-          <input type="checkbox" {...register('isOpenAmount')} className="h-4 w-4" />
-          Montant libre (chaque membre donne ce qu'il veut)
+        <label className="flex items-center gap-2 text-sm text-[var(--afc-text-soft)]">
+          <input type="checkbox" {...register('isOpenAmount')} className="h-4 w-4 accent-[#C9A048]" />
+          Montant libre (chaque membre donne ce qu&apos;il veut)
         </label>
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1.5">Bénéficiaire (optionnel)</label>
+          <label className="mb-1.5 block text-sm font-medium text-[var(--afc-text-soft)]">Bénéficiaire (optionnel)</label>
           <Controller
             name="beneficiaryMemberId"
             control={control}
             render={({ field }) => (
-              <select className="input-field w-full" {...field}>
+              <select className="afc-login-input w-full text-sm" {...field}>
                 <option value="">Aucun / Ouvert à tous</option>
                 {members.map((m) => (
                   <option key={m.id} value={m.id}>{m.firstName} {m.lastName}</option>
@@ -394,15 +384,15 @@ function ExceptionalForm({
           />
         </div>
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1.5">Membres concernés (laisser vide = ouvert à tous)</label>
-          <div className="max-h-40 overflow-auto border border-gray-200 rounded-xl p-2 space-y-1">
+          <label className="mb-1.5 block text-sm font-medium text-[var(--afc-text-soft)]">Membres concernés (laisser vide = ouvert à tous)</label>
+          <div className="max-h-40 space-y-1 overflow-auto rounded-xl border border-[rgba(var(--afc-hl),0.08)] bg-[rgba(var(--afc-hl),0.02)] p-2">
             {members.map((m) => (
-              <label key={m.id} className="flex items-center gap-2 text-sm text-gray-700">
+              <label key={m.id} className="flex items-center gap-2 text-sm text-[var(--afc-text-soft)]">
                 <input
                   type="checkbox"
                   checked={(targetMemberIds ?? []).includes(m.id)}
                   onChange={() => toggleMember(m.id)}
-                  className="h-4 w-4"
+                  className="h-4 w-4 accent-[#C9A048]"
                 />
                 {m.firstName} {m.lastName}
               </label>
@@ -411,19 +401,19 @@ function ExceptionalForm({
         </div>
         <div className="grid grid-cols-2 gap-4">
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1.5">Date de début</label>
-            <input type="date" className="input-field w-full" {...register('startDate')} />
+            <label className="mb-1.5 block text-sm font-medium text-[var(--afc-text-soft)]">Date de début</label>
+            <input type="date" className="afc-login-input w-full text-sm" {...register('startDate')} />
           </div>
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1.5">Date de fin</label>
-            <input type="date" className="input-field w-full" {...register('endDate')} />
+            <label className="mb-1.5 block text-sm font-medium text-[var(--afc-text-soft)]">Date de fin</label>
+            <input type="date" className="afc-login-input w-full text-sm" {...register('endDate')} />
           </div>
         </div>
         <div className="flex gap-3 pt-2">
-          <button type="submit" disabled={isSubmitting} className="btn-primary disabled:opacity-60">
+          <button type="submit" disabled={isSubmitting} className="afc-button-primary disabled:opacity-60">
             {isSubmitting ? 'Création…' : 'Créer'}
           </button>
-          <button type="button" onClick={onCancel} className="px-4 py-2 rounded-xl border border-gray-200 text-gray-700 hover:bg-gray-50">
+          <button type="button" onClick={onCancel} className="rounded-xl border border-[rgba(var(--afc-hl),0.1)] bg-[rgba(var(--afc-hl),0.03)] px-4 py-2 text-[var(--afc-text-soft)] transition hover:bg-[rgba(var(--afc-hl),0.06)]">
             Annuler
           </button>
         </div>

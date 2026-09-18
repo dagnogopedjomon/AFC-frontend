@@ -45,45 +45,45 @@ export default function ActivitesPage() {
   }, []);
 
   return (
-    <div className="space-y-8">
-      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+    <div className="space-y-5">
+      <header className="flex flex-col gap-4 pt-1 sm:flex-row sm:items-center sm:justify-between">
         <div>
-          <h1 className="text-2xl font-bold text-[var(--foreground)]">Activités & vie du club</h1>
-          <p className="text-gray-600 mt-1">Matchs, entraînements, anniversaires, annonces.</p>
+          <h1 className="text-[28px] font-light tracking-[-0.02em] text-[var(--afc-text)]">Activités &amp; vie du club</h1>
+          <p className="mt-0.5 text-sm text-[var(--afc-muted)]">Matchs, entraînements, anniversaires, annonces.</p>
         </div>
         {canCreate && (
           <div className="flex gap-2">
-            <Link href="/dashboard/activites/nouvelle" className="btn-primary text-sm">
-              <Plus size={16} aria-hidden="true" /> Nouvelle activité
+            <Link href="/dashboard/activites/nouvelle" className="afc-button-primary text-sm">
+              <Plus size={15} strokeWidth={2} aria-hidden="true" /> Nouvelle activité
             </Link>
-            <Link href="/dashboard/activites/annonce" className="inline-flex min-h-11 items-center justify-center gap-2 rounded-xl border border-gray-200 px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50">
-              <Plus size={16} aria-hidden="true" /> Nouvelle annonce
+            <Link href="/dashboard/activites/annonce" className="inline-flex min-h-11 items-center justify-center gap-2 rounded-xl border border-[rgba(var(--afc-hl),0.1)] bg-[rgba(var(--afc-hl),0.03)] px-4 py-2 text-sm font-medium text-[var(--afc-text-soft)] transition hover:bg-[rgba(var(--afc-hl),0.06)]">
+              <Plus size={15} strokeWidth={2} aria-hidden="true" /> Nouvelle annonce
             </Link>
           </div>
         )}
-      </div>
+      </header>
 
       {error && (
-        <div className="rounded-xl bg-red-50 text-red-700 px-4 py-3">{error}</div>
+        <div className="rounded-xl border border-red-700/30 bg-red-900/20 px-4 py-3 text-red-400">{error}</div>
       )}
 
       {loading ? (
-        <div className="card flex justify-center py-12">
-          <div className="inline-block h-10 w-10 animate-spin rounded-full border-4 border-[var(--sky-blue)] border-r-transparent" />
+        <div className="flex justify-center rounded-xl border border-[var(--afc-border)] bg-[var(--afc-card)] py-12">
+          <div className="inline-block h-10 w-10 animate-spin rounded-full border-4 border-[#C9A048] border-r-transparent" />
         </div>
       ) : (
         <>
-          <div className="card">
-            <h2 className="text-lg font-semibold text-[var(--foreground)] mb-4">Annonces du bureau</h2>
+          <div className="rounded-xl border border-[var(--afc-border)] bg-[var(--afc-card)] p-5">
+            <h2 className="mb-4 text-lg font-semibold text-[var(--afc-text)]">Annonces du bureau</h2>
             {announcements.length === 0 ? (
-              <p className="text-gray-500">Aucune annonce.</p>
+              <p className="text-[var(--afc-muted)]">Aucune annonce.</p>
             ) : (
               <ul className="space-y-4">
                 {announcements.map((a) => (
-                  <li key={a.id} className="border-b border-gray-100 pb-4 last:border-0">
-                    <p className="font-medium text-[var(--foreground)]">{a.title}</p>
-                    <p className="text-sm text-gray-600 mt-1 line-clamp-2">{a.content}</p>
-                    <p className="text-xs text-gray-400 mt-2">
+                  <li key={a.id} className="border-b border-[var(--afc-border)] pb-4 last:border-0">
+                    <p className="font-medium text-[var(--afc-text)]">{a.title}</p>
+                    <p className="mt-1 line-clamp-2 text-sm text-[var(--afc-muted-2)]">{a.content}</p>
+                    <p className="mt-2 text-xs text-[var(--afc-muted)]">
                       {a.author.firstName} {a.author.lastName} — {new Date(a.createdAt).toLocaleDateString('fr-FR')}
                     </p>
                   </li>
@@ -92,10 +92,10 @@ export default function ActivitesPage() {
             )}
           </div>
 
-          <div className="card">
-            <h2 className="text-lg font-semibold text-[var(--foreground)] mb-4">Activités (matchs, entraînements…)</h2>
+          <div className="rounded-xl border border-[var(--afc-border)] bg-[var(--afc-card)] p-5">
+            <h2 className="mb-4 text-lg font-semibold text-[var(--afc-text)]">Activités (matchs, entraînements…)</h2>
             {activities.length === 0 ? (
-              <p className="text-gray-500">Aucune activité.</p>
+              <p className="text-[var(--afc-muted)]">Aucune activité.</p>
             ) : (
               <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
                 {activities.map((a) => (
@@ -103,16 +103,16 @@ export default function ActivitesPage() {
                     key={a.id}
                     type="button"
                     onClick={() => router.push(`/dashboard/activites/${a.id}`)}
-                    className="text-left rounded-xl border border-gray-100 p-4 hover:bg-[var(--sky-blue-soft)]/50 transition-colors focus:outline-none focus:ring-2 focus:ring-[var(--sky-blue)]"
+                    className="rounded-xl border border-[var(--afc-border)] bg-[rgba(var(--afc-hl),0.02)] p-4 text-left transition hover:border-[#C9A048]/30 hover:bg-[#C9A048]/[0.06] focus:outline-none focus:ring-2 focus:ring-[#C9A048]/40"
                   >
-                    <span className="inline-flex rounded-full bg-[var(--sky-blue-soft)] px-2 py-0.5 text-xs font-medium text-[var(--sky-blue-dark)]">
+                    <span className="inline-flex rounded-full border border-blue-700/30 bg-blue-900/20 px-2 py-0.5 text-xs font-medium text-blue-300">
                       {activityTypeLabel(a.type)}
                     </span>
-                    <p className="font-medium text-[var(--foreground)] mt-2 line-clamp-2">{a.title}</p>
-                    <p className="text-sm text-gray-600 mt-1">{new Date(a.date).toLocaleDateString('fr-FR')}</p>
-                    {a.result && <p className="text-sm text-gray-600 mt-1">Résultat : {a.result}</p>}
+                    <p className="mt-2 line-clamp-2 font-medium text-[var(--afc-text)]">{a.title}</p>
+                    <p className="mt-1 text-sm text-[var(--afc-muted-2)]">{new Date(a.date).toLocaleDateString('fr-FR')}</p>
+                    {a.result && <p className="mt-1 text-sm text-[var(--afc-muted-2)]">Résultat : {a.result}</p>}
                     {a._count && a._count.photos > 0 && (
-                      <p className="text-xs text-gray-500 mt-2">{a._count.photos} photo{a._count.photos > 1 ? 's' : ''}</p>
+                      <p className="mt-2 text-xs text-[var(--afc-muted)]">{a._count.photos} photo{a._count.photos > 1 ? 's' : ''}</p>
                     )}
                   </button>
                 ))}

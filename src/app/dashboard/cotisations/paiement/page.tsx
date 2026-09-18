@@ -1,7 +1,6 @@
 'use client';
 
 import { useEffect, useMemo, useState } from 'react';
-import Link from 'next/link';
 import { CheckCircle2 } from 'lucide-react';
 import { contributionsApi, membersApi, type Contribution, type Member } from '@/lib/api';
 import { useAuth } from '@/lib/auth-context';
@@ -107,32 +106,111 @@ export default function PaiementPage() {
     finally { setSaving(false); }
   }
 
-  if (user && user.role !== 'ADMIN') return <div className="card">Accès réservé à l’administrateur.</div>;
+  if (user && user.role !== 'ADMIN') {
+    return (
+      <div className="rounded-xl border border-[var(--afc-border)] bg-[var(--afc-card)] p-6 text-[var(--afc-muted)]">
+        Accès réservé à l&rsquo;administrateur.
+      </div>
+    );
+  }
 
   return (
     <div className="mx-auto max-w-3xl space-y-5">
-      <div><Link href="/dashboard/cotisations" className="font-medium text-[var(--sky-blue-dark)] hover:underline">← Cotisations</Link><h1 className="mt-2 text-2xl font-bold">Paiement déjà reçu</h1><p className="mt-1 text-gray-600">Enregistrez rapidement un paiement encaissé hors de l’application.</p></div>
-      {error && <div className="rounded-xl bg-red-50 px-4 py-3 text-red-700">{error}</div>}
-      {success && <div className="flex items-center gap-2 rounded-xl bg-green-50 px-4 py-3 text-green-800"><CheckCircle2 size={19} />{success}</div>}
-      <section className="card border-l-4 border-l-emerald-500 space-y-4">
-        <div><h2 className="text-lg font-semibold text-slate-900">Créer un lien de versement</h2><p className="mt-1 text-sm text-slate-500">Envoyez un lien unique pour une cotisation, un don ou un autre motif.</p></div>
+      <header className="pt-1">
+        <h1 className="text-[28px] font-light tracking-[-0.02em] text-[var(--afc-text)]">Paiement déjà reçu</h1>
+        <p className="mt-1 text-sm text-[var(--afc-muted)]">Enregistrez rapidement un paiement encaissé hors de l&rsquo;application.</p>
+      </header>
+
+      {error && <div className="rounded-xl border border-red-700/30 bg-red-900/20 px-4 py-3 text-red-400">{error}</div>}
+      {success && <div className="flex items-center gap-2 rounded-xl border border-emerald-700/30 bg-emerald-900/20 px-4 py-3 text-emerald-400"><CheckCircle2 size={19} />{success}</div>}
+
+      <section className="space-y-4 rounded-xl border border-[var(--afc-border)] bg-[var(--afc-card)] p-5">
+        <div>
+          <h2 className="text-lg font-semibold text-[var(--afc-text)]">Créer un lien de versement</h2>
+          <p className="mt-1 text-sm text-[var(--afc-muted)]">Envoyez un lien unique pour une cotisation, un don ou un autre motif.</p>
+        </div>
         <form onSubmit={createPaymentLink} className="grid gap-4 sm:grid-cols-2">
-          <label className="block"><span className="mb-1 block text-sm font-medium">Motif</span><select className="input w-full" value={linkContributionId} onChange={(e) => { const next = contributions.find((item) => item.id === e.target.value); setLinkContributionId(e.target.value); setLinkAmount(next?.amount ? String(next.amount) : ''); setLinkTitle(next?.name ?? ''); }} required><option value="">Sélectionner un motif</option>{contributions.map((item) => <option key={item.id} value={item.id}>{item.name}</option>)}</select></label>
-          <label className="block"><span className="mb-1 block text-sm font-medium">Membre concerné</span><select className="input w-full" value={memberId} onChange={(e) => setMemberId(e.target.value)} required><option value="">Sélectionner le membre</option>{members.map((member) => <option key={member.id} value={member.id}>{member.firstName} {member.lastName}</option>)}</select></label>
-          <label className="block"><span className="mb-1 block text-sm font-medium">Montant (FCFA)</span><input className="input w-full" type="number" min={100} value={linkAmount} onChange={(e) => setLinkAmount(e.target.value)} required /></label>
-          <label className="block"><span className="mb-1 block text-sm font-medium">Titre du lien</span><input className="input w-full" value={linkTitle} onChange={(e) => setLinkTitle(e.target.value)} placeholder="Versement AFC" /></label>
-          <button type="submit" disabled={linkLoading} className="btn-primary sm:col-span-2 disabled:opacity-60">{linkLoading ? 'Création…' : 'Générer le lien'}</button>
+          <label className="block">
+            <span className="mb-1 block text-sm font-medium text-[var(--afc-text-soft)]">Motif</span>
+            <select className="afc-login-input w-full text-sm" value={linkContributionId} onChange={(e) => { const next = contributions.find((item) => item.id === e.target.value); setLinkContributionId(e.target.value); setLinkAmount(next?.amount ? String(next.amount) : ''); setLinkTitle(next?.name ?? ''); }} required>
+              <option value="">Sélectionner un motif</option>
+              {contributions.map((item) => <option key={item.id} value={item.id}>{item.name}</option>)}
+            </select>
+          </label>
+          <label className="block">
+            <span className="mb-1 block text-sm font-medium text-[var(--afc-text-soft)]">Membre concerné</span>
+            <select className="afc-login-input w-full text-sm" value={memberId} onChange={(e) => setMemberId(e.target.value)} required>
+              <option value="">Sélectionner le membre</option>
+              {members.map((member) => <option key={member.id} value={member.id}>{member.firstName} {member.lastName}</option>)}
+            </select>
+          </label>
+          <label className="block">
+            <span className="mb-1 block text-sm font-medium text-[var(--afc-text-soft)]">Montant (FCFA)</span>
+            <input className="afc-login-input w-full text-sm" type="number" min={100} value={linkAmount} onChange={(e) => setLinkAmount(e.target.value)} required />
+          </label>
+          <label className="block">
+            <span className="mb-1 block text-sm font-medium text-[var(--afc-text-soft)]">Titre du lien</span>
+            <input className="afc-login-input w-full text-sm" value={linkTitle} onChange={(e) => setLinkTitle(e.target.value)} placeholder="Versement AFC" />
+          </label>
+          <button type="submit" disabled={linkLoading} className="afc-button-primary sm:col-span-2 disabled:opacity-60">{linkLoading ? 'Création…' : 'Générer le lien'}</button>
         </form>
-        {generatedLink && <div className="flex flex-col gap-2 rounded-xl border border-emerald-200 bg-emerald-50 p-3 sm:flex-row sm:items-center"><input readOnly value={generatedLink} className="min-w-0 flex-1 rounded-lg border-0 bg-transparent text-sm text-emerald-900 outline-none"/><button type="button" className="rounded-lg bg-emerald-700 px-3 py-2 text-sm font-semibold text-white" onClick={() => navigator.clipboard?.writeText(generatedLink)}>Copier le lien</button></div>}
+        {generatedLink && (
+          <div className="flex flex-col gap-2 rounded-xl border border-emerald-700/30 bg-emerald-900/15 p-3 sm:flex-row sm:items-center">
+            <input readOnly value={generatedLink} className="min-w-0 flex-1 rounded-lg border-0 bg-transparent text-sm text-emerald-300 outline-none"/>
+            <button type="button" className="rounded-lg bg-emerald-700 px-3 py-2 text-sm font-semibold text-white transition hover:bg-emerald-600" onClick={() => navigator.clipboard?.writeText(generatedLink)}>Copier le lien</button>
+          </div>
+        )}
       </section>
-      <form onSubmit={submit} className="card space-y-5">
-        <div><label className="mb-1 block text-sm font-medium">Membre</label><select className="input w-full" value={memberId} onChange={(e) => setMemberId(e.target.value)} required><option value="">Sélectionner</option>{members.map((member) => <option key={member.id} value={member.id}>{member.firstName} {member.lastName} — {member.phone}</option>)}</select></div>
-        <div><label className="mb-2 block text-sm font-medium">Durée couverte</label><div className="grid grid-cols-2 gap-2 sm:grid-cols-4">{[1, 3, 6, 12].map((value) => <button key={value} type="button" onClick={() => setMonths(value)} className={`rounded-xl border px-3 py-2 font-semibold ${months === value ? 'border-[var(--sky-blue)] bg-[var(--sky-blue-soft)] text-[var(--sky-blue-dark)]' : 'border-gray-200'}`}>{value === 12 ? '1 an' : `${value} mois`}</button>)}</div></div>
-        <div className="rounded-xl bg-slate-50 p-4"><p className="text-sm text-gray-500">Montant calculé automatiquement</p><p className="text-3xl font-bold text-[var(--foreground)]">{amount.toLocaleString('fr-FR')} FCFA</p><p className="text-xs text-gray-500">{months} × {Number(monthly?.amount ?? 0).toLocaleString('fr-FR')} FCFA</p></div>
-        {memberId && <div className="rounded-xl border border-amber-200 bg-amber-50 p-4"><p className="text-sm font-semibold text-amber-900">Période qui sera enregistrée</p><p className="mt-1 text-sm text-amber-800">{previewLoading ? 'Vérification…' : previewPeriods.length === months ? `${periodLabel(previewPeriods[0])}${months > 1 ? ` à ${periodLabel(previewPeriods[previewPeriods.length - 1])}` : ''}` : 'Période impossible à déterminer'}</p><p className="mt-1 text-xs text-amber-700">Vérifiez cette période avant de valider. Les mois déjà payés sont automatiquement ignorés.</p></div>}
-        <details className="rounded-xl border border-gray-200 p-4"><summary className="cursor-pointer text-sm font-semibold text-gray-700">Informations facultatives</summary><div className="mt-4 grid gap-4 sm:grid-cols-2"><div><label className="mb-1 block text-sm">Moyen de paiement</label><input className="input" value={method} onChange={(e) => setMethod(e.target.value)} placeholder="Espèces, Wave externe…" /></div><div><label className="mb-1 block text-sm">Référence</label><input className="input" value={reference} onChange={(e) => setReference(e.target.value)} /></div><div className="sm:col-span-2"><label className="mb-1 block text-sm">Note</label><textarea className="input min-h-20" value={note} onChange={(e) => setNote(e.target.value)} /></div></div></details>
-        <button type="submit" disabled={!memberId || !monthly || saving || previewLoading || previewPeriods.length !== months} className="btn-primary w-full disabled:opacity-60">{saving ? 'Enregistrement…' : `Valider ${amount.toLocaleString('fr-FR')} FCFA hors application`}</button>
-        <p className="text-center text-xs text-gray-500">La date, la caisse principale et la provenance « Hors application » sont enregistrées automatiquement.</p>
+
+      <form onSubmit={submit} className="space-y-5 rounded-xl border border-[var(--afc-border)] bg-[var(--afc-card)] p-5">
+        <div>
+          <label className="mb-1 block text-sm font-medium text-[var(--afc-text-soft)]">Membre</label>
+          <select className="afc-login-input w-full text-sm" value={memberId} onChange={(e) => setMemberId(e.target.value)} required>
+            <option value="">Sélectionner</option>
+            {members.map((member) => <option key={member.id} value={member.id}>{member.firstName} {member.lastName} — {member.phone}</option>)}
+          </select>
+        </div>
+        <div>
+          <label className="mb-2 block text-sm font-medium text-[var(--afc-text-soft)]">Durée couverte</label>
+          <div className="grid grid-cols-2 gap-2 sm:grid-cols-4">
+            {[1, 3, 6, 12].map((value) => (
+              <button key={value} type="button" onClick={() => setMonths(value)} className={`rounded-xl border px-3 py-2 font-semibold transition ${months === value ? 'border-[#C9A048]/50 bg-[#C9A048]/10 text-[#C9A048]' : 'border-[rgba(var(--afc-hl),0.08)] bg-[rgba(var(--afc-hl),0.02)] text-[var(--afc-muted-2)] hover:border-[rgba(var(--afc-hl),0.16)]'}`}>
+                {value === 12 ? '1 an' : `${value} mois`}
+              </button>
+            ))}
+          </div>
+        </div>
+        <div className="rounded-xl border border-[var(--afc-border)] bg-[rgba(var(--afc-hl),0.02)] p-4">
+          <p className="text-sm text-[var(--afc-muted)]">Montant calculé automatiquement</p>
+          <p className="text-3xl font-semibold text-[var(--afc-text)]">{amount.toLocaleString('fr-FR')} FCFA</p>
+          <p className="text-xs text-[var(--afc-muted)]">{months} × {Number(monthly?.amount ?? 0).toLocaleString('fr-FR')} FCFA</p>
+        </div>
+        {memberId && (
+          <div className="rounded-xl border border-amber-700/30 bg-amber-900/15 p-4">
+            <p className="text-sm font-semibold text-amber-300">Période qui sera enregistrée</p>
+            <p className="mt-1 text-sm text-amber-200/90">{previewLoading ? 'Vérification…' : previewPeriods.length === months ? `${periodLabel(previewPeriods[0])}${months > 1 ? ` à ${periodLabel(previewPeriods[previewPeriods.length - 1])}` : ''}` : 'Période impossible à déterminer'}</p>
+            <p className="mt-1 text-xs text-amber-300/70">Vérifiez cette période avant de valider. Les mois déjà payés sont automatiquement ignorés.</p>
+          </div>
+        )}
+        <details className="rounded-xl border border-[rgba(var(--afc-hl),0.08)] bg-[rgba(var(--afc-hl),0.02)] p-4">
+          <summary className="cursor-pointer text-sm font-semibold text-[var(--afc-text-soft)]">Informations facultatives</summary>
+          <div className="mt-4 grid gap-4 sm:grid-cols-2">
+            <div>
+              <label className="mb-1 block text-sm text-[var(--afc-muted-2)]">Moyen de paiement</label>
+              <input className="afc-login-input text-sm" value={method} onChange={(e) => setMethod(e.target.value)} placeholder="Espèces, Wave externe…" />
+            </div>
+            <div>
+              <label className="mb-1 block text-sm text-[var(--afc-muted-2)]">Référence</label>
+              <input className="afc-login-input text-sm" value={reference} onChange={(e) => setReference(e.target.value)} />
+            </div>
+            <div className="sm:col-span-2">
+              <label className="mb-1 block text-sm text-[var(--afc-muted-2)]">Note</label>
+              <textarea className="afc-login-input min-h-20 text-sm" value={note} onChange={(e) => setNote(e.target.value)} />
+            </div>
+          </div>
+        </details>
+        <button type="submit" disabled={!memberId || !monthly || saving || previewLoading || previewPeriods.length !== months} className="afc-button-primary w-full disabled:opacity-60">{saving ? 'Enregistrement…' : `Valider ${amount.toLocaleString('fr-FR')} FCFA hors application`}</button>
+        <p className="text-center text-xs text-[var(--afc-muted)]">La date, la caisse principale et la provenance « Hors application » sont enregistrées automatiquement.</p>
       </form>
     </div>
   );

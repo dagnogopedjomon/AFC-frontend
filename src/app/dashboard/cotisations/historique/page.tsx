@@ -93,91 +93,91 @@ export default function HistoriquePage() {
 
   if (!canView) {
     return (
-      <div className="card">
-        <h1 className="text-xl font-bold text-[var(--foreground)] mb-2">Historique</h1>
-        <p className="text-gray-600">L’accès à cette page est réservé à l’Admin et au bureau. Consultez vos paiements dans « Mes paiements ».</p>
+      <div className="rounded-xl border border-[var(--afc-border)] bg-[var(--afc-card)] p-6">
+        <h1 className="mb-2 text-xl font-semibold text-[var(--afc-text)]">Historique</h1>
+        <p className="text-sm text-[var(--afc-muted)]">L&rsquo;accès à cette page est réservé à l&rsquo;Admin et au bureau. Consultez vos paiements dans « Mes paiements ».</p>
       </div>
     );
   }
 
   return (
-    <div className="space-y-8">
-      <div className="flex items-center gap-4">
-        <Link href="/dashboard/cotisations" className="text-[var(--sky-blue-dark)] hover:underline font-medium">
-          ← Cotisations
-        </Link>
-      </div>
-      <div className="flex items-start justify-between gap-4">
-        <div><h1 className="text-2xl font-bold text-[var(--foreground)]">Historique</h1><p className="text-gray-600 mt-1">Tous les paiements enregistrés.</p></div>
-        <Link href="/dashboard/cotisations/paiement" className="afc-button-primary shrink-0"><Plus size={16} aria-hidden="true" /> Nouveau paiement</Link>
-      </div>
+    <div className="space-y-5">
+      <header className="flex flex-wrap items-end justify-between gap-4 pt-1">
+        <div>
+          <h1 className="text-[28px] font-light tracking-[-0.02em] text-[var(--afc-text)]">Historique</h1>
+          <p className="mt-0.5 text-sm text-[var(--afc-muted)]">Tous les paiements enregistrés.</p>
+        </div>
+        <Link href="/dashboard/cotisations/paiement" className="afc-button-primary shrink-0"><Plus size={15} strokeWidth={2} aria-hidden="true" /> Nouveau paiement</Link>
+      </header>
 
       {/* Recherche des paiements — tracer qui a payé */}
-      <div className="card">
-        <h2 className="text-lg font-semibold text-[var(--foreground)] mb-4">Recherche des paiements</h2>
-        <p className="text-sm text-gray-600 mb-4">
-          Recherchez par nom ou numéro de téléphone pour voir tous les paiements d’un membre.
+      <div className="rounded-xl border border-[var(--afc-border)] bg-[var(--afc-card)] p-5">
+        <h2 className="mb-4 text-lg font-semibold text-[var(--afc-text)]">Recherche des paiements</h2>
+        <p className="mb-4 text-sm text-[var(--afc-muted-2)]">
+          Recherchez par nom ou numéro de téléphone pour voir tous les paiements d&rsquo;un membre.
         </p>
-        <div className="mb-4 flex w-fit flex-wrap gap-1 rounded-lg bg-slate-100 p-1 text-sm">
-          {([['ALL','Tous'],['MONTHLY','Mensuelles'],['EXCEPTIONAL','Exceptionnelles']] as const).map(([value,label])=><button key={value} type="button" onClick={()=>{setTypeFilter(value);setPaymentsPage(1);}} className={`rounded-md px-4 py-2 font-medium ${typeFilter===value?'bg-white text-blue-700 shadow-sm':'text-slate-500'}`}>{label}</button>)}
+        <div className="mb-4 flex w-fit flex-wrap gap-1 rounded-lg bg-[rgba(var(--afc-hl),0.04)] p-1 text-sm">
+          {([['ALL','Tous'],['MONTHLY','Mensuelles'],['EXCEPTIONAL','Exceptionnelles']] as const).map(([value,label])=>(
+            <button key={value} type="button" onClick={()=>{setTypeFilter(value);setPaymentsPage(1);}} className={`rounded-md px-4 py-2 font-medium transition ${typeFilter===value?'bg-[#C9A048] text-[#171308]':'text-[var(--afc-muted-2)] hover:text-[var(--afc-text)]'}`}>{label}</button>
+          ))}
         </div>
         <div className="mb-4 grid gap-3 md:grid-cols-[minmax(240px,1fr)_180px_180px_auto]">
-        <div className="relative">
-          <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400" />
-          <input
-            type="search"
-            placeholder="Nom ou téléphone…"
-            value={searchQuery}
-            onChange={(e) => {
-              setSearchQuery(e.target.value);
-              setPaymentsPage(1);
-            }}
-            className="input-field w-full pl-10"
-          />
-        </div>
-        <input type="date" className="input-field" aria-label="Date de début" value={startDate} onChange={e=>setStartDate(e.target.value)}/>
-        <input type="date" className="input-field" aria-label="Date de fin" value={endDate} onChange={e=>setEndDate(e.target.value)}/>
-        <button type="button" className="rounded-lg border border-slate-200 px-4 py-2 text-sm font-medium" onClick={()=>{setSearchQuery('');setStartDate('');setEndDate('');setTypeFilter('ALL');}}>Réinitialiser</button>
+          <div className="relative">
+            <Search className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-[var(--afc-muted-3)]" />
+            <input
+              type="search"
+              placeholder="Nom ou téléphone…"
+              value={searchQuery}
+              onChange={(e) => {
+                setSearchQuery(e.target.value);
+                setPaymentsPage(1);
+              }}
+              className="afc-login-input w-full !pl-10 text-sm"
+            />
+          </div>
+          <input type="date" className="afc-login-input text-sm" aria-label="Date de début" value={startDate} onChange={e=>setStartDate(e.target.value)}/>
+          <input type="date" className="afc-login-input text-sm" aria-label="Date de fin" value={endDate} onChange={e=>setEndDate(e.target.value)}/>
+          <button type="button" className="rounded-lg border border-[rgba(var(--afc-hl),0.08)] bg-[rgba(var(--afc-hl),0.03)] px-4 py-2 text-sm font-medium text-[var(--afc-text-soft)] transition hover:bg-[rgba(var(--afc-hl),0.06)]" onClick={()=>{setSearchQuery('');setStartDate('');setEndDate('');setTypeFilter('ALL');}}>Réinitialiser</button>
         </div>
         {paymentsLoading ? (
-          <div className="py-8 flex justify-center">
-            <div className="inline-block h-8 w-8 animate-spin rounded-full border-4 border-[var(--sky-blue)] border-r-transparent" />
+          <div className="flex justify-center py-8">
+            <div className="inline-block h-8 w-8 animate-spin rounded-full border-4 border-[#C9A048] border-r-transparent" />
           </div>
         ) : (
-          <div className="overflow-x-auto">
-            <table className="w-full text-left text-sm">
+          <div className="overflow-x-auto rounded-lg border border-[var(--afc-border)]">
+            <table className="afc-table-dark w-full text-left text-sm">
               <thead>
-                <tr className="border-b border-gray-100 bg-[var(--sky-blue-soft)]">
-                  <th className="px-4 py-3 text-[var(--sky-blue-dark)]">Date</th>
-                  <th className="px-4 py-3 text-gray-600">Membre</th>
-                  <th className="px-4 py-3 text-gray-600">Téléphone</th>
-                  <th className="px-4 py-3 text-gray-600">Cotisation</th>
-                  <th className="px-4 py-3 text-gray-600">Montant</th>
-                  <th className="px-4 py-3 text-gray-600">Source / action</th>
+                <tr>
+                  <th className="px-4 py-3 text-[11px] font-semibold uppercase tracking-wider text-[var(--afc-muted)]">Date</th>
+                  <th className="px-4 py-3 text-[11px] font-semibold uppercase tracking-wider text-[var(--afc-muted)]">Membre</th>
+                  <th className="px-4 py-3 text-[11px] font-semibold uppercase tracking-wider text-[var(--afc-muted)]">Téléphone</th>
+                  <th className="px-4 py-3 text-[11px] font-semibold uppercase tracking-wider text-[var(--afc-muted)]">Cotisation</th>
+                  <th className="px-4 py-3 text-[11px] font-semibold uppercase tracking-wider text-[var(--afc-muted)]">Montant</th>
+                  <th className="px-4 py-3 text-[11px] font-semibold uppercase tracking-wider text-[var(--afc-muted)]">Source / action</th>
                 </tr>
               </thead>
               <tbody>
                 {filteredPayments.length === 0 ? (
                   <tr>
-                    <td colSpan={6} className="px-4 py-6 text-center text-gray-500">
+                    <td colSpan={6} className="px-4 py-6 text-center text-[var(--afc-muted)]">
                       {payments.length === 0 ? 'Aucun paiement enregistré.' : 'Aucun résultat pour cette recherche.'}
                     </td>
                   </tr>
                 ) : (
                   paginatedPayments.map((p) => (
-                    <tr key={p.id} className={`border-b border-gray-50 hover:bg-gray-50/50 ${p.cancelledAt ? 'opacity-50' : ''}`}>
-                      <td className="px-4 py-3 text-gray-600 whitespace-nowrap">
+                    <tr key={p.id} className={`border-t border-[rgba(var(--afc-hl),0.04)] transition hover:bg-[rgba(var(--afc-hl),0.02)] ${p.cancelledAt ? 'opacity-50' : ''}`}>
+                      <td className="whitespace-nowrap px-4 py-3 text-[var(--afc-muted-2)]">
                         {new Date(p.paidAt).toLocaleDateString('fr-FR', { day: 'numeric', month: 'short', year: 'numeric' })}
                       </td>
-                      <td className="px-4 py-3 font-medium text-[var(--foreground)]">
+                      <td className="px-4 py-3 font-medium text-[var(--afc-text)]">
                         {p.member ? `${p.member.firstName} ${p.member.lastName}` : '—'}
                       </td>
-                      <td className="px-4 py-3 text-gray-600">{p.member?.phone ?? '—'}</td>
-                      <td className="px-4 py-3 text-gray-600">{p.contribution?.name ?? '—'}</td>
-                      <td className="px-4 py-3 font-medium">{Number(p.amount).toLocaleString('fr-FR')} FCFA</td>
+                      <td className="px-4 py-3 text-[var(--afc-muted-2)]">{p.member?.phone ?? '—'}</td>
+                      <td className="px-4 py-3 text-[var(--afc-muted-2)]">{p.contribution?.name ?? '—'}</td>
+                      <td className="px-4 py-3 font-medium text-[var(--afc-text)]">{Number(p.amount).toLocaleString('fr-FR')} FCFA</td>
                       <td className="px-4 py-3 text-xs">
-                        <span className="block text-gray-600">{p.metadata?.includes('external_admin') ? 'Hors application' : 'En ligne / interne'}</span>
-                        {p.cancelledAt ? <span className="font-semibold text-red-600">Annulé</span> : user?.role === 'ADMIN' ? <button type="button" onClick={() => cancelPayment(p)} className="font-semibold text-red-600 hover:underline">Annuler</button> : null}
+                        <span className="block text-[var(--afc-muted-2)]">{p.metadata?.includes('external_admin') ? 'Hors application' : 'En ligne / interne'}</span>
+                        {p.cancelledAt ? <span className="font-semibold text-red-400">Annulé</span> : user?.role === 'ADMIN' ? <button type="button" onClick={() => cancelPayment(p)} className="font-semibold text-red-400 transition hover:text-red-300 hover:underline">Annuler</button> : null}
                       </td>
                     </tr>
                   ))
@@ -188,7 +188,7 @@ export default function HistoriquePage() {
         )}
         {filteredPayments.length > 0 && (
           <div className="mt-4 flex flex-wrap items-center justify-between gap-3">
-            <p className="text-xs text-gray-500">
+            <p className="text-xs text-[var(--afc-muted)]">
               {filteredPayments.length} paiement{filteredPayments.length !== 1 ? 's' : ''}{searchQuery.trim() ? ' trouvé(s)' : ''}.
             </p>
             {paymentsPageCount > 1 && (
@@ -197,18 +197,18 @@ export default function HistoriquePage() {
                   type="button"
                   onClick={() => setPaymentsPage((page) => Math.max(1, page - 1))}
                   disabled={currentPaymentsPage === 1}
-                  className="rounded-lg border border-gray-200 px-3 py-1.5 text-sm font-medium disabled:cursor-not-allowed disabled:opacity-40 hover:bg-gray-50"
+                  className="rounded-lg border border-[rgba(var(--afc-hl),0.08)] bg-[rgba(var(--afc-hl),0.03)] px-3 py-1.5 text-sm font-medium text-[var(--afc-text-soft)] transition hover:bg-[rgba(var(--afc-hl),0.06)] disabled:cursor-not-allowed disabled:opacity-40"
                 >
                   Précédent
                 </button>
-                <span className="min-w-16 text-center text-sm font-semibold text-gray-700">
+                <span className="min-w-16 text-center text-sm font-semibold text-[var(--afc-text)]">
                   {currentPaymentsPage}/{paymentsPageCount}
                 </span>
                 <button
                   type="button"
                   onClick={() => setPaymentsPage((page) => Math.min(paymentsPageCount, page + 1))}
                   disabled={currentPaymentsPage === paymentsPageCount}
-                  className="rounded-lg border border-gray-200 px-3 py-1.5 text-sm font-medium disabled:cursor-not-allowed disabled:opacity-40 hover:bg-gray-50"
+                  className="rounded-lg border border-[rgba(var(--afc-hl),0.08)] bg-[rgba(var(--afc-hl),0.03)] px-3 py-1.5 text-sm font-medium text-[var(--afc-text-soft)] transition hover:bg-[rgba(var(--afc-hl),0.06)] disabled:cursor-not-allowed disabled:opacity-40"
                 >
                   Suivant
                 </button>
@@ -219,42 +219,42 @@ export default function HistoriquePage() {
       </div>
 
       {error && (
-        <div className="rounded-xl bg-red-50 text-red-700 px-4 py-3">{error}</div>
+        <div className="rounded-xl border border-red-700/30 bg-red-900/20 px-4 py-3 text-red-400">{error}</div>
       )}
 
       {loading ? (
-        <div className="card flex justify-center py-12">
-          <div className="inline-block h-10 w-10 animate-spin rounded-full border-4 border-[var(--sky-blue)] border-r-transparent" />
+        <div className="flex justify-center rounded-xl border border-[var(--afc-border)] bg-[var(--afc-card)] py-12">
+          <div className="inline-block h-10 w-10 animate-spin rounded-full border-4 border-[#C9A048] border-r-transparent" />
         </div>
       ) : (
         <>
           {summary && (
-            <div className="card">
-              <h2 className="text-lg font-semibold text-[var(--foreground)] mb-4">Solde global (cotisation mensuelle)</h2>
-              <p className="text-2xl font-bold text-[var(--sky-blue-dark)]">
+            <div className="rounded-xl border border-[var(--afc-border)] bg-[var(--afc-card)] p-5">
+              <h2 className="mb-4 text-lg font-semibold text-[var(--afc-text)]">Solde global (cotisation mensuelle)</h2>
+              <p className="text-2xl font-semibold text-[#C9A048]">
                 {summary.totalCollected.toLocaleString('fr-FR')} FCFA
               </p>
-              <p className="text-sm text-gray-500 mt-1">Total collecté (toutes périodes)</p>
+              <p className="mt-1 text-sm text-[var(--afc-muted)]">Total collecté (toutes périodes)</p>
               {summary.byMonth.length > 0 && (
                 <div className="mt-6">
-                  <h3 className="text-sm font-medium text-gray-700 mb-2">Par mois</h3>
-                  <div className="overflow-x-auto">
-                    <table className="w-full text-left text-sm">
+                  <h3 className="mb-2 text-sm font-medium text-[var(--afc-muted-2)]">Par mois</h3>
+                  <div className="overflow-x-auto rounded-lg border border-[var(--afc-border)]">
+                    <table className="afc-table-dark w-full text-left text-sm">
                       <thead>
-                        <tr className="border-b border-gray-100">
-                          <th className="py-2 text-gray-600">Période</th>
-                          <th className="py-2 text-gray-600">Collecté</th>
-                          <th className="py-2 text-gray-600">Paiements</th>
+                        <tr>
+                          <th className="px-4 py-3 text-[11px] font-semibold uppercase tracking-wider text-[var(--afc-muted)]">Période</th>
+                          <th className="px-4 py-3 text-[11px] font-semibold uppercase tracking-wider text-[var(--afc-muted)]">Collecté</th>
+                          <th className="px-4 py-3 text-[11px] font-semibold uppercase tracking-wider text-[var(--afc-muted)]">Paiements</th>
                         </tr>
                       </thead>
                       <tbody>
                         {summary.byMonth.slice(0, 12).map((m) => (
-                          <tr key={`${m.year}-${m.month}`} className="border-b border-gray-50">
-                            <td className="py-2">
+                          <tr key={`${m.year}-${m.month}`} className="border-t border-[rgba(var(--afc-hl),0.04)]">
+                            <td className="px-4 py-2.5 text-[var(--afc-text-soft)]">
                               {new Date(m.year, m.month - 1).toLocaleString('fr-FR', { month: 'long', year: 'numeric' })}
                             </td>
-                            <td className="py-2 font-medium">{m.totalCollected.toLocaleString('fr-FR')} FCFA</td>
-                            <td className="py-2 text-gray-600">{m.paymentsCount}</td>
+                            <td className="px-4 py-2.5 font-medium text-[var(--afc-text)]">{m.totalCollected.toLocaleString('fr-FR')} FCFA</td>
+                            <td className="px-4 py-2.5 text-[var(--afc-muted-2)]">{m.paymentsCount}</td>
                           </tr>
                         ))}
                       </tbody>
@@ -265,12 +265,12 @@ export default function HistoriquePage() {
             </div>
           )}
 
-          <div className="card">
-            <h2 className="text-lg font-semibold text-[var(--foreground)] mb-4">Historique par membre</h2>
+          <div className="rounded-xl border border-[var(--afc-border)] bg-[var(--afc-card)] p-5">
+            <h2 className="mb-4 text-lg font-semibold text-[var(--afc-text)]">Historique par membre</h2>
             <div className="mb-4">
-              <label className="block text-sm font-medium text-gray-700 mb-1.5">Choisir un membre</label>
+              <label className="mb-1.5 block text-sm font-medium text-[var(--afc-text-soft)]">Choisir un membre</label>
               <select
-                className="input-field max-w-md"
+                className="afc-login-input max-w-md text-sm"
                 value={selectedMemberId ?? ''}
                 onChange={(e) => setSelectedMemberId(e.target.value || null)}
               >
@@ -284,28 +284,28 @@ export default function HistoriquePage() {
             </div>
             {memberHistory && (
               <div className="mt-4 space-y-4">
-                <p className="font-medium text-[var(--foreground)]">
+                <p className="font-medium text-[var(--afc-text)]">
                   {memberHistory.member.firstName} {memberHistory.member.lastName} — Total payé :{' '}
                   {memberHistory.totalPaid.toLocaleString('fr-FR')} FCFA
                 </p>
                 {memberHistory.byMonth.length > 0 && (
-                  <div className="overflow-x-auto">
-                    <table className="w-full text-left text-sm">
+                  <div className="overflow-x-auto rounded-lg border border-[var(--afc-border)]">
+                    <table className="afc-table-dark w-full text-left text-sm">
                       <thead>
-                        <tr className="border-b border-gray-100 bg-[var(--sky-blue-soft)]">
-                          <th className="px-4 py-2 text-[var(--sky-blue-dark)]">Période</th>
-                          <th className="px-4 py-2 text-gray-600">Montant</th>
-                          <th className="px-4 py-2 text-gray-600">Date paiement</th>
+                        <tr>
+                          <th className="px-4 py-2.5 text-[11px] font-semibold uppercase tracking-wider text-[var(--afc-muted)]">Période</th>
+                          <th className="px-4 py-2.5 text-[11px] font-semibold uppercase tracking-wider text-[var(--afc-muted)]">Montant</th>
+                          <th className="px-4 py-2.5 text-[11px] font-semibold uppercase tracking-wider text-[var(--afc-muted)]">Date paiement</th>
                         </tr>
                       </thead>
                       <tbody>
                         {memberHistory.byMonth.map((m, i) => (
-                          <tr key={i} className="border-b border-gray-50">
-                            <td className="px-4 py-2">
+                          <tr key={i} className="border-t border-[rgba(var(--afc-hl),0.04)]">
+                            <td className="px-4 py-2.5 text-[var(--afc-text-soft)]">
                               {new Date(m.year, m.month - 1).toLocaleString('fr-FR', { month: 'long', year: 'numeric' })}
                             </td>
-                            <td className="px-4 py-2">{m.amount.toLocaleString('fr-FR')} FCFA</td>
-                            <td className="px-4 py-2 text-gray-600">
+                            <td className="px-4 py-2.5 text-[var(--afc-text)]">{m.amount.toLocaleString('fr-FR')} FCFA</td>
+                            <td className="px-4 py-2.5 text-[var(--afc-muted-2)]">
                               {new Date(m.paidAt).toLocaleDateString('fr-FR')}
                             </td>
                           </tr>
@@ -315,7 +315,7 @@ export default function HistoriquePage() {
                   </div>
                 )}
                 {memberHistory.byMonth.length === 0 && (
-                  <p className="text-gray-500">Aucun paiement de cotisation mensuelle pour ce membre.</p>
+                  <p className="text-[var(--afc-muted)]">Aucun paiement de cotisation mensuelle pour ce membre.</p>
                 )}
               </div>
             )}

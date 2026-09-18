@@ -57,19 +57,19 @@ export default function RegulariserPage() {
 
   if (loading && (!debtSummary || debtSummary.unpaidMonths.length === 0)) {
     return (
-      <div className="min-h-[60vh] flex items-center justify-center">
-        <div className="inline-block h-10 w-10 animate-spin rounded-full border-4 border-[var(--sky-blue)] border-r-transparent" />
+      <div className="flex min-h-[60vh] items-center justify-center">
+        <div className="inline-block h-10 w-10 animate-spin rounded-full border-4 border-[#C9A048] border-r-transparent" />
       </div>
     );
   }
 
   if (!debtSummary) {
     return (
-      <div className="max-w-xl mx-auto">
-        <div className="card border-l-4 border-l-red-500">
-          <h1 className="text-lg font-bold text-[var(--foreground)]">Impossible d’afficher votre dette</h1>
-          <p className="mt-2 text-sm text-red-700">{error ?? 'Le détail des cotisations est temporairement indisponible.'}</p>
-          <button type="button" onClick={fetchData} className="btn-primary mt-4">Réessayer</button>
+      <div className="mx-auto max-w-xl">
+        <div className="rounded-xl border border-[var(--afc-border)] border-l-4 border-l-red-500 bg-[var(--afc-card)] p-5">
+          <h1 className="text-lg font-semibold text-[var(--afc-text)]">Impossible d&rsquo;afficher votre dette</h1>
+          <p className="mt-2 text-sm text-red-400">{error ?? 'Le détail des cotisations est temporairement indisponible.'}</p>
+          <button type="button" onClick={fetchData} className="afc-button-primary mt-4">Réessayer</button>
         </div>
       </div>
     );
@@ -85,62 +85,62 @@ export default function RegulariserPage() {
 
   return (
     <div className="mx-auto max-w-6xl space-y-4">
-      <div className="flex items-center gap-3 rounded-2xl border border-amber-200 bg-amber-50 px-4 py-3">
-        <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-amber-100 text-amber-700">
+      <div className="flex items-center gap-3 rounded-2xl border border-amber-700/30 bg-amber-900/15 px-4 py-3">
+        <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-amber-900/30 text-amber-400">
           <AlertCircle size={20} />
         </div>
         <div className="min-w-0">
-          <h1 className="text-lg font-bold text-[var(--foreground)]">Régulariser vos cotisations</h1>
-          <p className="text-sm text-amber-800">
+          <h1 className="text-lg font-semibold text-[var(--afc-text)]">Régulariser vos cotisations</h1>
+          <p className="text-sm text-amber-300/90">
             {agreement ? 'Votre accord administrateur est appliqué au montant à payer.' : 'Consultez vos mois impayés et réglez votre dette pour retrouver l’accès.'}
           </p>
         </div>
       </div>
 
       <div className="grid items-start gap-4 lg:grid-cols-[minmax(0,0.9fr)_minmax(420px,1.1fr)]">
-        <div className="card space-y-4">
-          <div className="flex items-end justify-between gap-4 border-b border-gray-100 pb-4">
+        <div className="space-y-4 rounded-xl border border-[var(--afc-border)] bg-[var(--afc-card)] p-5">
+          <div className="flex items-end justify-between gap-4 border-b border-[var(--afc-border)] pb-4">
             <div>
-              <p className="text-xs font-semibold uppercase tracking-wide text-gray-500">{agreement ? 'Dette initiale' : 'Montant total dû'}</p>
-              <p className="mt-1 text-3xl font-bold text-[var(--foreground)]">{debtSummary.totalOwed.toLocaleString('fr-FR')} FCFA</p>
+              <p className="text-xs font-semibold uppercase tracking-wide text-[var(--afc-muted)]">{agreement ? 'Dette initiale' : 'Montant total dû'}</p>
+              <p className="mt-1 text-3xl font-semibold text-[var(--afc-text)]">{debtSummary.totalOwed.toLocaleString('fr-FR')} FCFA</p>
             </div>
-            <span className="rounded-full bg-amber-50 px-3 py-1 text-sm font-semibold text-amber-700">{debtSummary.unpaidMonths.length} mois</span>
+            <span className="rounded-full border border-amber-700/30 bg-amber-900/20 px-3 py-1 text-sm font-semibold text-amber-400">{debtSummary.unpaidMonths.length} mois</span>
           </div>
           <div>
-            <h2 className="mb-2 text-xs font-semibold uppercase tracking-wide text-gray-500">Détail des mois</h2>
-            <ul className="divide-y divide-gray-100 text-sm">
+            <h2 className="mb-2 text-xs font-semibold uppercase tracking-wide text-[var(--afc-muted)]">Détail des mois</h2>
+            <ul className="divide-y divide-[rgba(var(--afc-hl),0.06)] text-sm">
               {debtSummary.unpaidMonths.map((month) => (
-                <li key={`${month.year}-${month.month}`} className="flex justify-between py-2 font-medium">
+                <li key={`${month.year}-${month.month}`} className="flex justify-between py-2 font-medium text-[var(--afc-text-soft)]">
                   <span>{month.label}</span><span>{month.amount.toLocaleString('fr-FR')} FCFA</span>
                 </li>
               ))}
             </ul>
           </div>
-          {monthly && <p className="text-xs text-gray-500">{monthly.name} · {Number(monthly.amount).toLocaleString('fr-FR')} FCFA / mois</p>}
+          {monthly && <p className="text-xs text-[var(--afc-muted)]">{monthly.name} · {Number(monthly.amount).toLocaleString('fr-FR')} FCFA / mois</p>}
         </div>
 
         <div className="space-y-4 lg:sticky lg:top-4">
-          <div className="card space-y-4 border-t-4 border-t-[var(--sky-blue)]">
+          <div className="space-y-4 rounded-xl border border-[var(--afc-border)] border-t-4 border-t-[#C9A048] bg-[var(--afc-card)] p-5">
             {agreement ? (
               <>
                 <div className="flex flex-wrap items-center justify-between gap-2">
-                  <h2 className="text-lg font-bold text-[var(--foreground)]">Accord de régularisation</h2>
-                  <span className="rounded-full bg-blue-50 px-3 py-1 text-xs font-semibold text-blue-700">{agreement.mode === 'INSTALLMENT' ? 'Paiement par tranches' : 'Règlement négocié'}</span>
+                  <h2 className="text-lg font-semibold text-[var(--afc-text)]">Accord de régularisation</h2>
+                  <span className="rounded-full border border-blue-700/30 bg-blue-900/20 px-3 py-1 text-xs font-semibold text-blue-300">{agreement.mode === 'INSTALLMENT' ? 'Paiement par tranches' : 'Règlement négocié'}</span>
                 </div>
-                <div className="grid grid-cols-2 gap-3 rounded-xl bg-slate-50 p-3 text-sm sm:grid-cols-4">
-                  <div><span className="text-gray-500">Accordé</span><p className="font-bold">{agreement.agreedAmount.toLocaleString('fr-FR')}</p></div>
-                  <div><span className="text-gray-500">Remise</span><p className="font-bold text-green-700">{agreement.discountAmount.toLocaleString('fr-FR')}</p></div>
-                  <div><span className="text-gray-500">Payé</span><p className="font-bold text-green-700">{agreement.paidAmount.toLocaleString('fr-FR')}</p></div>
-                  <div><span className="text-gray-500">Solde</span><p className="font-bold text-amber-700">{agreement.balance.toLocaleString('fr-FR')} FCFA</p></div>
+                <div className="grid grid-cols-2 gap-3 rounded-xl border border-[var(--afc-border)] bg-[rgba(var(--afc-hl),0.02)] p-3 text-sm sm:grid-cols-4">
+                  <div><span className="text-[var(--afc-muted)]">Accordé</span><p className="font-bold text-[var(--afc-text)]">{agreement.agreedAmount.toLocaleString('fr-FR')}</p></div>
+                  <div><span className="text-[var(--afc-muted)]">Remise</span><p className="font-bold text-emerald-400">{agreement.discountAmount.toLocaleString('fr-FR')}</p></div>
+                  <div><span className="text-[var(--afc-muted)]">Payé</span><p className="font-bold text-emerald-400">{agreement.paidAmount.toLocaleString('fr-FR')}</p></div>
+                  <div><span className="text-[var(--afc-muted)]">Solde</span><p className="font-bold text-amber-400">{agreement.balance.toLocaleString('fr-FR')} FCFA</p></div>
                 </div>
-                {agreement.deadline && <p className="text-sm text-gray-700">Échéance du solde : <strong>{new Date(agreement.deadline).toLocaleDateString('fr-FR')}</strong></p>}
-                {agreement.notes && <p className="text-sm text-gray-600">Note : {agreement.notes}</p>}
+                {agreement.deadline && <p className="text-sm text-[var(--afc-text-soft)]">Échéance du solde : <strong>{new Date(agreement.deadline).toLocaleDateString('fr-FR')}</strong></p>}
+                {agreement.notes && <p className="text-sm text-[var(--afc-muted-2)]">Note : {agreement.notes}</p>}
               </>
             ) : null}
 
-            <div className={agreement ? 'border-t border-gray-100 pt-4' : ''}>
-              <p className="text-xs font-semibold uppercase tracking-wide text-gray-500">À payer maintenant</p>
-              <p className="mt-1 text-3xl font-bold text-[var(--sky-blue-dark)]">{paymentAmount.toLocaleString('fr-FR')} FCFA</p>
+            <div className={agreement ? 'border-t border-[var(--afc-border)] pt-4' : ''}>
+              <p className="text-xs font-semibold uppercase tracking-wide text-[var(--afc-muted)]">À payer maintenant</p>
+              <p className="mt-1 text-3xl font-semibold text-[#C9A048]">{paymentAmount.toLocaleString('fr-FR')} FCFA</p>
             </div>
 
             {debtSummary.monthlyContributionId && monthly && (
@@ -157,7 +157,7 @@ export default function RegulariserPage() {
             )}
           </div>
 
-          {error && <div className="rounded-xl bg-red-50 px-4 py-3 text-sm text-red-700">{error}</div>}
+          {error && <div className="rounded-xl border border-red-700/30 bg-red-900/20 px-4 py-3 text-sm text-red-400">{error}</div>}
         </div>
       </div>
     </div>

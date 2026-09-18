@@ -110,41 +110,34 @@ export default function CotisationsExceptionnellesPage() {
   if (loading) {
     return (
       <div className="flex items-center justify-center py-12">
-        <Loader2 className="animate-spin h-8 w-8 text-[var(--sky-blue)]" />
+        <Loader2 className="h-8 w-8 animate-spin text-[#C9A048]" />
       </div>
     );
   }
 
   return (
-    <div className="space-y-8">
-      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+    <div className="space-y-5">
+      <header className="flex flex-col gap-4 pt-1 sm:flex-row sm:items-end sm:justify-between">
         <div>
-          <div className="flex items-center gap-3 mb-2">
-            <Link href="/dashboard/cotisations" className="text-[var(--sky-blue-dark)] hover:underline font-medium">← Cotisations</Link>
-          </div>
-          <h1 className="text-2xl font-semibold text-slate-900">Cotisations exceptionnelles</h1>
-          <p className="mt-1 text-sm text-slate-500">Cadeaux, équipements, événements, actions surprises.</p>
+          <h1 className="text-[28px] font-light tracking-[-0.02em] text-[var(--afc-text)]">Cotisations exceptionnelles</h1>
+          <p className="mt-0.5 text-sm text-[var(--afc-muted)]">Cadeaux, équipements, événements, actions surprises.</p>
         </div>
         {canAct && (
-          <button
-            type="button"
-            onClick={() => setShowForm((v) => !v)}
-            className="btn-primary"
-          >
-            {showForm ? 'Annuler' : <><Plus size={16} aria-hidden="true" /> Nouvelle cotisation</>}
+          <button type="button" onClick={() => setShowForm((v) => !v)} className="afc-button-primary w-full sm:w-auto">
+            {showForm ? 'Annuler' : <><Plus size={15} strokeWidth={2} aria-hidden="true" /> Nouvelle cotisation</>}
           </button>
         )}
-      </div>
+      </header>
 
       {showForm && (
-        <div className="card">
-          <h2 className="text-lg font-semibold mb-4">Nouvelle cotisation exceptionnelle</h2>
+        <div className="rounded-xl border border-[var(--afc-border)] bg-[var(--afc-card)] p-5">
+          <h2 className="mb-4 text-lg font-semibold text-[var(--afc-text)]">Nouvelle cotisation exceptionnelle</h2>
           <form onSubmit={handleCreate} className="space-y-4">
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Nom / motif</label>
+              <label className="mb-1 block text-sm font-medium text-[var(--afc-text-soft)]">Nom / motif</label>
               <input
                 type="text"
-                className="input-field w-full"
+                className="afc-login-input w-full text-sm"
                 value={form.name}
                 onChange={(e) => setForm({ ...form, name: e.target.value })}
                 placeholder="Ex: Cadeau naissance, Tournoi, Équipement..."
@@ -153,10 +146,10 @@ export default function CotisationsExceptionnellesPage() {
             </div>
             <div className="grid gap-4 sm:grid-cols-2">
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Montant suggéré (FCFA)</label>
+                <label className="mb-1 block text-sm font-medium text-[var(--afc-text-soft)]">Montant suggéré (FCFA)</label>
                 <input
                   type="number"
-                  className="input-field w-full"
+                  className="afc-login-input w-full text-sm"
                   value={form.amount}
                   onChange={(e) => setForm({ ...form, amount: e.target.value })}
                   placeholder="0 = libre"
@@ -164,28 +157,28 @@ export default function CotisationsExceptionnellesPage() {
                 />
               </div>
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Date de clôture</label>
+                <label className="mb-1 block text-sm font-medium text-[var(--afc-text-soft)]">Date de clôture</label>
                 <input
                   type="datetime-local"
-                  className="input-field w-full"
+                  className="afc-login-input w-full text-sm"
                   value={form.deadline}
                   onChange={(e) => setForm({ ...form, deadline: e.target.value })}
                 />
               </div>
             </div>
-            <label className="flex items-center gap-2 text-sm text-gray-700">
+            <label className="flex items-center gap-2 text-sm text-[var(--afc-text-soft)]">
               <input
                 type="checkbox"
                 checked={form.isOpenAmount}
                 onChange={(e) => setForm({ ...form, isOpenAmount: e.target.checked, amount: e.target.checked ? '' : form.amount })}
-                className="h-4 w-4"
+                className="h-4 w-4 accent-[#C9A048]"
               />
-              Montant libre (chaque membre donne ce qu'il veut)
+              Montant libre (chaque membre donne ce qu&apos;il veut)
             </label>
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Bénéficiaire (optionnel)</label>
+              <label className="mb-1 block text-sm font-medium text-[var(--afc-text-soft)]">Bénéficiaire (optionnel)</label>
               <select
-                className="input-field w-full"
+                className="afc-login-input w-full text-sm"
                 value={form.beneficiaryMemberId}
                 onChange={(e) => setForm({ ...form, beneficiaryMemberId: e.target.value })}
               >
@@ -196,22 +189,22 @@ export default function CotisationsExceptionnellesPage() {
               </select>
             </div>
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Membres concernés (laisser vide = ouvert à tous)</label>
-              <div className="max-h-40 overflow-auto border border-gray-200 rounded-xl p-2 space-y-1">
+              <label className="mb-1 block text-sm font-medium text-[var(--afc-text-soft)]">Membres concernés (laisser vide = ouvert à tous)</label>
+              <div className="max-h-40 space-y-1 overflow-auto rounded-xl border border-[rgba(var(--afc-hl),0.08)] bg-[rgba(var(--afc-hl),0.02)] p-2">
                 {members.map((m) => (
-                  <label key={m.id} className="flex items-center gap-2 text-sm text-gray-700">
+                  <label key={m.id} className="flex items-center gap-2 text-sm text-[var(--afc-text-soft)]">
                     <input
                       type="checkbox"
                       checked={form.targetMemberIds.includes(m.id)}
                       onChange={() => toggleMember(m.id)}
-                      className="h-4 w-4"
+                      className="h-4 w-4 accent-[#C9A048]"
                     />
                     {m.firstName} {m.lastName}
                   </label>
                 ))}
               </div>
             </div>
-            <button type="submit" disabled={submitting} className="btn-primary disabled:opacity-60">
+            <button type="submit" disabled={submitting} className="afc-button-primary disabled:opacity-60">
               {submitting ? 'Création…' : 'Créer la cotisation'}
             </button>
           </form>
@@ -219,8 +212,8 @@ export default function CotisationsExceptionnellesPage() {
       )}
 
       {contributions.length === 0 ? (
-        <div className="card py-12 text-center">
-          <p className="text-slate-500">Aucune cotisation exceptionnelle disponible pour l’instant.</p>
+        <div className="rounded-xl border border-[var(--afc-border)] bg-[var(--afc-card)] py-12 text-center">
+          <p className="text-[var(--afc-muted)]">Aucune cotisation exceptionnelle disponible pour l&rsquo;instant.</p>
         </div>
       ) : (
         <div className="grid gap-4">
@@ -229,22 +222,22 @@ export default function CotisationsExceptionnellesPage() {
             const isPending = c.status === 'CLOSED_PENDING';
             const deadline = c.deadline ? new Date(c.deadline) : null;
             return (
-              <div key={c.id} className={`card ${isClosed ? 'opacity-75' : ''}`}>
-                <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-4">
+              <div key={c.id} className={`rounded-xl border border-[var(--afc-border)] bg-[var(--afc-card)] p-5 ${isClosed ? 'opacity-60' : ''}`}>
+                <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
                   <div>
                     <div className="flex items-center gap-2">
-                      <h3 className="text-lg font-semibold text-[var(--foreground)]">{c.name}</h3>
-                      {isClosed && <span className="px-2 py-0.5 rounded-full bg-gray-200 text-gray-600 text-xs">Clôturée et remise</span>}
-                      {isPending && <span className="px-2 py-0.5 rounded-full bg-amber-100 text-amber-700 text-xs">Clôturée — en attente de réception</span>}
+                      <h3 className="text-lg font-semibold text-[var(--afc-text)]">{c.name}</h3>
+                      {isClosed && <span className="rounded-full border border-[rgba(var(--afc-hl),0.08)] bg-[rgba(var(--afc-hl),0.06)] px-2 py-0.5 text-xs text-[var(--afc-muted-2)]">Clôturée et remise</span>}
+                      {isPending && <span className="rounded-full border border-amber-700/30 bg-amber-900/20 px-2 py-0.5 text-xs text-amber-400">Clôturée — en attente de réception</span>}
                     </div>
                     {c.amount && !c.isOpenAmount && (
-                      <p className="text-sm text-gray-600 mt-1">Montant suggéré : {Number(c.amount).toLocaleString('fr-FR')} FCFA</p>
+                      <p className="mt-1 text-sm text-[var(--afc-muted-2)]">Montant suggéré : {Number(c.amount).toLocaleString('fr-FR')} FCFA</p>
                     )}
                     {c.isOpenAmount && (
-                      <p className="text-sm text-gray-600 mt-1">Montant libre</p>
+                      <p className="mt-1 text-sm text-[var(--afc-muted-2)]">Montant libre</p>
                     )}
                     {deadline && (
-                      <p className="text-sm font-medium mt-1 animate-blink-red">
+                      <p className="animate-blink-red mt-1 text-sm font-medium">
                         Clôture : {deadline.toLocaleString('fr-FR', { dateStyle: 'medium', timeStyle: 'short' })}
                       </p>
                     )}
@@ -252,14 +245,14 @@ export default function CotisationsExceptionnellesPage() {
                   <div className="flex items-center gap-2">
                     <Link
                       href={`/dashboard/cotisations/exceptionnelles/${c.id}`}
-                      className="px-4 py-2 rounded-xl border border-gray-200 text-gray-700 hover:bg-gray-50 text-sm font-medium"
+                      className="rounded-xl border border-[rgba(var(--afc-hl),0.08)] bg-[rgba(var(--afc-hl),0.03)] px-4 py-2 text-sm font-medium text-[var(--afc-text-soft)] transition hover:border-[#C9A048]/40 hover:text-[#C9A048]"
                     >
                       Détails
                     </Link>
                   </div>
                 </div>
                 {!isClosed && c.status === 'OPEN' && (
-                  <div className="mt-4 pt-4 border-t border-gray-100">
+                  <div className="mt-4 border-t border-[var(--afc-border)] pt-4">
                     <JekoPayButton
                       contributionId={c.id}
                       amount={c.amount ? Number(c.amount) : 1000}
@@ -267,7 +260,7 @@ export default function CotisationsExceptionnellesPage() {
                       onError={(msg) => toast.error(msg)}
                     />
                     {c.isOpenAmount && (
-                      <p className="text-xs text-gray-400 mt-2">Pour un montant personnalisé, utilisez le bouton ci-dessus. Le montant final est à définir sur la page Jeko.</p>
+                      <p className="mt-2 text-xs text-[var(--afc-muted)]">Pour un montant personnalisé, utilisez le bouton ci-dessus. Le montant final est à définir sur la page Jeko.</p>
                     )}
                   </div>
                 )}
@@ -277,18 +270,48 @@ export default function CotisationsExceptionnellesPage() {
         </div>
       )}
 
-      <section className="card overflow-hidden p-0">
-        <div className="flex flex-col gap-4 border-b border-slate-100 px-6 py-5 xl:flex-row xl:items-center xl:justify-between">
-          <h2 className="text-xl font-semibold text-slate-900">Journal des paiements exceptionnels</h2>
+      <section className="overflow-hidden rounded-xl border border-[var(--afc-border)] bg-[var(--afc-card)]">
+        <div className="flex flex-col gap-4 border-b border-[var(--afc-border)] px-6 py-5 xl:flex-row xl:items-center xl:justify-between">
+          <h2 className="text-xl font-semibold text-[var(--afc-text)]">Journal des paiements exceptionnels</h2>
           <div className="flex flex-wrap items-center gap-2">
-            <select aria-label="Filtrer par cotisation" className="input-field !w-auto min-w-52" value={paymentContributionId} onChange={(e) => setPaymentContributionId(e.target.value)}><option value="ALL">Toutes les cotisations</option>{contributions.map((c) => <option key={c.id} value={c.id}>{c.name}</option>)}</select>
-            <div className="relative"><Search size={17} className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-slate-400"/><input aria-label="Rechercher un membre" className="input-field !w-64 !pl-10" placeholder="Rechercher membre…" value={paymentQuery} onChange={(e) => setPaymentQuery(e.target.value)} /></div>
-            <button type="button" onClick={exportPayments} disabled={visiblePayments.length === 0} className="inline-flex items-center gap-2 rounded-lg border border-slate-200 px-4 py-2 text-sm font-medium text-slate-600 disabled:opacity-50"><Download size={16}/> CSV</button>
+            <select aria-label="Filtrer par cotisation" className="afc-login-input !w-auto min-w-52 !py-2 text-sm" value={paymentContributionId} onChange={(e) => setPaymentContributionId(e.target.value)}>
+              <option value="ALL">Toutes les cotisations</option>
+              {contributions.map((c) => <option key={c.id} value={c.id}>{c.name}</option>)}
+            </select>
+            <div className="relative">
+              <Search size={15} strokeWidth={1.6} className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-[var(--afc-muted-3)]"/>
+              <input aria-label="Rechercher un membre" className="afc-login-input !w-64 !py-2 !pl-9 text-sm" placeholder="Rechercher membre…" value={paymentQuery} onChange={(e) => setPaymentQuery(e.target.value)} />
+            </div>
+            <button type="button" onClick={exportPayments} disabled={visiblePayments.length === 0} className="inline-flex items-center gap-2 rounded-lg border border-[rgba(var(--afc-hl),0.08)] bg-[rgba(var(--afc-hl),0.03)] px-4 py-2 text-sm font-medium text-[var(--afc-text-soft)] transition hover:border-[#C9A048]/40 hover:text-[#C9A048] disabled:opacity-50"><Download size={16} strokeWidth={1.8}/> CSV</button>
           </div>
         </div>
-        <div className="flex items-center justify-between border-b border-slate-100 bg-slate-50 px-6 py-3 text-sm text-slate-500"><span>{visiblePayments.length} paiement{visiblePayments.length === 1 ? '' : 's'}</span><strong className="font-mono text-[var(--sky-blue)]">Total : {totalPayments.toLocaleString('fr-FR')} F</strong></div>
-        <div className="overflow-x-auto"><table className="w-full text-left text-sm"><thead><tr className="bg-[var(--sky-blue-soft)]"><th className="px-6 py-3 text-[.7rem] font-bold uppercase tracking-[.12em] text-slate-600">Date</th><th className="px-6 py-3 text-[.7rem] font-bold uppercase tracking-[.12em] text-slate-600">Membre</th><th className="px-6 py-3 text-[.7rem] font-bold uppercase tracking-[.12em] text-slate-600">Cotisation</th><th className="px-6 py-3 text-right text-[.7rem] font-bold uppercase tracking-[.12em] text-slate-600">Montant</th></tr></thead><tbody>{visiblePayments.map((payment) => <tr key={payment.id} className="border-b border-slate-100 hover:bg-slate-50/70"><td className="whitespace-nowrap px-6 py-3 text-slate-500">{new Date(payment.paidAt).toLocaleDateString('fr-FR')}</td><td className="px-6 py-3 font-medium text-slate-800">{payment.member ? `${payment.member.firstName} ${payment.member.lastName}` : '—'}</td><td className="px-6 py-3 text-slate-600">{payment.contribution?.name ?? '—'}</td><td className="px-6 py-3 text-right font-semibold text-emerald-700">{Number(payment.amount).toLocaleString('fr-FR')} FCFA</td></tr>)}</tbody></table></div>
-        {visiblePayments.length === 0 && <p className="py-12 text-center text-slate-500">Aucun paiement ne correspond à ce filtre.</p>}
+        <div className="flex items-center justify-between border-b border-[var(--afc-border)] bg-[rgba(var(--afc-hl),0.02)] px-6 py-3 text-sm text-[var(--afc-muted)]">
+          <span>{visiblePayments.length} paiement{visiblePayments.length === 1 ? '' : 's'}</span>
+          <strong className="font-mono text-[#C9A048]">Total : {totalPayments.toLocaleString('fr-FR')} F</strong>
+        </div>
+        <div className="overflow-x-auto">
+          <table className="afc-table-dark w-full text-left text-sm">
+            <thead>
+              <tr>
+                <th className="px-6 py-3 text-[11px] font-semibold uppercase tracking-wider text-[var(--afc-muted)]">Date</th>
+                <th className="px-6 py-3 text-[11px] font-semibold uppercase tracking-wider text-[var(--afc-muted)]">Membre</th>
+                <th className="px-6 py-3 text-[11px] font-semibold uppercase tracking-wider text-[var(--afc-muted)]">Cotisation</th>
+                <th className="px-6 py-3 text-right text-[11px] font-semibold uppercase tracking-wider text-[var(--afc-muted)]">Montant</th>
+              </tr>
+            </thead>
+            <tbody>
+              {visiblePayments.map((payment) => (
+                <tr key={payment.id} className="border-t border-[rgba(var(--afc-hl),0.04)] transition hover:bg-[rgba(var(--afc-hl),0.02)]">
+                  <td className="whitespace-nowrap px-6 py-3 text-[var(--afc-muted-2)]">{new Date(payment.paidAt).toLocaleDateString('fr-FR')}</td>
+                  <td className="px-6 py-3 font-medium text-[var(--afc-text)]">{payment.member ? `${payment.member.firstName} ${payment.member.lastName}` : '—'}</td>
+                  <td className="px-6 py-3 text-[var(--afc-muted-2)]">{payment.contribution?.name ?? '—'}</td>
+                  <td className="px-6 py-3 text-right font-semibold text-emerald-400">{Number(payment.amount).toLocaleString('fr-FR')} FCFA</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+        {visiblePayments.length === 0 && <p className="py-12 text-center text-[var(--afc-muted)]">Aucun paiement ne correspond à ce filtre.</p>}
       </section>
     </div>
   );
