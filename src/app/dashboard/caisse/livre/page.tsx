@@ -3,8 +3,17 @@
 import { useEffect, useState } from 'react';
 import { useAuth } from '@/lib/auth-context';
 import { caisseApi, contributionsApi, type LivreEntry, type Payment } from '@/lib/api';
+import { CaisseMembre } from '@/components/CaisseMembre';
+
+const BUREAU_OR_ADMIN = ['ADMIN', 'PRESIDENT', 'SECRETARY_GENERAL', 'TREASURER', 'COMMISSIONER', 'GENERAL_MEANS_MANAGER'];
 
 export default function LivreDeCaissePage() {
+  const { user } = useAuth();
+  if (!user) return null;
+  return BUREAU_OR_ADMIN.includes(user.role) ? <LivreBureau /> : <CaisseMembre />;
+}
+
+function LivreBureau() {
   const { user } = useAuth();
   const [livre, setLivre] = useState<LivreEntry[]>([]);
   const [payments, setPayments] = useState<Payment[]>([]);

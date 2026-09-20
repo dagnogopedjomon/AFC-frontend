@@ -65,7 +65,7 @@ const CAISSE_SUB = [
 ];
 
 const memberNav = [
-  { href: '/dashboard/mes-paiements', label: 'Mes paiements', icon: Wallet },
+  { href: '/dashboard/mes-cotisations', label: 'Mes cotisations', icon: Wallet },
   { href: '/dashboard/mes-amendes', label: 'Mes amendes', icon: Gavel },
   { href: '/dashboard/caisse/livre', label: 'La caisse du club', icon: PiggyBank },
 ];

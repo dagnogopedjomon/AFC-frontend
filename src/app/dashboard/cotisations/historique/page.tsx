@@ -95,7 +95,7 @@ export default function HistoriquePage() {
     return (
       <div className="rounded-xl border border-[var(--afc-border)] bg-[var(--afc-card)] p-6">
         <h1 className="mb-2 text-xl font-semibold text-[var(--afc-text)]">Historique</h1>
-        <p className="text-sm text-[var(--afc-muted)]">L&rsquo;accès à cette page est réservé à l&rsquo;Admin et au bureau. Consultez vos paiements dans « Mes paiements ».</p>
+        <p className="text-sm text-[var(--afc-muted)]">L&rsquo;accès à cette page est réservé à l&rsquo;Admin et au bureau. Consultez vos cotisations dans « Mes cotisations ».</p>
       </div>
     );
   }
