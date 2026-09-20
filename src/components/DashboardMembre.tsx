@@ -81,11 +81,14 @@ export function DashboardMembre() {
     const now = new Date();
     const nowKey = now.getFullYear() * 12 + now.getMonth();
     const paidRows = history?.byMonth ?? [];
-    const paidToDate = paidRows.filter((r) => r.year * 12 + (r.month - 1) <= nowKey).length;
-    const dueMonths = paidToDate + (debt?.unpaidMonths.length ?? 0);
+    const isDue = (r: { year: number; month: number }) => r.year * 12 + (r.month - 1) <= nowKey;
+    const dueRows = paidRows.filter(isDue);
+    const advanceRows = paidRows.filter((r) => !isDue(r));
+    const dueMonths = dueRows.length + (debt?.unpaidMonths.length ?? 0);
     const due = dueMonths * (debt?.monthlyAmount ?? 0);
-    const paid = paidRows.reduce((sum, r) => sum + r.amount, 0);
-    return { dueMonths, due, paid, covered: paidToDate, balance: paid - due };
+    const paid = dueRows.reduce((sum, r) => sum + r.amount, 0);
+    const advance = advanceRows.reduce((sum, r) => sum + r.amount, 0);
+    return { dueMonths, due, paid, covered: dueRows.length, balance: paid - due, advance, advanceMonths: advanceRows.length };
   }, [history, debt]);
 
   const periodLabel = PERIODS.find((p) => p.value === period)!.label.toLowerCase();
@@ -129,11 +132,11 @@ export function DashboardMembre() {
         <div className="mt-4 grid gap-5 sm:grid-cols-3">
           <Field label="Balance globale">
             <span className="font-serif text-3xl">{situation.balance > 0 ? '+' : ''}{money(situation.balance)}</span> <span className="text-xs text-[var(--afc-muted)]">F CFA</span>
-            <p className="text-xs text-[var(--afc-muted)]">{situation.balance < 0 ? 'En retard de paiement' : 'À jour ou en avance'}</p>
+            <p className="text-xs text-[var(--afc-muted)]">{situation.balance < 0 ? 'En retard de paiement' : situation.advanceMonths > 0 ? 'À jour, avec des mois payés d’avance' : 'À jour'}</p>
           </Field>
           <Field label="Cotisations versées">
             <span className="font-serif text-3xl">{money(situation.paid)}</span> <span className="text-xs text-[var(--afc-muted)]">F CFA</span>
-            <p className="text-xs text-[var(--afc-muted)]">sur {money(situation.due)} F CFA dus</p>
+            <p className="text-xs text-[var(--afc-muted)]">sur {money(situation.due)} F CFA dus{situation.advanceMonths > 0 ? ` · +${money(situation.advance)} F d’avance (${situation.advanceMonths} mois)` : ''}</p>
           </Field>
           <Field label="Mois couverts">
             <span className="font-serif text-3xl">{situation.covered}</span> <span className="text-xs text-[var(--afc-muted)]">/ {situation.dueMonths}</span>
