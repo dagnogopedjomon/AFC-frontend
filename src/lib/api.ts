@@ -649,6 +649,11 @@ export const administrationApi = {
   createFine: (data: { memberId: string; reason: string; amount: number; note?: string }) => api<Fine>('/administration/fines', { method: 'POST', body: JSON.stringify(data) }),
   settleFine: (id: string) => api<Fine>(`/administration/fines/${id}/settle`, { method: 'PATCH' }),
   cancelFine: (id: string) => api<Fine>(`/administration/fines/${id}/cancel`, { method: 'PATCH' }),
+  payFineJekoInit: (id: string, data: { paymentMethod: string; payerPhone?: string }) =>
+    api<{ reference: string; redirectUrl: string }>(`/administration/fines/${id}/jeko/init`, { method: 'POST', body: JSON.stringify(data) }),
+  payFineJekoLink: (id: string, data: { title?: string }) =>
+    api<{ reference: string; link: string }>(`/administration/fines/${id}/jeko/link`, { method: 'POST', body: JSON.stringify(data) }),
+  verifyFinePayment: (reference: string) => api<{ paid: boolean }>(`/administration/fines/jeko/verify/${reference}`),
   exemptions: (memberId?: string, year?: number) => {
     const params = new URLSearchParams(); if (memberId) params.set('memberId', memberId); if (year) params.set('year', String(year));
     return api<ContributionExemption[]>(`/administration/exemptions?${params}`);

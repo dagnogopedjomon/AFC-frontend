@@ -3,7 +3,7 @@
 import { useEffect, useState } from 'react';
 import { useSearchParams, useRouter } from 'next/navigation';
 import { CheckCircle, XCircle, Loader2, RefreshCw } from 'lucide-react';
-import { contributionsApi } from '@/lib/api';
+import { administrationApi, contributionsApi } from '@/lib/api';
 import { toast } from 'sonner';
 import { useAuth } from '@/lib/auth-context';
 
@@ -12,6 +12,8 @@ export default function PaymentSuccessPage() {
   const router = useRouter();
   const { refreshUser } = useAuth();
   const linkId = searchParams.get('ref');
+  const isFine = searchParams.get('type') === 'fine';
+  const backHref = isFine ? '/dashboard/mes-amendes' : '/dashboard/cotisations';
   const [status, setStatus] = useState<'verifying' | 'paid' | 'pending' | 'error'>('verifying');
   const [retryCount, setRetryCount] = useState(0);
 
@@ -21,12 +23,12 @@ export default function PaymentSuccessPage() {
       return;
     }
     try {
-      const res = await contributionsApi.jekoVerify(linkId);
+      const res = isFine ? await administrationApi.verifyFinePayment(linkId) : await contributionsApi.jekoVerify(linkId);
       if (res.paid) {
         setStatus('paid');
         toast.success('Paiement confirmé !', { duration: 3000 });
         await refreshUser();
-        setTimeout(() => router.replace('/dashboard'), 3000);
+        setTimeout(() => router.replace(isFine ? '/dashboard/mes-amendes' : '/dashboard'), 3000);
       } else {
         setStatus('pending');
         // Auto-retry every 3 seconds up to 5 times
@@ -81,8 +83,8 @@ export default function PaymentSuccessPage() {
               <RefreshCw size={16} />
               Réessayer la vérification
             </button>
-            <button onClick={() => router.replace('/dashboard/cotisations')} className="btn-ghost w-full text-sm">
-              Retour aux cotisations
+            <button onClick={() => router.replace(backHref)} className="btn-ghost w-full text-sm">
+              {isFine ? 'Retour aux amendes' : 'Retour aux cotisations'}
             </button>
           </>
         )}
@@ -96,8 +98,8 @@ export default function PaymentSuccessPage() {
             <button onClick={handleRetry} className="btn-primary w-full mb-2">
               Réessayer
             </button>
-            <button onClick={() => router.replace('/dashboard/cotisations')} className="btn-ghost w-full text-sm">
-              Retour aux cotisations
+            <button onClick={() => router.replace(backHref)} className="btn-ghost w-full text-sm">
+              {isFine ? 'Retour aux amendes' : 'Retour aux cotisations'}
             </button>
           </>
         )}

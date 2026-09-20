@@ -2,7 +2,7 @@
 
 import { useState } from 'react';
 import { CreditCard, Loader2 } from 'lucide-react';
-import { contributionsApi } from '@/lib/api';
+import { administrationApi, contributionsApi } from '@/lib/api';
 
 const PAYMENT_METHODS = [
   { id: 'wave',   label: 'Wave' },
@@ -14,7 +14,8 @@ const PAYMENT_METHODS = [
 ] as const;
 
 type Props = {
-  contributionId: string;
+  contributionId?: string;
+  fineId?: string;
   amount: number;
   periodYear?: number;
   periodMonth?: number;
@@ -25,7 +26,7 @@ type Props = {
   advanceMonths?: number;
 };
 
-export function JekoPayButton({ contributionId, amount, periodYear, periodMonth, defaultPhone = '', label, onError, regularizationAgreementId, advanceMonths }: Props) {
+export function JekoPayButton({ contributionId, fineId, amount, periodYear, periodMonth, defaultPhone = '', label, onError, regularizationAgreementId, advanceMonths }: Props) {
   const [method, setMethod] = useState<string>('wave');
   const [phone, setPhone] = useState(defaultPhone);
   const [loading, setLoading] = useState(false);
@@ -34,31 +35,43 @@ export function JekoPayButton({ contributionId, amount, periodYear, periodMonth,
     if (!method) return;
     setLoading(true);
     try {
-      if (method === 'card') {
-        const res = await contributionsApi.jekoLink({
-          contributionId,
-          amount,
-          periodYear,
-          periodMonth,
-          title: label ?? `Cotisation AFC`,
-          regularizationAgreementId,
-          advanceMonths,
-        });
-        localStorage.setItem('jeko_pending_link', res.reference);
-        window.location.href = res.link;
-      } else {
-        const res = await contributionsApi.jekoInit({
-          contributionId,
-          amount,
-          periodYear,
-          periodMonth,
-          paymentMethod: method,
-          payerPhone: phone || undefined,
-          regularizationAgreementId,
-          advanceMonths,
-        });
-        localStorage.setItem('jeko_pending_link', res.reference);
-        window.location.href = res.redirectUrl;
+      if (fineId) {
+        if (method === 'card') {
+          const res = await administrationApi.payFineJekoLink(fineId, { title: label ?? 'Amende AFC' });
+          localStorage.setItem('jeko_pending_link', res.reference);
+          window.location.href = res.link;
+        } else {
+          const res = await administrationApi.payFineJekoInit(fineId, { paymentMethod: method, payerPhone: phone || undefined });
+          localStorage.setItem('jeko_pending_link', res.reference);
+          window.location.href = res.redirectUrl;
+        }
+      } else if (contributionId) {
+        if (method === 'card') {
+          const res = await contributionsApi.jekoLink({
+            contributionId,
+            amount,
+            periodYear,
+            periodMonth,
+            title: label ?? `Cotisation AFC`,
+            regularizationAgreementId,
+            advanceMonths,
+          });
+          localStorage.setItem('jeko_pending_link', res.reference);
+          window.location.href = res.link;
+        } else {
+          const res = await contributionsApi.jekoInit({
+            contributionId,
+            amount,
+            periodYear,
+            periodMonth,
+            paymentMethod: method,
+            payerPhone: phone || undefined,
+            regularizationAgreementId,
+            advanceMonths,
+          });
+          localStorage.setItem('jeko_pending_link', res.reference);
+          window.location.href = res.redirectUrl;
+        }
       }
     } catch (e) {
       const msg = e instanceof Error ? e.message : 'Erreur lors du paiement.';

@@ -85,13 +85,13 @@ export default function RegulariserPage() {
 
   return (
     <div className="mx-auto max-w-6xl space-y-4">
-      <div className="flex items-center gap-3 rounded-2xl border border-amber-700/30 bg-amber-900/15 px-4 py-3">
-        <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-amber-900/30 text-amber-400">
+      <div className="flex items-center gap-3 rounded-2xl border px-4 py-3" style={{ borderColor: 'var(--afc-badge-amber-border)', background: 'var(--afc-badge-amber-bg)' }}>
+        <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full" style={{ background: 'var(--afc-badge-amber-border)', color: 'var(--afc-badge-amber-text)' }}>
           <AlertCircle size={20} />
         </div>
         <div className="min-w-0">
           <h1 className="text-lg font-semibold text-[var(--afc-text)]">Régulariser vos cotisations</h1>
-          <p className="text-sm text-amber-300/90">
+          <p className="text-sm" style={{ color: 'var(--afc-badge-amber-text)' }}>
             {agreement ? 'Votre accord administrateur est appliqué au montant à payer.' : 'Consultez vos mois impayés et réglez votre dette pour retrouver l’accès.'}
           </p>
         </div>
@@ -104,7 +104,7 @@ export default function RegulariserPage() {
               <p className="text-xs font-semibold uppercase tracking-wide text-[var(--afc-muted)]">{agreement ? 'Dette initiale' : 'Montant total dû'}</p>
               <p className="mt-1 text-3xl font-semibold text-[var(--afc-text)]">{debtSummary.totalOwed.toLocaleString('fr-FR')} FCFA</p>
             </div>
-            <span className="rounded-full border border-amber-700/30 bg-amber-900/20 px-3 py-1 text-sm font-semibold text-amber-400">{debtSummary.unpaidMonths.length} mois</span>
+            <span className="afc-badge-amber rounded-full border px-3 py-1 text-sm font-semibold">{debtSummary.unpaidMonths.length} mois</span>
           </div>
           <div>
             <h2 className="mb-2 text-xs font-semibold uppercase tracking-wide text-[var(--afc-muted)]">Détail des mois</h2>

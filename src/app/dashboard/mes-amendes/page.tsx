@@ -3,6 +3,8 @@
 import { useEffect, useMemo, useState } from 'react';
 import { toast } from 'sonner';
 import { administrationApi, type Fine } from '@/lib/api';
+import { useAuth } from '@/lib/auth-context';
+import { JekoPayButton } from '@/components/JekoPayButton';
 
 const statusLabel: Record<string, string> = { UNPAID: 'À régler', PAID: 'Réglée', CANCELLED: 'Annulée' };
 const statusTone: Record<string, string> = {
@@ -13,9 +15,12 @@ const statusTone: Record<string, string> = {
 const date = (value: string | null) => (value ? new Date(value).toLocaleDateString('fr-FR', { day: '2-digit', month: 'short', year: 'numeric' }) : '—');
 
 export default function MesAmendesPage() {
+  const { user } = useAuth();
   const [fines, setFines] = useState<Fine[]>([]);
   const [loading, setLoading] = useState(true);
   const [statusFilter, setStatusFilter] = useState('ALL');
+  const [payingId, setPayingId] = useState<string | null>(null);
+  const [payError, setPayError] = useState<string | null>(null);
 
   useEffect(() => {
     administrationApi
@@ -52,6 +57,7 @@ export default function MesAmendesPage() {
           </div>
         ) : (
           <>
+            {payError && <p className="px-4 pt-3 text-sm text-red-400">{payError}</p>}
             <div className="space-y-3 p-3 md:hidden">
               {visible.map((fine) => (
                 <article key={fine.id} className="rounded-xl border border-[var(--afc-border)] bg-[rgba(var(--afc-hl),0.02)] p-4">
@@ -65,6 +71,23 @@ export default function MesAmendesPage() {
                     <span className="text-sm text-[var(--afc-muted)]">{fine.reason}</span>
                     <strong className="text-[var(--afc-text)]">{Number(fine.amount).toLocaleString('fr-FR')} F</strong>
                   </div>
+                  {fine.status === 'UNPAID' && (
+                    <div className="mt-3 border-t border-[var(--afc-border)] pt-3">
+                      {payingId === fine.id ? (
+                        <JekoPayButton
+                          fineId={fine.id}
+                          amount={Number(fine.amount)}
+                          defaultPhone={user?.phone ?? ''}
+                          label={`${Number(fine.amount).toLocaleString('fr-FR')} FCFA`}
+                          onError={setPayError}
+                        />
+                      ) : (
+                        <button type="button" onClick={() => { setPayingId(fine.id); setPayError(null); }} className="afc-button-primary w-full text-sm">
+                          Payer maintenant
+                        </button>
+                      )}
+                    </div>
+                  )}
                 </article>
               ))}
             </div>
@@ -77,6 +100,7 @@ export default function MesAmendesPage() {
                     <th className="px-5 py-3 text-[11px] font-semibold uppercase tracking-wider text-[var(--afc-muted)]">Montant</th>
                     <th className="px-5 py-3 text-[11px] font-semibold uppercase tracking-wider text-[var(--afc-muted)]">Réglée le</th>
                     <th className="px-5 py-3 text-[11px] font-semibold uppercase tracking-wider text-[var(--afc-muted)]">Statut</th>
+                    <th className="px-5 py-3 text-[11px] font-semibold uppercase tracking-wider text-[var(--afc-muted)]">Action</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -90,6 +114,23 @@ export default function MesAmendesPage() {
                         <span className={`inline-flex rounded-full px-2.5 py-1 text-xs font-medium ${statusTone[fine.status]}`}>
                           {statusLabel[fine.status]}
                         </span>
+                      </td>
+                      <td className="px-5 py-3 min-w-[220px]">
+                        {fine.status === 'UNPAID' && (
+                          payingId === fine.id ? (
+                            <JekoPayButton
+                              fineId={fine.id}
+                              amount={Number(fine.amount)}
+                              defaultPhone={user?.phone ?? ''}
+                              label={`${Number(fine.amount).toLocaleString('fr-FR')} FCFA`}
+                              onError={setPayError}
+                            />
+                          ) : (
+                            <button type="button" onClick={() => { setPayingId(fine.id); setPayError(null); }} className="afc-button-primary text-sm">
+                              Payer maintenant
+                            </button>
+                          )
+                        )}
                       </td>
                     </tr>
                   ))}
