@@ -8,6 +8,7 @@ import {
   Users,
   Wallet,
   PiggyBank,
+  Landmark,
   BarChart3,
   CalendarDays,
   Bell,
@@ -67,7 +68,7 @@ const CAISSE_SUB = [
 const memberNav = [
   { href: '/dashboard/mes-cotisations', label: 'Mes cotisations', icon: Wallet },
   { href: '/dashboard/mes-amendes', label: 'Mes amendes', icon: Gavel },
-  { href: '/dashboard/caisse/livre', label: 'La caisse du club', icon: PiggyBank },
+  { href: '/dashboard/caisse/livre', label: 'La caisse du club', icon: Landmark },
 ];
 
 const BREADCRUMB_LABELS: { href: string; label: string }[] = [

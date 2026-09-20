@@ -5,6 +5,7 @@ import Link from 'next/link';
 import { ResponsiveContainer, BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend } from 'recharts';
 import { ArrowUpRight, Wallet, Users, CalendarDays, Plus } from 'lucide-react';
 import { useAuth } from '@/lib/auth-context';
+import { DashboardMembre } from '@/components/DashboardMembre';
 import { caisseApi, contributionsApi, membersApi, reportsApi, activitiesApi, type CaisseSummary, type AnnualContributionMatrix, type AnnualReport, type Member, type Payment, type Expense, type Activity } from '@/lib/api';
 
 const money = (n: number) => n.toLocaleString('fr-FR');
@@ -39,7 +40,30 @@ function Metric({
   );
 }
 
+const BUREAU_OR_ADMIN = ['ADMIN', 'PRESIDENT', 'SECRETARY_GENERAL', 'TREASURER', 'COMMISSIONER', 'GENERAL_MEANS_MANAGER'];
+
 export default function DashboardPage() {
+  const { user } = useAuth();
+  if (user && !BUREAU_OR_ADMIN.includes(user.role)) return <MemberHome />;
+  return <BureauDashboard />;
+}
+
+function MemberHome() {
+  const { user } = useAuth();
+  const hour = new Date().getHours();
+  const greeting = hour < 18 ? 'Bonjour' : 'Bonsoir';
+  return (
+    <div className="space-y-6">
+      <header>
+        <h1 className="font-serif text-2xl font-semibold text-[var(--afc-text)]">{greeting}, {user?.firstName ?? ''}</h1>
+        <p className="mt-1 text-[13px] text-[var(--afc-muted-4)]">Votre situation et la trésorerie du club.</p>
+      </header>
+      <DashboardMembre />
+    </div>
+  );
+}
+
+function BureauDashboard() {
   const { user } = useAuth();
   const [caisse, setCaisse] = useState<CaisseSummary | null>(null);
   const [members, setMembers] = useState<Member[]>([]);
