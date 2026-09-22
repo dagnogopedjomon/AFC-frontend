@@ -26,6 +26,7 @@ import {
   Moon,
 } from 'lucide-react';
 import { useAuth } from '@/lib/auth-context';
+import { toast } from 'sonner';
 import { notificationsApi, caisseApi, activitiesApi } from '@/lib/api';
 import { cn, roleLabelFr } from '@/lib/utils';
 import { ConfirmModal } from '@/components/ConfirmModal';
@@ -296,12 +297,31 @@ export default function DashboardLayout({
       .catch(() => setInAppUnreadCount(0));
   };
 
+  const seenNotificationIds = useRef<Set<string> | null>(null);
+  const pollNewNotifications = () => {
+    notificationsApi.inApp
+      .list(15)
+      .then((rows) => {
+        if (!seenNotificationIds.current) {
+          seenNotificationIds.current = new Set(rows.map((r) => r.id));
+          return;
+        }
+        const fresh = rows.filter((r) => !seenNotificationIds.current!.has(r.id));
+        for (const r of fresh) {
+          seenNotificationIds.current!.add(r.id);
+          toast(r.title || 'Notification', { description: r.message });
+        }
+      })
+      .catch(() => undefined);
+  };
+
   useEffect(() => {
     if (!user) return;
     refreshActivitiesRecentCount();
     const intervalActivities = setInterval(refreshActivitiesRecentCount, 60000);
     refreshInAppCount();
-    const interval = setInterval(refreshInAppCount, 60000);
+    pollNewNotifications();
+    const interval = setInterval(() => { refreshInAppCount(); pollNewNotifications(); }, 30000);
     return () => {
       clearInterval(interval);
       clearInterval(intervalActivities);
@@ -309,7 +329,7 @@ export default function DashboardLayout({
   }, [user]);
 
   useEffect(() => {
-    const handler = () => refreshInAppCount();
+    const handler = () => { refreshInAppCount(); pollNewNotifications(); };
     window.addEventListener('notifications-inapp-updated', handler);
     return () => window.removeEventListener('notifications-inapp-updated', handler);
   }, []);
