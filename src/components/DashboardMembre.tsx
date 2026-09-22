@@ -130,13 +130,27 @@ export function DashboardMembre() {
       <section className="rounded-xl border border-[var(--afc-border)] bg-[var(--afc-card)] p-5">
         <h2 className="flex items-center gap-2 font-serif text-xl text-[var(--afc-text)]"><Wallet size={18} className="text-[var(--afc-muted)]" /> Ma situation</h2>
         <div className="mt-4 grid gap-5 sm:grid-cols-3">
-          <Field label="Balance globale">
-            <span className="font-serif text-3xl">{situation.balance > 0 ? '+' : ''}{money(situation.balance)}</span> <span className="text-xs text-[var(--afc-muted)]">F CFA</span>
-            <p className="text-xs text-[var(--afc-muted)]">{situation.balance < 0 ? 'En retard de paiement' : situation.advanceMonths > 0 ? 'À jour, avec des mois payés d’avance' : 'À jour'}</p>
+          <Field label="Situation">
+            {situation.balance < 0 || situation.advanceMonths > 0 ? (
+              <div className="space-y-2">
+                {situation.balance < 0 && (
+                  <div>
+                    <span className="font-serif text-3xl text-red-500">{money(-situation.balance)}</span> <span className="text-xs text-[var(--afc-muted)]">F CFA de retard</span>
+                  </div>
+                )}
+                {situation.advanceMonths > 0 && (
+                  <div>
+                    <span className="font-serif text-2xl text-emerald-500">+{money(situation.advance)}</span> <span className="text-xs text-[var(--afc-muted)]">F CFA d’avance ({situation.advanceMonths} mois)</span>
+                  </div>
+                )}
+              </div>
+            ) : (
+              <span className="font-serif text-3xl">À jour</span>
+            )}
           </Field>
           <Field label="Cotisations versées">
             <span className="font-serif text-3xl">{money(situation.paid)}</span> <span className="text-xs text-[var(--afc-muted)]">F CFA</span>
-            <p className="text-xs text-[var(--afc-muted)]">sur {money(situation.due)} F CFA dus{situation.advanceMonths > 0 ? ` · +${money(situation.advance)} F d’avance (${situation.advanceMonths} mois)` : ''}</p>
+            <p className="text-xs text-[var(--afc-muted)]">sur {money(situation.due)} F CFA dus</p>
           </Field>
           <Field label="Mois couverts">
             <span className="font-serif text-3xl">{situation.covered}</span> <span className="text-xs text-[var(--afc-muted)]">/ {situation.dueMonths}</span>
