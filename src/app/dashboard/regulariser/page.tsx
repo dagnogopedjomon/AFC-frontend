@@ -120,12 +120,12 @@ export default function RegulariserPage() {
         </div>
 
         <div className="space-y-4 lg:sticky lg:top-4">
-          <div className="space-y-4 rounded-xl border border-[var(--afc-border)] border-t-4 border-t-[#C9A048] bg-[var(--afc-card)] p-5">
+          <div className="space-y-4 overflow-hidden rounded-xl border border-[var(--afc-border)] bg-[var(--afc-card)] p-5">
             {agreement ? (
               <>
                 <div className="flex flex-wrap items-center justify-between gap-2">
                   <h2 className="text-lg font-semibold text-[var(--afc-text)]">Accord de régularisation</h2>
-                  <span className="rounded-full border border-blue-700/30 bg-blue-900/20 px-3 py-1 text-xs font-semibold text-blue-300">{agreement.mode === 'INSTALLMENT' ? 'Paiement par tranches' : 'Règlement négocié'}</span>
+                  <span className="afc-badge-blue rounded-full border px-3 py-1 text-xs font-semibold">{agreement.mode === 'INSTALLMENT' ? 'Paiement par tranches' : 'Règlement négocié'}</span>
                 </div>
                 <div className="grid grid-cols-2 gap-3 rounded-xl border border-[var(--afc-border)] bg-[rgba(var(--afc-hl),0.02)] p-3 text-sm sm:grid-cols-4">
                   <div><span className="text-[var(--afc-muted)]">Accordé</span><p className="font-bold text-[var(--afc-text)]">{agreement.agreedAmount.toLocaleString('fr-FR')}</p></div>
