@@ -20,11 +20,21 @@ function entryType(entry: LivreEntry): { label: string; tone: string } {
     : { label: 'Dépense', tone: 'afc-badge-red' };
 }
 
+const fullName = (p?: { firstName: string; lastName: string } | null) => (p ? `${p.firstName} ${p.lastName}` : '—');
+
+function entryWho(entry: LivreEntry): string {
+  if (entry.type === 'entree') return entry.member ? fullName(entry.member) : entry.requestedBy ? fullName(entry.requestedBy) : '—';
+  return entry.beneficiary || fullName(entry.requestedBy);
+}
+
 function entryObject(entry: LivreEntry): string {
   if (entry.type === 'entree') {
     if (entry.kind === 'fine') return entry.description ? `Amende — ${entry.description}` : 'Amende';
     if (entry.kind === 'allocation') return entry.description || 'Allocation vers une sous-caisse';
-    return entry.contribution ?? 'Cotisation';
+    const period = entry.periodYear != null && entry.periodMonth != null
+      ? ` (${new Date(entry.periodYear, entry.periodMonth - 1).toLocaleString('fr-FR', { month: 'long', year: 'numeric' })})`
+      : '';
+    return `${entry.contribution ?? 'Cotisation'}${period}`;
   }
   return entry.description || ('label' in entry && entry.label ? String(entry.label) : 'Sortie de caisse');
 }
@@ -124,11 +134,12 @@ export function CaisseMembre() {
           <p className="p-10 text-center text-sm text-[var(--afc-muted)]">Aucune {countLabel} sur cette période.</p>
         ) : (
           <div className="overflow-x-auto">
-            <table className="afc-table-dark w-full min-w-[560px] text-left text-sm">
+            <table className="afc-table-dark w-full min-w-[680px] text-left text-sm">
               <thead>
                 <tr>
                   <th className="px-5 py-3 text-[11px] font-semibold uppercase tracking-wider text-[var(--afc-muted)]">Date</th>
                   <th className="px-5 py-3 text-[11px] font-semibold uppercase tracking-wider text-[var(--afc-muted)]">Type</th>
+                  <th className="px-5 py-3 text-[11px] font-semibold uppercase tracking-wider text-[var(--afc-muted)]">{tab === 'entree' ? 'Payé par' : 'Bénéficiaire'}</th>
                   <th className="px-5 py-3 text-[11px] font-semibold uppercase tracking-wider text-[var(--afc-muted)]">Objet</th>
                   <th className="px-5 py-3 text-right text-[11px] font-semibold uppercase tracking-wider text-[var(--afc-muted)]">Montant</th>
                 </tr>
@@ -144,7 +155,8 @@ export function CaisseMembre() {
                       <td className="px-5 py-3">
                         <span className={`inline-flex rounded-full border px-2.5 py-0.5 text-xs font-medium ${kind.tone}`}>{kind.label}</span>
                       </td>
-                      <td className="px-5 py-3 text-[var(--afc-text)]">{entryObject(entry)}</td>
+                      <td className="px-5 py-3 text-[var(--afc-text)]">{entryWho(entry)}</td>
+                      <td className="px-5 py-3 text-[var(--afc-muted-2)]">{entryObject(entry)}</td>
                       <td className="whitespace-nowrap px-5 py-3 text-right font-medium text-[var(--afc-text)]">{fcfa(Number(entry.amount))}</td>
                     </tr>
                   );
