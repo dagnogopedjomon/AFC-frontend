@@ -66,19 +66,10 @@ export default function PaiementPage() {
   useEffect(() => {
     if (!memberId) { setPreviewPeriods([]); return; }
     setPreviewLoading(true);
-    contributionsApi.memberHistory(memberId).then((history) => {
-      const paid = new Set(history.byMonth.map((period) => `${period.year}-${period.month}`));
-      const periods: Array<{ year: number; month: number }> = [];
-      const cursor = new Date();
-      cursor.setDate(1);
-      for (let index = 0; periods.length < months && index < 36; index++) {
-        const year = cursor.getFullYear();
-        const month = cursor.getMonth() + 1;
-        if (!paid.has(`${year}-${month}`)) periods.push({ year, month });
-        cursor.setMonth(cursor.getMonth() + 1);
-      }
-      setPreviewPeriods(periods);
-    }).catch(() => setPreviewPeriods([])).finally(() => setPreviewLoading(false));
+    contributionsApi.previewAdvance(memberId, months)
+      .then(setPreviewPeriods)
+      .catch(() => setPreviewPeriods([]))
+      .finally(() => setPreviewLoading(false));
   }, [memberId, months]);
 
   const periodLabel = (period: { year: number; month: number }) =>

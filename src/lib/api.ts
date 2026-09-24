@@ -377,6 +377,8 @@ export const contributionsApi = {
         ? `/contributions/history/summary?year=${year}&month=${month}`
         : '/contributions/history/summary',
     ),
+  previewAdvance: (memberId: string, months: number) =>
+    api<Array<{ year: number; month: number }>>(`/contributions/payments/advance/preview?memberId=${memberId}&months=${months}`),
   memberHistory: (memberId: string) =>
     api<MemberHistory>(`/contributions/history/member/${memberId}`),
   /** Statut cotisation du membre connecté (tous les rôles). */
