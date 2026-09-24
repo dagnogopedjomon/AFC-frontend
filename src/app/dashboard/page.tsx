@@ -6,6 +6,7 @@ import { ResponsiveContainer, BarChart, Bar, XAxis, YAxis, CartesianGrid, Toolti
 import { ArrowUpRight, Wallet, Users, CalendarDays, Plus } from 'lucide-react';
 import { useAuth } from '@/lib/auth-context';
 import { DashboardMembre } from '@/components/DashboardMembre';
+import { EcheanceBanner } from '@/components/EcheanceBanner';
 import { caisseApi, contributionsApi, membersApi, reportsApi, activitiesApi, type CaisseSummary, type AnnualContributionMatrix, type AnnualReport, type Member, type Payment, type Expense, type Activity } from '@/lib/api';
 
 const money = (n: number) => n.toLocaleString('fr-FR');
@@ -58,6 +59,7 @@ function MemberHome() {
         <h1 className="font-serif text-2xl font-semibold text-[var(--afc-text)]">{greeting}, {user?.firstName ?? ''}</h1>
         <p className="mt-1 text-[13px] text-[var(--afc-muted-4)]">Votre situation et la trésorerie du club.</p>
       </header>
+      <EcheanceBanner audience="member" />
       <DashboardMembre />
     </div>
   );
@@ -121,6 +123,8 @@ function BureauDashboard() {
           Nouveau paiement
         </Link>
       </header>
+
+      <EcheanceBanner audience="bureau" />
 
       {loading ? (
         <div className="grid min-h-64 place-items-center rounded-xl border border-[var(--afc-border)] bg-[var(--afc-card)]">

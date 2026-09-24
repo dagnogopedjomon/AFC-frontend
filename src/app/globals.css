@@ -380,3 +380,18 @@ main textarea { border-color: #dbe2ea; }
   animation: blink-red 1.2s ease-in-out infinite;
   color: #dc2626;
 }
+
+@keyframes afc-marquee {
+  from { transform: translateX(100%); }
+  to { transform: translateX(-100%); }
+}
+.afc-marquee-track {
+  display: inline-block;
+  white-space: nowrap;
+  padding-left: 100%;
+  animation: afc-marquee 28s linear infinite;
+}
+.afc-marquee:hover .afc-marquee-track { animation-play-state: paused; }
+@media (prefers-reduced-motion: reduce) {
+  .afc-marquee-track { animation: none; padding-left: 0; white-space: normal; }
+}
