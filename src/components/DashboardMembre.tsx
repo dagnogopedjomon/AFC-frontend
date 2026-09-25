@@ -88,7 +88,13 @@ export function DashboardMembre() {
     const due = dueMonths * (debt?.monthlyAmount ?? 0);
     const paid = dueRows.reduce((sum, r) => sum + r.amount, 0);
     const advance = advanceRows.reduce((sum, r) => sum + r.amount, 0);
-    return { dueMonths, due, paid, covered: dueRows.length, balance: paid - due, advance, advanceMonths: advanceRows.length };
+    const last = paidRows.reduce<{ year: number; month: number } | null>(
+      (acc, r) => (!acc || r.year * 12 + r.month > acc.year * 12 + acc.month ? r : acc), null);
+    const paidThrough = last ? new Date(last.year, last.month - 1).toLocaleString('fr-FR', { month: 'long', year: 'numeric' }) : null;
+    return {
+      dueMonths, due, paid, covered: dueRows.length, balance: paid - due, advance, advanceMonths: advanceRows.length,
+      totalPaid: paidRows.reduce((sum, r) => sum + r.amount, 0), totalMonths: paidRows.length, paidThrough,
+    };
   }, [history, debt]);
 
   const periodLabel = PERIODS.find((p) => p.value === period)!.label.toLowerCase();
@@ -149,12 +155,12 @@ export function DashboardMembre() {
             )}
           </Field>
           <Field label="Cotisations versées">
-            <span className="font-serif text-3xl">{money(situation.paid)}</span> <span className="text-xs text-[var(--afc-muted)]">F CFA</span>
-            <p className="text-xs text-[var(--afc-muted)]">sur {money(situation.due)} F CFA dus</p>
+            <span className="font-serif text-3xl">{money(situation.totalPaid)}</span> <span className="text-xs text-[var(--afc-muted)]">F CFA</span>
+            <p className="text-xs text-[var(--afc-muted)]">{money(situation.due)} F CFA dus à ce jour{situation.advance > 0 ? ` + ${money(situation.advance)} F d’avance` : ''}</p>
           </Field>
           <Field label="Mois couverts">
-            <span className="font-serif text-3xl">{situation.covered}</span> <span className="text-xs text-[var(--afc-muted)]">/ {situation.dueMonths}</span>
-            <p className="text-xs text-[var(--afc-muted)]">mois dus à ce jour</p>
+            <span className="font-serif text-3xl">{situation.totalMonths}</span> <span className="text-xs text-[var(--afc-muted)]">mois payés</span>
+            <p className="text-xs text-[var(--afc-muted)]">{situation.paidThrough ? `jusqu’en ${situation.paidThrough} · ` : ''}{situation.covered} / {situation.dueMonths} mois dus à ce jour</p>
           </Field>
         </div>
       </section>
