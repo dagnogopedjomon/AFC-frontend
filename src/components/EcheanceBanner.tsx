@@ -71,7 +71,10 @@ export function EcheanceBanner({ audience }: { audience: 'member' | 'bureau' }) 
     <div role="status" className={`flex items-center gap-3 rounded-xl border px-3 py-2 text-sm ${banner.tone}`}>
       <Icon size={16} className="shrink-0" aria-hidden="true" />
       <div className="afc-marquee min-w-0 flex-1 overflow-hidden">
-        <span className="afc-marquee-track font-medium">{banner.text}</span>
+        <span className="afc-marquee-track font-medium">
+          <span className="pr-12">{banner.text}</span>
+          <span className="pr-12" aria-hidden="true">{banner.text}</span>
+        </span>
       </div>
       <Link href={banner.href} className="shrink-0 rounded-lg border border-current px-3 py-1 text-xs font-semibold transition hover:opacity-80">
         {banner.cta}
