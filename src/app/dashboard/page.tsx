@@ -214,7 +214,7 @@ function BureauDashboard() {
               {late.length ? (
                 <div className="mt-3.5 divide-y divide-[rgba(var(--afc-hl),0.06)]">
                   {late.slice(0, 5).map((m) => (
-                    <Link key={m.id} href={'/dashboard/membres/' + m.id} className="flex items-center justify-between py-2.5 hover:opacity-80">
+                    <Link key={m.id} href={'/dashboard/membres/voir?id=' + m.id} className="flex items-center justify-between py-2.5 hover:opacity-80">
                       <span className="text-[13px] font-medium text-[var(--afc-text)]">{m.firstName} {m.lastName}</span>
                       <span className="rounded-full px-2.5 py-1 text-[11px] font-medium" style={{ background: 'rgba(212,83,89,0.16)', color: '#E28A87' }}>
                         {m.count} mois

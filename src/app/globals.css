@@ -386,12 +386,16 @@ main textarea { border-color: #dbe2ea; }
   to { transform: translateX(-50%); }
 }
 .afc-marquee-track {
+  position: absolute;
+  top: 0;
+  left: 0;
   display: inline-flex;
   white-space: nowrap;
+  width: max-content;
   animation: afc-marquee 24s linear infinite;
 }
 .afc-marquee:hover .afc-marquee-track { animation-play-state: paused; }
 @media (prefers-reduced-motion: reduce) {
-  .afc-marquee-track { animation: none; }
+  .afc-marquee-track { position: static; animation: none; }
   .afc-marquee-track > :nth-child(2) { display: none; }
 }
