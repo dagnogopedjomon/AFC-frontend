@@ -221,7 +221,9 @@ export default function DashboardLayout({
   children: React.ReactNode;
 }) {
   const { user, token, loading, logout } = useAuth();
-  const pathname = usePathname();
+  const rawPathname = usePathname();
+  // L'export statique ajoute un slash final (trailingSlash) : on le retire pour que les comparaisons de route restent fiables.
+  const pathname = rawPathname.length > 1 ? rawPathname.replace(/\/$/, '') : rawPathname;
   const router = useRouter();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
