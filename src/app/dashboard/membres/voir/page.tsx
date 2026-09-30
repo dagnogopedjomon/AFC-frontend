@@ -202,7 +202,7 @@ function MemberDetailPageInner() {
     return (
       <div className="space-y-4">
         <BackLink />
-        <div className="rounded-xl border border-red-700/30 bg-red-900/20 p-5 text-red-400">{error}</div>
+        <div className="afc-badge-red rounded-xl border p-5">{error}</div>
       </div>
     );
   }
@@ -229,7 +229,7 @@ function MemberDetailPageInner() {
               type="button"
               onClick={handleDelete}
               disabled={deleting}
-              className="rounded-full border border-red-700/30 bg-red-900/10 px-4 py-2 text-sm font-medium text-red-400 transition hover:bg-red-900/20 disabled:opacity-60"
+              className="afc-badge-red rounded-full border px-4 py-2 text-sm font-medium transition disabled:opacity-60"
             >
               {deleting ? 'Suppression…' : 'Supprimer'}
             </button>
@@ -237,8 +237,8 @@ function MemberDetailPageInner() {
         )}
       </div>
 
-      {error && <div className="rounded-xl border border-red-700/30 bg-red-900/20 px-4 py-3 text-red-400">{error}</div>}
-      {success && <div className="rounded-xl border border-emerald-700/30 bg-emerald-900/20 px-4 py-3 text-emerald-400">{success}</div>}
+      {error && <div className="afc-badge-red rounded-xl border px-4 py-3">{error}</div>}
+      {success && <div className="afc-badge-emerald rounded-xl border px-4 py-3">{success}</div>}
 
       {editing ? (
         <div className="rounded-xl border border-[var(--afc-border)] bg-[var(--afc-card)] p-5">
@@ -332,7 +332,7 @@ function MemberDetailPageInner() {
                 <span className="font-medium text-[var(--afc-text)]">Téléphone :</span> {member.phone}
               </p>
               <p>
-                <span className={`inline-flex items-center rounded-full px-2.5 py-0.5 text-sm font-medium ${member.isSuspended ? 'border border-amber-700/30 bg-amber-900/20 text-amber-400' : 'border border-blue-700/30 bg-blue-900/20 text-[var(--afc-avatar-text)]'}`}>
+                <span className={`inline-flex items-center rounded-full px-2.5 py-0.5 text-sm font-medium ${member.isSuspended ? 'afc-badge-amber border' : 'afc-badge-blue border'}`}>
                   {memberRoleLabel(member.role, !!member.isSuspended)}
                 </span>
               </p>
@@ -364,7 +364,7 @@ function MemberDetailPageInner() {
                     type="button"
                     onClick={handleReactivate}
                     disabled={reactivating}
-                    className="cursor-pointer rounded-xl border border-emerald-700/30 bg-emerald-900/20 px-4 py-2 text-sm font-medium text-emerald-400 transition hover:bg-emerald-900/35 disabled:cursor-not-allowed disabled:opacity-60"
+                    className="afc-badge-emerald cursor-pointer rounded-xl border px-4 py-2 text-sm font-medium transition disabled:cursor-not-allowed disabled:opacity-60"
                   >
                     {reactivating ? 'Réactivation…' : 'Réactiver le compte'}
                   </button>

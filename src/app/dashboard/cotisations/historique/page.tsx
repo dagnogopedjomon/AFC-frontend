@@ -219,7 +219,7 @@ export default function HistoriquePage() {
       </div>
 
       {error && (
-        <div className="rounded-xl border border-red-700/30 bg-red-900/20 px-4 py-3 text-red-400">{error}</div>
+        <div className="afc-badge-red rounded-xl border px-4 py-3">{error}</div>
       )}
 
       {loading ? (

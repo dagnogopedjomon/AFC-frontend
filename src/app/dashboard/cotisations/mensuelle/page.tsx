@@ -181,7 +181,7 @@ export default function CotisationMensuellePage() {
                       <strong className="block text-sm text-[var(--afc-text)]">{member.firstName} {member.lastName}</strong>
                       <span className="block text-xs text-[var(--afc-muted)]">{member.phone}</span>
                     </span>
-                    <span className="rounded-full border border-red-700/30 bg-red-900/20 px-2.5 py-1 text-xs font-semibold text-red-400">En retard</span>
+                    <span className="afc-badge-red rounded-full border px-2.5 py-1 text-xs font-semibold">En retard</span>
                   </label>
                 ))}
               </div>
@@ -276,7 +276,7 @@ export default function CotisationMensuellePage() {
           Période en cours : {new Date(currentYear, currentMonth - 1).toLocaleString('fr-FR', { month: 'long', year: 'numeric' })}
         </p>
         {prepayment?.paidThrough && (
-          <p className="mt-3 inline-flex rounded-full border border-emerald-700/30 bg-emerald-900/20 px-3 py-1 text-sm font-semibold text-emerald-400">
+          <p className="afc-badge-emerald mt-3 inline-flex rounded-full border px-3 py-1 text-sm font-semibold">
             Payé jusqu&rsquo;en {new Date(prepayment.paidThrough.year, prepayment.paidThrough.month - 1).toLocaleString('fr-FR', { month: 'long', year: 'numeric' })}
           </p>
         )}

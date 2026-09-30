@@ -127,8 +127,8 @@ export default function AmendesPage() {
               </div>
               {fine.status === 'UNPAID' && (
                 <div className="mt-3 flex gap-2">
-                  <button type="button" onClick={() => settleFine(fine.id)} className="flex-1 rounded-lg border border-emerald-700/30 bg-emerald-900/20 px-3 py-2 text-sm font-semibold text-emerald-400">Régler</button>
-                  <button type="button" onClick={() => cancelFine(fine.id)} className="flex-1 rounded-lg border border-red-700/30 bg-red-900/20 px-3 py-2 text-sm font-semibold text-red-400">Annuler</button>
+                  <button type="button" onClick={() => settleFine(fine.id)} className="afc-badge-emerald flex-1 rounded-lg border px-3 py-2 text-sm font-semibold">Régler</button>
+                  <button type="button" onClick={() => cancelFine(fine.id)} className="afc-badge-red flex-1 rounded-lg border px-3 py-2 text-sm font-semibold">Annuler</button>
                 </div>
               )}
             </article>

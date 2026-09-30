@@ -82,7 +82,7 @@ export default function GererCotisationsPage() {
       </header>
 
       {error && (
-        <div className="rounded-xl border border-red-700/30 bg-red-900/20 px-4 py-3 text-red-400">{error}</div>
+        <div className="afc-badge-red rounded-xl border px-4 py-3">{error}</div>
       )}
 
       {loading ? (
@@ -249,7 +249,7 @@ function EditMonthlyForm({
 
   return (
     <form onSubmit={handleSubmit} className="space-y-4">
-      {err && <div className="rounded-xl border border-red-700/30 bg-red-900/20 px-4 py-2 text-sm text-red-400">{err}</div>}
+      {err && <div className="afc-badge-red rounded-xl border px-4 py-2 text-sm">{err}</div>}
       <div>
         <label className="mb-1.5 block text-sm font-medium text-[var(--afc-text-soft)]">Nom</label>
         <input

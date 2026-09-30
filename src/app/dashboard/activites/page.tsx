@@ -64,7 +64,7 @@ export default function ActivitesPage() {
       </header>
 
       {error && (
-        <div className="rounded-xl border border-red-700/30 bg-red-900/20 px-4 py-3 text-red-400">{error}</div>
+        <div className="afc-badge-red rounded-xl border px-4 py-3">{error}</div>
       )}
 
       {loading ? (
@@ -105,7 +105,7 @@ export default function ActivitesPage() {
                     onClick={() => router.push(`/dashboard/activites/voir?id=${a.id}`)}
                     className="rounded-xl border border-[var(--afc-border)] bg-[rgba(var(--afc-hl),0.02)] p-4 text-left transition hover:border-[#C9A048]/30 hover:bg-[#C9A048]/[0.06] focus:outline-none focus:ring-2 focus:ring-[#C9A048]/40"
                   >
-                    <span className="inline-flex rounded-full border border-blue-700/30 bg-blue-900/20 px-2 py-0.5 text-xs font-medium text-blue-300">
+                    <span className="afc-badge-blue inline-flex rounded-full border px-2 py-0.5 text-xs font-medium">
                       {activityTypeLabel(a.type)}
                     </span>
                     <p className="mt-2 line-clamp-2 font-medium text-[var(--afc-text)]">{a.title}</p>

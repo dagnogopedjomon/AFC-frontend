@@ -157,7 +157,7 @@ export default function RegulariserPage() {
             )}
           </div>
 
-          {error && <div className="rounded-xl border border-red-700/30 bg-red-900/20 px-4 py-3 text-sm text-red-400">{error}</div>}
+          {error && <div className="afc-badge-red rounded-xl border px-4 py-3 text-sm">{error}</div>}
         </div>
       </div>
     </div>

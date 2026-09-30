@@ -228,7 +228,7 @@ export default function CotisationsExceptionnellesPage() {
                     <div className="flex items-center gap-2">
                       <h3 className="text-lg font-semibold text-[var(--afc-text)]">{c.name}</h3>
                       {isClosed && <span className="rounded-full border border-[rgba(var(--afc-hl),0.08)] bg-[rgba(var(--afc-hl),0.06)] px-2 py-0.5 text-xs text-[var(--afc-muted-2)]">Clôturée et remise</span>}
-                      {isPending && <span className="rounded-full border border-amber-700/30 bg-amber-900/20 px-2 py-0.5 text-xs text-amber-400">Clôturée — en attente de réception</span>}
+                      {isPending && <span className="afc-badge-amber rounded-full border px-2 py-0.5 text-xs">Clôturée — en attente de réception</span>}
                     </div>
                     {c.amount && !c.isOpenAmount && (
                       <p className="mt-1 text-sm text-[var(--afc-muted-2)]">Montant suggéré : {Number(c.amount).toLocaleString('fr-FR')} FCFA</p>

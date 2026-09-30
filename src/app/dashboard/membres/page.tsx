@@ -106,7 +106,7 @@ export default function MembresPage() {
       </header>
 
       {params.get('created') === '1' && (
-        <div className="rounded-xl border border-emerald-700/30 bg-emerald-900/20 px-4 py-3 text-sm text-emerald-400">
+        <div className="afc-badge-emerald rounded-xl border px-4 py-3 text-sm">
           Compte créé avec succès.
         </div>
       )}
@@ -195,7 +195,7 @@ export default function MembresPage() {
                           <button
                             title={m.isSuspended ? 'Réactiver le compte' : 'Geler le compte'}
                             aria-label={m.isSuspended ? 'Réactiver le compte' : 'Geler le compte'}
-                            className={`rounded-lg border p-1.5 transition disabled:opacity-40 ${m.isSuspended ? 'border-emerald-700/40 bg-emerald-900/20 text-emerald-400 hover:bg-emerald-900/35' : 'border-amber-700/40 bg-amber-900/20 text-amber-400 hover:bg-amber-900/35'}`}
+                            className={`afc-badge-${m.isSuspended ? 'emerald' : 'amber'} rounded-lg border p-1.5 transition disabled:opacity-40`}
                             type="button"
                             disabled={actioning === m.id}
                             onClick={() => toggleSuspension(m)}

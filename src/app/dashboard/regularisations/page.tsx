@@ -77,8 +77,8 @@ export default function RegularisationsAdminPage() {
         <p className="mt-0.5 text-sm text-[var(--afc-muted)]">Consultez les dettes de chaque membre et créez un accord à partir de quatre mois impayés.</p>
       </header>
 
-      {error && <div className="rounded-xl border border-red-700/30 bg-red-900/20 px-4 py-3 text-red-400">{error}</div>}
-      {message && <div className="rounded-xl border border-emerald-700/30 bg-emerald-900/20 px-4 py-3 text-emerald-400">{message}</div>}
+      {error && <div className="afc-badge-red rounded-xl border px-4 py-3">{error}</div>}
+      {message && <div className="afc-badge-emerald rounded-xl border px-4 py-3">{message}</div>}
 
       <div className="rounded-xl border border-[var(--afc-border)] bg-[var(--afc-card)] p-5">
         <div className="mb-4 flex items-center justify-between gap-3">
@@ -92,7 +92,7 @@ export default function RegularisationsAdminPage() {
                 key={candidate.id}
                 type="button"
                 onClick={() => candidate.eligibleForAgreement && setSelectedId(candidate.id)}
-                className={`rounded-xl border p-4 text-left transition ${candidate.eligibleForAgreement ? 'cursor-pointer border-amber-700/30 bg-amber-900/10 hover:bg-amber-900/20' : 'cursor-default border-[var(--afc-border)] bg-[rgba(var(--afc-hl),0.02)]'}`}
+                className={`rounded-xl border p-4 text-left transition ${candidate.eligibleForAgreement ? 'afc-badge-amber cursor-pointer hover:opacity-90' : 'cursor-default border-[var(--afc-border)] bg-[rgba(var(--afc-hl),0.02)]'}`}
               >
                 <div className="flex items-start justify-between gap-3">
                   <div>
@@ -118,7 +118,7 @@ export default function RegularisationsAdminPage() {
             {candidates.map((c) => <option key={c.id} value={c.id} disabled={!c.eligibleForAgreement}>{c.firstName} {c.lastName} — {c.debt.unpaidMonths.length} mois — {c.debt.totalOwed.toLocaleString('fr-FR')} FCFA{!c.eligibleForAgreement ? ' (moins de 4 mois)' : ''}</option>)}
           </select>
         </div>
-        {selected && <div className="rounded-xl border border-amber-700/30 bg-amber-900/15 p-3 text-sm text-amber-300">Dette constatée : <strong>{selected.debt.totalOwed.toLocaleString('fr-FR')} FCFA</strong> pour {selected.debt.unpaidMonths.map((m) => m.label).join(', ')}.</div>}
+        {selected && <div className="afc-badge-amber rounded-xl border p-3 text-sm">Dette constatée : <strong>{selected.debt.totalOwed.toLocaleString('fr-FR')} FCFA</strong> pour {selected.debt.unpaidMonths.map((m) => m.label).join(', ')}.</div>}
         <div className="grid gap-4 sm:grid-cols-2">
           <div>
             <label className="mb-1 block text-sm font-medium text-[var(--afc-text-soft)]">Type d&rsquo;accord</label>

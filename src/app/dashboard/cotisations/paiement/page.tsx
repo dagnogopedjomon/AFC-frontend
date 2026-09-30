@@ -112,8 +112,8 @@ export default function PaiementPage() {
         <p className="mt-1 text-sm text-[var(--afc-muted)]">Enregistrez rapidement un paiement encaissé hors de l&rsquo;application.</p>
       </header>
 
-      {error && <div className="rounded-xl border border-red-700/30 bg-red-900/20 px-4 py-3 text-red-400">{error}</div>}
-      {success && <div className="flex items-center gap-2 rounded-xl border border-emerald-700/30 bg-emerald-900/20 px-4 py-3 text-emerald-400"><CheckCircle2 size={19} />{success}</div>}
+      {error && <div className="afc-badge-red rounded-xl border px-4 py-3">{error}</div>}
+      {success && <div className="afc-badge-emerald flex items-center gap-2 rounded-xl border px-4 py-3"><CheckCircle2 size={19} />{success}</div>}
 
       <section className="space-y-4 rounded-xl border border-[var(--afc-border)] bg-[var(--afc-card)] p-5">
         <div>
@@ -146,8 +146,8 @@ export default function PaiementPage() {
           <button type="submit" disabled={linkLoading} className="afc-button-primary sm:col-span-2 disabled:opacity-60">{linkLoading ? 'Création…' : 'Générer le lien'}</button>
         </form>
         {generatedLink && (
-          <div className="flex flex-col gap-2 rounded-xl border border-emerald-700/30 bg-emerald-900/15 p-3 sm:flex-row sm:items-center">
-            <input readOnly value={generatedLink} className="min-w-0 flex-1 rounded-lg border-0 bg-transparent text-sm text-emerald-300 outline-none"/>
+          <div className="afc-badge-emerald flex flex-col gap-2 rounded-xl border p-3 sm:flex-row sm:items-center">
+            <input readOnly value={generatedLink} className="min-w-0 flex-1 rounded-lg border-0 bg-transparent text-sm outline-none"/>
             <button type="button" className="rounded-lg bg-emerald-700 px-3 py-2 text-sm font-semibold text-white transition hover:bg-emerald-600" onClick={() => navigator.clipboard?.writeText(generatedLink)}>Copier le lien</button>
           </div>
         )}

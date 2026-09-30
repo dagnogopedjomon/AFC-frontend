@@ -310,10 +310,10 @@ export default function CaissePage() {
       </header>
 
       {error && (
-        <div className="rounded-xl border border-red-700/30 bg-red-900/20 px-4 py-3 text-red-400">{error}</div>
+        <div className="afc-badge-red rounded-xl border px-4 py-3">{error}</div>
       )}
       {created && (
-        <div className="flex items-center justify-between gap-4 rounded-xl border border-emerald-700/30 bg-emerald-900/20 px-4 py-3 text-emerald-400">
+        <div className="afc-badge-emerald flex items-center justify-between gap-4 rounded-xl border px-4 py-3">
           <p className="flex-1">
             Dépense créée. Elle doit être validée par le Trésorier puis par le Commissaire aux comptes.
           </p>
@@ -629,7 +629,7 @@ export default function CaissePage() {
                                 })}
                               </td>
                               <td className="px-6 py-3">
-                                <span className={`inline-flex rounded-full px-2.5 py-0.5 text-xs font-medium ${t.type === 'ALLOCATION' ? 'border border-emerald-700/30 bg-emerald-900/20 text-emerald-400' : 'border border-amber-700/30 bg-amber-900/20 text-amber-400'}`}>
+                                <span className={`inline-flex rounded-full px-2.5 py-0.5 text-xs font-medium ${t.type === 'ALLOCATION' ? 'afc-badge-emerald border' : 'afc-badge-amber border'}`}>
                                   {t.type === 'ALLOCATION' ? 'Allocation' : 'Retrait'}
                                 </span>
                               </td>
@@ -716,7 +716,7 @@ export default function CaissePage() {
                         })}
                       </td>
                       <td className="px-6 py-3">
-                        <span className={`inline-flex rounded-full px-2.5 py-0.5 text-xs font-medium ${entry.type === 'entree' ? 'border border-emerald-700/30 bg-emerald-900/20 text-emerald-400' : 'border border-red-700/30 bg-red-900/20 text-red-400'}`}>
+                        <span className={`inline-flex rounded-full px-2.5 py-0.5 text-xs font-medium ${entry.type === 'entree' ? 'afc-badge-emerald border' : 'afc-badge-red border'}`}>
                           {entry.type === 'entree' ? 'Entrée' : 'Sortie'}
                         </span>
                       </td>

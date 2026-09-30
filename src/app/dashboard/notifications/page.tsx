@@ -123,10 +123,10 @@ export default function NotificationsPage() {
       </header>
 
       {error && (
-        <div className="rounded-xl border border-red-700/30 bg-red-900/20 px-4 py-3 text-red-400">{error}</div>
+        <div className="afc-badge-red rounded-xl border px-4 py-3">{error}</div>
       )}
       {success && (
-        <div className="rounded-xl border border-emerald-700/30 bg-emerald-900/20 px-4 py-3 text-emerald-400">{success}</div>
+        <div className="afc-badge-emerald rounded-xl border px-4 py-3">{success}</div>
       )}
 
       {/* Mes notifications (tous les utilisateurs) */}

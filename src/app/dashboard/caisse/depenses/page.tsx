@@ -148,12 +148,12 @@ export default function DepensesPage() {
                   {canAct && (
                     <div className="mt-3 flex flex-wrap gap-2">
                       {e.status === 'PENDING_TREASURER' && (isTreasurer || isAdmin) && <>
-                        <button type="button" onClick={() => handleValidateTreasurer(e.id)} disabled={actioning === e.id} className="rounded-lg border border-emerald-700/30 bg-emerald-900/20 px-3 py-2 text-xs font-semibold text-emerald-400 disabled:opacity-60">Valider</button>
-                        <button type="button" onClick={() => handleReject(e.id)} disabled={actioning === e.id} className="rounded-lg border border-red-700/30 bg-red-900/20 px-3 py-2 text-xs font-semibold text-red-400 disabled:opacity-60">Rejeter</button>
+                        <button type="button" onClick={() => handleValidateTreasurer(e.id)} disabled={actioning === e.id} className="afc-badge-emerald rounded-lg border px-3 py-2 text-xs font-semibold disabled:opacity-60">Valider</button>
+                        <button type="button" onClick={() => handleReject(e.id)} disabled={actioning === e.id} className="afc-badge-red rounded-lg border px-3 py-2 text-xs font-semibold disabled:opacity-60">Rejeter</button>
                       </>}
                       {e.status === 'PENDING_COMMISSIONER' && (isCommissioner || isAdmin) && <>
-                        <button type="button" onClick={() => handleValidateCommissioner(e.id)} disabled={actioning === e.id} className="rounded-lg border border-emerald-700/30 bg-emerald-900/20 px-3 py-2 text-xs font-semibold text-emerald-400 disabled:opacity-60">Valider</button>
-                        <button type="button" onClick={() => handleReject(e.id)} disabled={actioning === e.id} className="rounded-lg border border-red-700/30 bg-red-900/20 px-3 py-2 text-xs font-semibold text-red-400 disabled:opacity-60">Rejeter</button>
+                        <button type="button" onClick={() => handleValidateCommissioner(e.id)} disabled={actioning === e.id} className="afc-badge-emerald rounded-lg border px-3 py-2 text-xs font-semibold disabled:opacity-60">Valider</button>
+                        <button type="button" onClick={() => handleReject(e.id)} disabled={actioning === e.id} className="afc-badge-red rounded-lg border px-3 py-2 text-xs font-semibold disabled:opacity-60">Rejeter</button>
                       </>}
                     </div>
                   )}

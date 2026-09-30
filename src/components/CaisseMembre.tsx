@@ -87,7 +87,7 @@ export function CaisseMembre() {
         <p className="mt-0.5 text-sm text-[var(--afc-muted)]">Entrées et sorties de l&rsquo;association.</p>
       </header>
 
-      {error && <div className="rounded-xl border border-red-700/30 bg-red-900/20 px-4 py-3 text-sm text-red-400">{error}</div>}
+      {error && <div className="afc-badge-red rounded-xl border px-4 py-3 text-sm">{error}</div>}
 
       <div className="flex gap-6 border-b border-[var(--afc-border)]">
         {([['sortie', 'Sorties'], ['entree', 'Entrées']] as const).map(([value, label]) => (

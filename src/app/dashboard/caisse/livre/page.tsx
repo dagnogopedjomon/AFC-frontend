@@ -68,7 +68,7 @@ function LivreBureau() {
       </header>
 
       {error && (
-        <div className="rounded-xl border border-red-700/30 bg-red-900/20 px-4 py-3 text-sm text-red-400">{error}</div>
+        <div className="afc-badge-red rounded-xl border px-4 py-3 text-sm">{error}</div>
       )}
 
       {/* Livre de caisse */}
@@ -99,7 +99,7 @@ function LivreBureau() {
                     })}
                   </td>
                   <td className="px-6 py-3">
-                    <span className={`inline-flex rounded-full px-2.5 py-0.5 text-xs font-medium ${entry.type === 'entree' ? 'border border-emerald-700/30 bg-emerald-900/20 text-emerald-400' : 'border border-red-700/30 bg-red-900/20 text-red-400'}`}>
+                    <span className={`inline-flex rounded-full px-2.5 py-0.5 text-xs font-medium ${entry.type === 'entree' ? 'afc-badge-emerald border' : 'afc-badge-red border'}`}>
                       {entry.type === 'entree' ? 'Entrée' : 'Sortie'}
                     </span>
                   </td>
