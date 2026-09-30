@@ -177,10 +177,10 @@ export default function PaiementPage() {
           <p className="text-xs text-[var(--afc-muted)]">{months} × {Number(monthly?.amount ?? 0).toLocaleString('fr-FR')} FCFA</p>
         </div>
         {memberId && (
-          <div className="rounded-xl border border-amber-700/30 bg-amber-900/15 p-4">
-            <p className="text-sm font-semibold text-amber-300">Période qui sera enregistrée</p>
-            <p className="mt-1 text-sm text-amber-200/90">{previewLoading ? 'Vérification…' : previewPeriods.length === months ? `${periodLabel(previewPeriods[0])}${months > 1 ? ` à ${periodLabel(previewPeriods[previewPeriods.length - 1])}` : ''}` : 'Période impossible à déterminer'}</p>
-            <p className="mt-1 text-xs text-amber-300/70">Vérifiez cette période avant de valider. Les mois déjà payés sont automatiquement ignorés.</p>
+          <div className="afc-badge-amber rounded-xl border p-4">
+            <p className="text-sm font-semibold">Période qui sera enregistrée</p>
+            <p className="mt-1 text-sm">{previewLoading ? 'Vérification…' : previewPeriods.length === months ? `${periodLabel(previewPeriods[0])}${months > 1 ? ` à ${periodLabel(previewPeriods[previewPeriods.length - 1])}` : ''}` : 'Période impossible à déterminer'}</p>
+            <p className="mt-1 text-xs opacity-80">Vérifiez cette période avant de valider. Les mois déjà payés sont automatiquement ignorés.</p>
           </div>
         )}
         <details className="rounded-xl border border-[rgba(var(--afc-hl),0.08)] bg-[rgba(var(--afc-hl),0.02)] p-4">
