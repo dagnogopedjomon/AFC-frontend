@@ -2,7 +2,8 @@
 
 import { useEffect, useState, useRef } from 'react';
 import Link from 'next/link';
-import { useParams, useRouter } from 'next/navigation';
+import { Suspense } from 'react';
+import { useSearchParams, useRouter } from 'next/navigation';
 import { useAuth } from '@/lib/auth-context';
 import { activitiesApi, type Activity, type Photo } from '@/lib/api';
 import { Pencil, Trash2, Upload, X } from 'lucide-react';
@@ -17,11 +18,11 @@ function activityTypeLabel(type: string) {
   return labels[type] ?? type;
 }
 
-export default function ActivityDetailPage() {
-  const params = useParams();
+function ActivityDetailPageInner() {
+  const searchParams = useSearchParams();
   const router = useRouter();
   const { user } = useAuth();
-  const id = params?.id as string;
+  const id = searchParams.get('id') ?? '';
   const [activity, setActivity] = useState<(Activity & { photos: Photo[] }) | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -241,5 +242,14 @@ export default function ActivityDetailPage() {
         )}
       </div>
     </div>
+  );
+}
+
+
+export default function ActivityDetailPage() {
+  return (
+    <Suspense fallback={null}>
+      <ActivityDetailPageInner />
+    </Suspense>
   );
 }

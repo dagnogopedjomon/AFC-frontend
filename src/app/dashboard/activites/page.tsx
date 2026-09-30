@@ -102,7 +102,7 @@ export default function ActivitesPage() {
                   <button
                     key={a.id}
                     type="button"
-                    onClick={() => router.push(`/dashboard/activites/${a.id}`)}
+                    onClick={() => router.push(`/dashboard/activites/voir?id=${a.id}`)}
                     className="rounded-xl border border-[var(--afc-border)] bg-[rgba(var(--afc-hl),0.02)] p-4 text-left transition hover:border-[#C9A048]/30 hover:bg-[#C9A048]/[0.06] focus:outline-none focus:ring-2 focus:ring-[#C9A048]/40"
                   >
                     <span className="inline-flex rounded-full border border-blue-700/30 bg-blue-900/20 px-2 py-0.5 text-xs font-medium text-blue-300">

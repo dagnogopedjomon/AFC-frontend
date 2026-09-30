@@ -172,7 +172,7 @@ export default function MembresPage() {
                           ? <img src={m.profilePhotoUrl.startsWith('http') ? m.profilePhotoUrl : API_BASE + m.profilePhotoUrl} className="h-8 w-8 rounded-full object-cover" alt="" />
                           : <span className="grid h-8 w-8 shrink-0 place-items-center rounded-full bg-[var(--afc-avatar-bg)] text-xs font-semibold text-[var(--afc-avatar-text)]">{m.firstName[0]}{m.lastName[0]}</span>
                         }
-                        <Link href={`/dashboard/membres/${m.id}`} className="font-medium text-[var(--afc-text)] transition hover:text-[#C9A048]">
+                        <Link href={`/dashboard/membres/voir?id=${m.id}`} className="font-medium text-[var(--afc-text)] transition hover:text-[#C9A048]">
                           {m.firstName} {m.lastName}
                         </Link>
                       </div>
@@ -188,8 +188,8 @@ export default function MembresPage() {
                     <td className="px-5 py-3.5"><Badge tone={m.isSuspended ? 'red' : 'blue'}>{m.isSuspended ? 'Inactif' : 'Actif'}</Badge></td>
                     <td className="px-5 py-3.5">
                       <div className="flex justify-end gap-1.5">
-                        <Link title="Modifier le membre" aria-label="Modifier le membre" href={`/dashboard/membres/${m.id}`} className="rounded-lg border border-[rgba(var(--afc-hl),0.08)] bg-[rgba(var(--afc-hl),0.04)] p-1.5 text-[var(--afc-text-soft)] transition hover:border-[#C9A048]/40 hover:bg-[#C9A048]/10 hover:text-[#C9A048]"><Pencil size={15} strokeWidth={1.8}/></Link>
-                        <Link title="Voir le compte" aria-label="Voir le compte" href={`/dashboard/membres/${m.id}`} className="rounded-lg border border-[rgba(var(--afc-hl),0.08)] bg-[rgba(var(--afc-hl),0.04)] p-1.5 text-[var(--afc-text-soft)] transition hover:border-[#C9A048]/40 hover:bg-[#C9A048]/10 hover:text-[#C9A048]"><UserRound size={15} strokeWidth={1.8}/></Link>
+                        <Link title="Modifier le membre" aria-label="Modifier le membre" href={`/dashboard/membres/voir?id=${m.id}`} className="rounded-lg border border-[rgba(var(--afc-hl),0.08)] bg-[rgba(var(--afc-hl),0.04)] p-1.5 text-[var(--afc-text-soft)] transition hover:border-[#C9A048]/40 hover:bg-[#C9A048]/10 hover:text-[#C9A048]"><Pencil size={15} strokeWidth={1.8}/></Link>
+                        <Link title="Voir le compte" aria-label="Voir le compte" href={`/dashboard/membres/voir?id=${m.id}`} className="rounded-lg border border-[rgba(var(--afc-hl),0.08)] bg-[rgba(var(--afc-hl),0.04)] p-1.5 text-[var(--afc-text-soft)] transition hover:border-[#C9A048]/40 hover:bg-[#C9A048]/10 hover:text-[#C9A048]"><UserRound size={15} strokeWidth={1.8}/></Link>
                         <button title="Renvoyer la clé d'activation" aria-label="Renvoyer la clé d'activation" type="button" disabled={actioning === m.id} onClick={() => sendActivation(m)} className="rounded-lg border border-[rgba(var(--afc-hl),0.08)] bg-[rgba(var(--afc-hl),0.04)] p-1.5 text-[var(--afc-text-soft)] transition hover:border-[#C9A048]/40 hover:bg-[#C9A048]/10 hover:text-[#C9A048] disabled:opacity-40"><KeyRound size={15} strokeWidth={1.8}/></button>
                         {user?.role === 'ADMIN' && (
                           <button

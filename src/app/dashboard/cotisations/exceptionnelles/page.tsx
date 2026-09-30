@@ -244,7 +244,7 @@ export default function CotisationsExceptionnellesPage() {
                   </div>
                   <div className="flex items-center gap-2">
                     <Link
-                      href={`/dashboard/cotisations/exceptionnelles/${c.id}`}
+                      href={`/dashboard/cotisations/exceptionnelles/voir?id=${c.id}`}
                       className="rounded-xl border border-[rgba(var(--afc-hl),0.08)] bg-[rgba(var(--afc-hl),0.03)] px-4 py-2 text-sm font-medium text-[var(--afc-text-soft)] transition hover:border-[#C9A048]/40 hover:text-[#C9A048]"
                     >
                       Détails

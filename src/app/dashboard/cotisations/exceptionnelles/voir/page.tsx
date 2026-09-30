@@ -2,15 +2,16 @@
 
 import { useEffect, useState } from 'react';
 import Link from 'next/link';
-import { useParams } from 'next/navigation';
+import { Suspense } from 'react';
+import { useSearchParams } from 'next/navigation';
 import { useAuth } from '@/lib/auth-context';
 import { contributionsApi, caisseApi, type Contribution } from '@/lib/api';
 import { toast } from 'sonner';
 import { Loader2 } from 'lucide-react';
 import { JekoPayButton } from '@/components/JekoPayButton';
 
-export default function CotisationExceptionnelleDetailPage() {
-  const { id } = useParams() as { id: string };
+function CotisationExceptionnelleDetailPageInner() {
+  const id = useSearchParams().get('id') ?? '';
   const { user } = useAuth();
   const [contribution, setContribution] = useState<Contribution | null>(null);
   const [contributors, setContributors] = useState<{
@@ -225,5 +226,14 @@ export default function CotisationExceptionnelleDetailPage() {
         )}
       </div>
     </div>
+  );
+}
+
+
+export default function CotisationExceptionnelleDetailPage() {
+  return (
+    <Suspense fallback={null}>
+      <CotisationExceptionnelleDetailPageInner />
+    </Suspense>
   );
 }

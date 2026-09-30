@@ -2,7 +2,8 @@
 
 import { useEffect, useState } from 'react';
 import Link from 'next/link';
-import { useParams, useRouter } from 'next/navigation';
+import { Suspense } from 'react';
+import { useSearchParams, useRouter } from 'next/navigation';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
@@ -41,11 +42,11 @@ const editSchema = z.object({
 
 type EditFormData = z.infer<typeof editSchema>;
 
-export default function MemberDetailPage() {
-  const params = useParams();
+function MemberDetailPageInner() {
+  const searchParams = useSearchParams();
   const router = useRouter();
   const { user } = useAuth();
-  const id = params?.id as string;
+  const id = searchParams.get('id') ?? '';
   const [member, setMember] = useState<Member | null>(null);
   const [auditLog, setAuditLog] = useState<MemberAuditLogEntry[]>([]);
   const [loading, setLoading] = useState(true);
@@ -445,4 +446,13 @@ function actionLabel(action: string): string {
     REACTIVATED: 'Réactivé',
   };
   return labels[action] ?? action;
+}
+
+
+export default function MemberDetailPage() {
+  return (
+    <Suspense fallback={null}>
+      <MemberDetailPageInner />
+    </Suspense>
+  );
 }
