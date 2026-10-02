@@ -657,7 +657,7 @@ export default function CaissePage() {
                                   )}
                                   {t.status === 'PENDING_COMMISSIONER' && (isCommissioner || isAdmin) && (
                                     <div className="flex gap-3">
-                                      <button type="button" onClick={() => handleValidateTransferCommissioner(t.id)} disabled={actioning === t.id} className="text-sm font-medium text-emerald-400 transition hover:text-emerald-300 disabled:opacity-60">Valider</button>
+                                      {isCommissioner && <button type="button" onClick={() => handleValidateTransferCommissioner(t.id)} disabled={actioning === t.id} className="text-sm font-medium text-emerald-400 transition hover:text-emerald-300 disabled:opacity-60">Valider</button>}
                                       <button type="button" onClick={() => handleRejectTransfer(t.id)} disabled={actioning === t.id} className="text-sm font-medium text-red-400 transition hover:text-red-300 disabled:opacity-60">Rejeter</button>
                                     </div>
                                   )}

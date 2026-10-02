@@ -152,7 +152,7 @@ export default function DepensesPage() {
                         <button type="button" onClick={() => handleReject(e.id)} disabled={actioning === e.id} className="afc-badge-red rounded-lg border px-3 py-2 text-xs font-semibold disabled:opacity-60">Rejeter</button>
                       </>}
                       {e.status === 'PENDING_COMMISSIONER' && (isCommissioner || isAdmin) && <>
-                        <button type="button" onClick={() => handleValidateCommissioner(e.id)} disabled={actioning === e.id} className="afc-badge-emerald rounded-lg border px-3 py-2 text-xs font-semibold disabled:opacity-60">Valider</button>
+                        {isCommissioner && <button type="button" onClick={() => handleValidateCommissioner(e.id)} disabled={actioning === e.id} className="afc-badge-emerald rounded-lg border px-3 py-2 text-xs font-semibold disabled:opacity-60">Valider</button>}
                         <button type="button" onClick={() => handleReject(e.id)} disabled={actioning === e.id} className="afc-badge-red rounded-lg border px-3 py-2 text-xs font-semibold disabled:opacity-60">Rejeter</button>
                       </>}
                     </div>
@@ -225,7 +225,7 @@ export default function DepensesPage() {
                           )}
                           {e.status === 'PENDING_COMMISSIONER' && (isCommissioner || isAdmin) && (
                             <div className="flex gap-3">
-                              <button type="button" onClick={() => handleValidateCommissioner(e.id)} disabled={actioning === e.id} className="text-sm font-medium text-emerald-400 transition hover:text-emerald-300 disabled:opacity-60">Valider</button>
+                              {isCommissioner && <button type="button" onClick={() => handleValidateCommissioner(e.id)} disabled={actioning === e.id} className="text-sm font-medium text-emerald-400 transition hover:text-emerald-300 disabled:opacity-60">Valider</button>}
                               <button type="button" onClick={() => handleReject(e.id)} disabled={actioning === e.id} className="text-sm font-medium text-red-400 transition hover:text-red-300 disabled:opacity-60">Rejeter</button>
                             </div>
                           )}
