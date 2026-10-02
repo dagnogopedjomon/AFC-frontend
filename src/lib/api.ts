@@ -452,6 +452,8 @@ export const regularizationsApi = {
   candidates: () => api<Array<Member & { eligibleForAgreement: boolean; debt: { totalOwed: number; monthlyAmount: number; unpaidMonths: Array<{ year: number; month: number; amount: number; label: string }>; monthlyContributionId: string } }>>('/regularizations/candidates'),
   create: (data: { memberId: string; mode: 'INSTALLMENT' | 'SETTLEMENT'; agreedAmount: number; initialAmount: number; deadline?: string; notes?: string }) =>
     api<RegularizationAgreement>('/regularizations', { method: 'POST', body: JSON.stringify(data) }),
+  update: (id: string, data: { agreedAmount?: number; initialAmount?: number; deadline?: string; notes?: string }) =>
+    api<RegularizationAgreement>(`/regularizations/${id}`, { method: 'PATCH', body: JSON.stringify(data) }),
   cancel: (id: string) => api<RegularizationAgreement>(`/regularizations/${id}/cancel`, { method: 'POST' }),
 };
 
