@@ -62,7 +62,7 @@ export default function MesCotisationsPage() {
   if (loading) {
     return (
       <div className="flex justify-center py-16">
-        <div className="inline-block h-8 w-8 animate-spin rounded-full border-4 border-[#C9A048] border-r-transparent" />
+        <div className="inline-block h-8 w-8 animate-spin rounded-full border-4 border-[var(--primary)] border-r-transparent" />
       </div>
     );
   }
@@ -72,14 +72,14 @@ export default function MesCotisationsPage() {
   return (
     <div className="space-y-5">
       <header className="pt-1">
-        <h1 className="text-[28px] font-light tracking-[-0.02em] text-[var(--afc-text)]">Mes cotisations</h1>
+        <h1 className="font-serif text-[22px] text-[var(--afc-text)]">Mes cotisations</h1>
         <p className="mt-0.5 text-sm text-[var(--afc-muted)]">Mensuelles et exceptionnelles.</p>
       </header>
 
       <section className="rounded-xl border border-[var(--afc-border)] bg-[var(--afc-card)] p-5">
         <div className="flex flex-wrap items-center justify-between gap-3">
           <div className="flex items-center gap-3">
-            <h2 className="text-lg font-semibold text-[var(--afc-text)]">Cotisations mensuelles</h2>
+            <h2 className="font-serif text-lg text-[var(--afc-text)]">Cotisations mensuelles</h2>
             <span className={`rounded-full border px-2.5 py-0.5 text-xs font-medium ${unpaidCount === 0 ? 'afc-badge-blue' : 'afc-badge-amber'}`}>
               {unpaidCount === 0 ? 'À jour' : `${unpaidCount} mois impayé${unpaidCount > 1 ? 's' : ''}`}
             </span>
@@ -111,7 +111,7 @@ export default function MesCotisationsPage() {
                       ? 'afc-badge-blue'
                       : late
                         ? 'afc-badge-red'
-                        : `border-[var(--afc-border)] bg-[rgba(var(--afc-hl),0.02)] text-[var(--afc-muted)] ${isCurrent ? 'ring-1 ring-[#C9A048]/50' : ''}`
+                        : `border-[var(--afc-border)] bg-[rgba(var(--afc-hl),0.02)] text-[var(--afc-muted)] ${isCurrent ? 'ring-1 ring-[var(--primary)]/50' : ''}`
                   }`}
                 >
                   {paid ? <Check size={16} /> : late ? '!' : '·'}
@@ -130,7 +130,7 @@ export default function MesCotisationsPage() {
           ].map(([label, value]) => (
             <div key={label}>
               <p className="text-[11px] font-semibold uppercase tracking-wider text-[var(--afc-muted)]">{label}</p>
-              <p className="mt-1 text-2xl font-semibold text-[var(--afc-text)]">{value}</p>
+              <p className="mt-1 afc-figure text-[30px] text-[var(--afc-text)]">{value}</p>
             </div>
           ))}
         </div>
@@ -140,7 +140,7 @@ export default function MesCotisationsPage() {
       </section>
 
       <section className="overflow-hidden rounded-xl border border-[var(--afc-border)] bg-[var(--afc-card)]">
-        <h2 className="p-5 pb-4 text-lg font-semibold text-[var(--afc-text)]">Cotisations exceptionnelles</h2>
+        <h2 className="p-5 pb-4 font-serif text-lg text-[var(--afc-text)]">Cotisations exceptionnelles</h2>
         {exceptional.length === 0 ? (
           <p className="border-t border-[var(--afc-border)] p-8 text-center text-sm text-[var(--afc-muted)]">Aucune cotisation exceptionnelle ne vous concerne.</p>
         ) : (

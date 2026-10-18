@@ -19,6 +19,7 @@ import {
 import { Plus } from 'lucide-react';
 import { useAuth } from '@/lib/auth-context';
 import { confirmAction } from '@/lib/swal';
+import { CHARTE, PIE_COLORS as CHARTE_PIE } from '@/lib/charte';
 import { caisseApi, type CaisseSummary, type Expense, type LivreEntry, type CashBoxSummary, type CashBoxTransfer } from '@/lib/api';
 
 const CAISSE_ROLES = ['ADMIN', 'TREASURER', 'COMMISSIONER'];
@@ -26,7 +27,7 @@ const CAN_CREATE_EXPENSE = ['ADMIN', 'TREASURER'];
 const CAN_CREATE_TRANSFER = ['ADMIN'];
 
 const formatAxis = (v: number) => (v >= 1000 ? Math.round(v / 1000) + 'k' : String(v));
-const PIE_COLORS = ['#C9A048', '#2E5FA3', '#4B9E7A', '#9B7ED8'];
+const PIE_COLORS = CHARTE_PIE;
 
 function statusLabel(status: string) {
   switch (status) {
@@ -296,7 +297,7 @@ export default function CaissePage() {
     <div className="space-y-5">
       <header className="flex flex-col gap-4 pt-1 sm:flex-row sm:items-end sm:justify-between">
         <div>
-          <h1 className="text-[28px] font-light tracking-[-0.02em] text-[var(--afc-text)]">Caisse</h1>
+          <h1 className="font-serif text-[22px] text-[var(--afc-text)]">Caisse</h1>
           <p className="mt-0.5 text-sm text-[var(--afc-muted)]">
             {canAct
               ? 'Solde et dépenses. Validation en 2 niveaux : Trésorier puis Commissaire aux comptes.'
@@ -304,7 +305,7 @@ export default function CaissePage() {
           </p>
         </div>
         <div className="flex shrink-0 items-center gap-3">
-          <Link href="/dashboard/cotisations/paiement" className="afc-button-primary"><Plus size={15} strokeWidth={2} aria-hidden="true" /> Nouveau paiement</Link>
+          <Link href="/dashboard/cotisations/paiement" className="afc-button-secondary"><Plus size={15} strokeWidth={2} aria-hidden="true" /> Nouveau paiement</Link>
           {canCreate && <Link href="/dashboard/caisse/nouvelle-depense" className="afc-button-primary"><Plus size={15} strokeWidth={2} aria-hidden="true" /> Ajouter une dépense</Link>}
         </div>
       </header>
@@ -320,7 +321,7 @@ export default function CaissePage() {
           <button
             type="button"
             onClick={dismissCreatedBanner}
-            className="shrink-0 font-medium text-emerald-300 underline transition hover:text-emerald-200"
+            className="shrink-0 font-medium text-[var(--afc-badge-blue-text)] underline transition hover:text-[var(--afc-badge-blue-text)]"
             aria-label="Fermer"
           >
             Fermer
@@ -330,27 +331,27 @@ export default function CaissePage() {
 
       {loading ? (
         <div className="flex justify-center rounded-xl border border-[var(--afc-border)] bg-[var(--afc-card)] py-12">
-          <div className="inline-block h-10 w-10 animate-spin rounded-full border-4 border-[#C9A048] border-r-transparent" />
+          <div className="inline-block h-10 w-10 animate-spin rounded-full border-4 border-[var(--primary)] border-r-transparent" />
         </div>
       ) : (
         <>
           {summary && (
             <>
               <section>
-                <h2 className="mb-3 text-lg font-semibold text-[var(--afc-text)]">Sous-caisses</h2>
+                <h2 className="mb-3 font-serif text-lg text-[var(--afc-text)]">Sous-caisses</h2>
                 <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
                   {summary.boxes.map((box: CashBoxSummary) => (
                     <div key={box.id} className="rounded-xl border border-[var(--afc-border)] bg-[var(--afc-card)] p-5">
                       <div>
-                        <h3 className="font-semibold text-[var(--afc-text)]">{box.name}</h3>
+                        <h3 className="font-serif text-[17px] text-[var(--afc-text)]">{box.name}</h3>
                         {box.isDefault && (
                           <span className="text-xs text-[var(--afc-muted)]">Par défaut</span>
                         )}
                       </div>
-                      <p className="mt-2 text-2xl font-semibold text-[#C9A048]">
-                        {box.solde.toLocaleString('fr-FR')} FCFA
+                      <p className="mt-2 afc-figure text-[32px] text-[var(--afc-text)]">
+                        {box.solde.toLocaleString('fr-FR')} <span className="font-sans text-sm text-[var(--afc-muted)]">F CFA</span>
                       </p>
-                      <p className="mt-1 text-xs text-[var(--afc-muted)]">
+                      <p className="afc-mono mt-1 text-xs text-[var(--afc-muted)]">
                         Entrées {box.totalEntries.toLocaleString('fr-FR')} − Sorties {box.totalExits.toLocaleString('fr-FR')}
                       </p>
                     </div>
@@ -360,26 +361,26 @@ export default function CaissePage() {
 
               <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
                 <div className="rounded-xl border border-[var(--afc-border)] bg-[var(--afc-card)] p-5">
-                  <h2 className="text-sm font-medium uppercase tracking-wide text-[var(--afc-muted)]">Solde global</h2>
-                  <p className="mt-2 text-2xl font-semibold text-[var(--afc-text)]">
-                    {summary.global.solde.toLocaleString('fr-FR')} FCFA
+                  <h2 className="afc-eyebrow">Solde global</h2>
+                  <p className="afc-figure mt-2 text-[28px] text-[var(--afc-text)]">
+                    {summary.global.solde.toLocaleString('fr-FR')} <span className="font-sans text-sm text-[var(--afc-muted)]">F CFA</span>
                   </p>
                 </div>
                 <div className="rounded-xl border border-[var(--afc-border)] bg-[var(--afc-card)] p-5">
-                  <h2 className="text-sm font-medium uppercase tracking-wide text-[var(--afc-muted)]">Total entrées</h2>
-                  <p className="mt-2 text-xl font-semibold text-emerald-400">
-                    {summary.global.totalEntries.toLocaleString('fr-FR')} FCFA
+                  <h2 className="afc-eyebrow">Total entrées</h2>
+                  <p className="afc-figure mt-2 text-[28px] text-[var(--primary)]">
+                    {summary.global.totalEntries.toLocaleString('fr-FR')} <span className="font-sans text-sm text-[var(--afc-muted)]">F CFA</span>
                   </p>
                 </div>
                 <div className="rounded-xl border border-[var(--afc-border)] bg-[var(--afc-card)] p-5">
-                  <h2 className="text-sm font-medium uppercase tracking-wide text-[var(--afc-muted)]">Total sorties (approuvées)</h2>
-                  <p className="mt-2 text-xl font-semibold text-red-400">
-                    {summary.global.totalExits.toLocaleString('fr-FR')} FCFA
+                  <h2 className="afc-eyebrow">Total sorties (approuvées)</h2>
+                  <p className="afc-figure mt-2 text-[28px] text-[var(--destructive)]">
+                    {summary.global.totalExits.toLocaleString('fr-FR')} <span className="font-sans text-sm text-[var(--afc-muted)]">F CFA</span>
                   </p>
                 </div>
                 <div className="rounded-xl border border-[var(--afc-border)] bg-[var(--afc-card)] p-5">
-                  <h2 className="text-sm font-medium uppercase tracking-wide text-[var(--afc-muted)]">Dépenses en attente</h2>
-                  <p className="mt-2 text-xl font-semibold text-amber-400">
+                  <h2 className="afc-eyebrow">Dépenses en attente</h2>
+                  <p className="afc-figure mt-2 text-[28px] text-[var(--afc-badge-amber-text)]">
                     {expenses.filter((e) => e.status === 'PENDING_TREASURER' || e.status === 'PENDING_COMMISSIONER').length}
                   </p>
                 </div>
@@ -388,21 +389,21 @@ export default function CaissePage() {
               {/* Graphiques KPI caisse */}
               {hasLivreChartData && (
                 <section className="rounded-xl border border-[var(--afc-border)] bg-[var(--afc-card)] p-5">
-                  <h2 className="text-sm font-medium text-[var(--afc-text)]">Activité du livre de caisse</h2>
+                  <h2 className="font-serif text-lg text-[var(--afc-text)]">Activité du livre de caisse</h2>
                   <p className="text-xs text-[var(--afc-muted)]">Entrées et sorties, 6 derniers mois</p>
                   <div className="mt-4 h-[260px] w-full">
                     <ResponsiveContainer width="100%" height="100%">
                       <BarChart data={livreByMonth}>
-                        <CartesianGrid vertical={false} stroke="rgba(255,255,255,0.06)" />
+                        <CartesianGrid vertical={false} stroke="rgba(var(--afc-hl),0.08)" />
                         <XAxis dataKey="mois" axisLine={false} tickLine={false} tick={{ fill: 'var(--afc-muted)', fontSize: 11 }} />
                         <YAxis axisLine={false} tickLine={false} tick={{ fill: 'var(--afc-muted)', fontSize: 11 }} tickFormatter={formatAxis} allowDecimals={false} />
                         <Tooltip
-                          contentStyle={{ background: '#1D2431', border: '1px solid rgba(255,255,255,0.08)', borderRadius: 8, color: 'var(--afc-text)' }}
+                          contentStyle={{ background: 'var(--afc-tooltip-bg)', border: '1px solid var(--afc-border)', borderRadius: 10, color: 'var(--afc-text)' }}
                           formatter={(value: number | undefined) => [Number(value ?? 0).toLocaleString('fr-FR') + ' FCFA', '']}
                         />
                         <Legend wrapperStyle={{ fontSize: 12, color: 'var(--afc-muted-4)' }} />
-                        <Bar dataKey="Entrées" fill="#C9A048" radius={[4, 4, 0, 0]} />
-                        <Bar dataKey="Sorties" fill="#C9645A" radius={[4, 4, 0, 0]} />
+                        <Bar dataKey="Entrées" fill={CHARTE.primary} radius={[4, 4, 0, 0]} />
+                        <Bar dataKey="Sorties" fill={CHARTE.destructive} radius={[4, 4, 0, 0]} />
                       </BarChart>
                     </ResponsiveContainer>
                   </div>
@@ -410,7 +411,7 @@ export default function CaissePage() {
               )}
               {summary.boxes.length > 1 && boxPieData.length > 0 && (
                 <section className="rounded-xl border border-[var(--afc-border)] bg-[var(--afc-card)] p-5">
-                  <h2 className="text-sm font-medium text-[var(--afc-text)]">Répartition du solde</h2>
+                  <h2 className="font-serif text-lg text-[var(--afc-text)]">Répartition du solde</h2>
                   <p className="text-xs text-[var(--afc-muted)]">Par sous-caisse</p>
                   <div className="mt-4 h-[220px] w-full">
                     <ResponsiveContainer width="100%" height="100%">
@@ -427,11 +428,11 @@ export default function CaissePage() {
                           label={({ name, value }) => `${name}: ${(value / 1000).toFixed(0)}k`}
                         >
                           {boxPieData.map((entry, index) => (
-                            <Cell key={`cell-${index}`} fill={entry.color} stroke="var(--afc-card)" strokeWidth={2} />
+                            <Cell key={`cell-${index}`} fill={entry.color} strokeWidth={2} />
                           ))}
                         </Pie>
                         <Tooltip
-                          contentStyle={{ background: '#1D2431', border: '1px solid rgba(255,255,255,0.08)', borderRadius: 8, color: 'var(--afc-text)' }}
+                          contentStyle={{ background: 'var(--afc-tooltip-bg)', border: '1px solid var(--afc-border)', borderRadius: 10, color: 'var(--afc-text)' }}
                           formatter={(value: number | undefined) => [Number(value ?? 0).toLocaleString('fr-FR') + ' FCFA', 'Solde']}
                         />
                         <Legend wrapperStyle={{ fontSize: 12, color: 'var(--afc-muted-4)' }} />
@@ -495,17 +496,17 @@ export default function CaissePage() {
                             <span className="font-medium text-[var(--afc-text)]">{box.name}{box.isDefault ? ' (par défaut)' : ''}</span>
                             <div className="flex gap-3">
                               {isAdmin && (
-                                <button type="button" onClick={() => handleSetOpeningBalance(box)} className="text-sm font-medium text-[#C9A048] transition hover:text-[#DDB65C] hover:underline">
+                                <button type="button" onClick={() => handleSetOpeningBalance(box)} className="text-sm font-medium text-[var(--primary)] transition hover:text-[var(--primary)] hover:underline">
                                   Modifier les fonds
                                 </button>
                               )}
                               {!box.isDefault && (
-                                <button type="button" onClick={() => handleSetDefaultBox(box.id)} className="text-sm font-medium text-[#C9A048] transition hover:text-[#DDB65C] hover:underline">
+                                <button type="button" onClick={() => handleSetDefaultBox(box.id)} className="text-sm font-medium text-[var(--primary)] transition hover:text-[var(--primary)] hover:underline">
                                   Définir par défaut
                                 </button>
                               )}
                               {!box.isDefault && summary.boxes.length > 1 && (
-                                <button type="button" onClick={() => handleDeleteCashBox(box.id, box.name)} className="text-sm font-medium text-red-400 transition hover:text-red-300 hover:underline">
+                                <button type="button" onClick={() => handleDeleteCashBox(box.id, box.name)} className="text-sm font-medium text-[var(--afc-badge-red-text)] transition hover:text-[var(--afc-badge-red-text)] hover:underline">
                                   Supprimer
                                 </button>
                               )}
@@ -597,7 +598,7 @@ export default function CaissePage() {
 
               {transfers.length > 0 && (
                 <section className="overflow-hidden rounded-xl border border-[var(--afc-border)] bg-[var(--afc-card)]">
-                  <h2 className="border-b border-[var(--afc-border)] px-6 py-4 text-lg font-semibold text-[var(--afc-text)]">
+                  <h2 className="border-b border-[var(--afc-border)] px-6 py-4 font-serif text-lg text-[var(--afc-text)]">
                     Mouvements entre caisses (en attente ou récents)
                   </h2>
                   <div className="overflow-x-auto">
@@ -651,14 +652,14 @@ export default function CaissePage() {
                                 <td className="px-6 py-3">
                                   {t.status === 'PENDING_TREASURER' && (isTreasurer || isAdmin) && (
                                     <div className="flex gap-3">
-                                      <button type="button" onClick={() => handleValidateTransferTreasurer(t.id)} disabled={actioning === t.id} className="text-sm font-medium text-emerald-400 transition hover:text-emerald-300 disabled:opacity-60">Valider</button>
-                                      <button type="button" onClick={() => handleRejectTransfer(t.id)} disabled={actioning === t.id} className="text-sm font-medium text-red-400 transition hover:text-red-300 disabled:opacity-60">Rejeter</button>
+                                      <button type="button" onClick={() => handleValidateTransferTreasurer(t.id)} disabled={actioning === t.id} className="text-sm font-medium text-[var(--afc-badge-blue-text)] transition hover:text-[var(--afc-badge-blue-text)] disabled:opacity-60">Valider</button>
+                                      <button type="button" onClick={() => handleRejectTransfer(t.id)} disabled={actioning === t.id} className="text-sm font-medium text-[var(--afc-badge-red-text)] transition hover:text-[var(--afc-badge-red-text)] disabled:opacity-60">Rejeter</button>
                                     </div>
                                   )}
                                   {t.status === 'PENDING_COMMISSIONER' && (isCommissioner || isAdmin) && (
                                     <div className="flex gap-3">
-                                      {isCommissioner && <button type="button" onClick={() => handleValidateTransferCommissioner(t.id)} disabled={actioning === t.id} className="text-sm font-medium text-emerald-400 transition hover:text-emerald-300 disabled:opacity-60">Valider</button>}
-                                      <button type="button" onClick={() => handleRejectTransfer(t.id)} disabled={actioning === t.id} className="text-sm font-medium text-red-400 transition hover:text-red-300 disabled:opacity-60">Rejeter</button>
+                                      {isCommissioner && <button type="button" onClick={() => handleValidateTransferCommissioner(t.id)} disabled={actioning === t.id} className="text-sm font-medium text-[var(--afc-badge-blue-text)] transition hover:text-[var(--afc-badge-blue-text)] disabled:opacity-60">Valider</button>}
+                                      <button type="button" onClick={() => handleRejectTransfer(t.id)} disabled={actioning === t.id} className="text-sm font-medium text-[var(--afc-badge-red-text)] transition hover:text-[var(--afc-badge-red-text)] disabled:opacity-60">Rejeter</button>
                                     </div>
                                   )}
                                   {(t.status === 'APPROVED' || t.status === 'REJECTED') && (
@@ -676,7 +677,7 @@ export default function CaissePage() {
                   </div>
                   {transfers.length > 0 && transfers.length >= transfersLimit && (
                     <div className="border-t border-[var(--afc-border)] px-6 py-3 text-center">
-                      <button type="button" onClick={() => setTransfersLimit((n) => n + 30)} className="text-sm font-medium text-[#C9A048] transition hover:text-[#DDB65C] hover:underline">
+                      <button type="button" onClick={() => setTransfersLimit((n) => n + 30)} className="text-sm font-medium text-[var(--primary)] transition hover:text-[var(--primary)] hover:underline">
                         Charger plus de mouvements
                       </button>
                     </div>
@@ -687,7 +688,7 @@ export default function CaissePage() {
           )}
 
           <section className="overflow-hidden rounded-xl border border-[var(--afc-border)] bg-[var(--afc-card)]">
-            <h2 className="border-b border-[var(--afc-border)] px-6 py-4 text-lg font-semibold text-[var(--afc-text)]">
+            <h2 className="border-b border-[var(--afc-border)] px-6 py-4 font-serif text-lg text-[var(--afc-text)]">
               Livre de caisse
             </h2>
             <p className="border-b border-[rgba(var(--afc-hl),0.04)] px-6 py-2 text-sm text-[var(--afc-muted)]">
@@ -748,7 +749,7 @@ export default function CaissePage() {
                           </>
                         )}
                       </td>
-                      <td className={`px-6 py-3 font-medium ${entry.type === 'entree' ? 'text-emerald-400' : 'text-red-400'}`}>
+                      <td className={`px-6 py-3 font-medium ${entry.type === 'entree' ? 'text-[var(--afc-badge-blue-text)]' : 'text-[var(--afc-badge-red-text)]'}`}>
                         {entry.type === 'entree' ? '+' : '−'}
                         {entry.amount.toLocaleString('fr-FR')} FCFA
                       </td>
@@ -762,7 +763,7 @@ export default function CaissePage() {
             )}
             {livre.length > 0 && livre.length >= livreLimit && (
               <div className="border-t border-[var(--afc-border)] px-6 py-3 text-center">
-                <button type="button" onClick={() => setLivreLimit((n) => n + 100)} className="text-sm font-medium text-[#C9A048] transition hover:text-[#DDB65C] hover:underline">
+                <button type="button" onClick={() => setLivreLimit((n) => n + 100)} className="text-sm font-medium text-[var(--primary)] transition hover:text-[var(--primary)] hover:underline">
                   Charger plus de mouvements
                 </button>
               </div>
@@ -775,7 +776,7 @@ export default function CaissePage() {
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 p-4">
           <div className="w-full max-w-lg space-y-4 rounded-2xl border border-[rgba(var(--afc-hl),0.08)] bg-[var(--afc-card)] p-6 shadow-xl">
             <div className="flex items-center justify-between">
-              <h3 className="text-lg font-semibold text-[var(--afc-text)]">Détail de la dépense</h3>
+              <h3 className="font-serif text-lg text-[var(--afc-text)]">Détail de la dépense</h3>
               <button type="button" onClick={() => setExpenseDetail(null)} className="text-2xl leading-none text-[var(--afc-muted)] transition hover:text-[var(--afc-text)]">&times;</button>
             </div>
             <div className="space-y-2 text-sm text-[var(--afc-text-soft)]">

@@ -48,7 +48,7 @@ export default function ActivitesPage() {
     <div className="space-y-5">
       <header className="flex flex-col gap-4 pt-1 sm:flex-row sm:items-center sm:justify-between">
         <div>
-          <h1 className="text-[28px] font-light tracking-[-0.02em] text-[var(--afc-text)]">Activités &amp; vie du club</h1>
+          <h1 className="font-serif text-[22px] text-[var(--afc-text)]">Activités &amp; vie du club</h1>
           <p className="mt-0.5 text-sm text-[var(--afc-muted)]">Matchs, entraînements, anniversaires, annonces.</p>
         </div>
         {canCreate && (
@@ -69,12 +69,12 @@ export default function ActivitesPage() {
 
       {loading ? (
         <div className="flex justify-center rounded-xl border border-[var(--afc-border)] bg-[var(--afc-card)] py-12">
-          <div className="inline-block h-10 w-10 animate-spin rounded-full border-4 border-[#C9A048] border-r-transparent" />
+          <div className="inline-block h-10 w-10 animate-spin rounded-full border-4 border-[var(--primary)] border-r-transparent" />
         </div>
       ) : (
         <>
           <div className="rounded-xl border border-[var(--afc-border)] bg-[var(--afc-card)] p-5">
-            <h2 className="mb-4 text-lg font-semibold text-[var(--afc-text)]">Annonces du bureau</h2>
+            <h2 className="mb-4 font-serif text-lg text-[var(--afc-text)]">Annonces du bureau</h2>
             {announcements.length === 0 ? (
               <p className="text-[var(--afc-muted)]">Aucune annonce.</p>
             ) : (
@@ -93,7 +93,7 @@ export default function ActivitesPage() {
           </div>
 
           <div className="rounded-xl border border-[var(--afc-border)] bg-[var(--afc-card)] p-5">
-            <h2 className="mb-4 text-lg font-semibold text-[var(--afc-text)]">Activités (matchs, entraînements…)</h2>
+            <h2 className="mb-4 font-serif text-lg text-[var(--afc-text)]">Activités (matchs, entraînements…)</h2>
             {activities.length === 0 ? (
               <p className="text-[var(--afc-muted)]">Aucune activité.</p>
             ) : (
@@ -103,7 +103,7 @@ export default function ActivitesPage() {
                     key={a.id}
                     type="button"
                     onClick={() => router.push(`/dashboard/activites/voir?id=${a.id}`)}
-                    className="rounded-xl border border-[var(--afc-border)] bg-[rgba(var(--afc-hl),0.02)] p-4 text-left transition hover:border-[#C9A048]/30 hover:bg-[#C9A048]/[0.06] focus:outline-none focus:ring-2 focus:ring-[#C9A048]/40"
+                    className="rounded-xl border border-[var(--afc-border)] bg-[rgba(var(--afc-hl),0.02)] p-4 text-left transition hover:border-[var(--primary)]/30 hover:bg-[var(--primary)]/[0.06] focus:outline-none focus:ring-2 focus:ring-[var(--primary)]/40"
                   >
                     <span className="afc-badge-blue inline-flex rounded-full border px-2 py-0.5 text-xs font-medium">
                       {activityTypeLabel(a.type)}

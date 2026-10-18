@@ -131,48 +131,48 @@ export default function CompleteProfilePage() {
 
   if (loading || !token) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-neutral-800">
+      <div className="brand-grid min-h-screen flex items-center justify-center bg-[var(--secondary)]">
         <div className="inline-block h-10 w-10 animate-spin rounded-full border-4 border-[var(--sky-blue)] border-r-transparent" />
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-neutral-800 py-8 px-4">
-      <div className="max-w-lg mx-auto card shadow-xl border border-neutral-600/30">
-        <h1 className="text-xl font-bold text-[var(--sky-blue-dark)] mb-6">
+    <div className="brand-grid min-h-screen bg-[var(--secondary)] py-8 px-4">
+      <div className="max-w-lg mx-auto card shadow-xl border border-[var(--afc-border)]/30">
+        <h1 className="font-serif text-[22px] text-[var(--primary)] mb-6">
           Compléter mon profil
         </h1>
-        <p className="text-gray-600 text-sm mb-6">
+        <p className="text-[var(--afc-muted)] text-sm mb-6">
           Pour accéder à l’application, complétez les champs obligatoires ci-dessous.
         </p>
 
         <form onSubmit={handleSubmit(onSubmit)} className="space-y-5">
           {error && (
-            <div className="rounded-xl bg-red-50 text-red-700 px-4 py-3 text-sm">
+            <div className="rounded-xl bg-[var(--afc-badge-red-bg)] text-[var(--destructive)] px-4 py-3 text-sm">
               {error}
             </div>
           )}
           <div className="grid grid-cols-2 gap-4">
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1.5">Prénom <span className="text-red-500">*</span></label>
+              <label className="block text-sm font-medium text-[var(--afc-text)] mb-1.5">Prénom <span className="text-[var(--destructive)]">*</span></label>
               <input className="input-field" {...register('firstName')} />
               {errors.firstName && (
-                <p className="mt-1 text-sm text-red-600">{errors.firstName.message}</p>
+                <p className="mt-1 text-sm text-[var(--destructive)]">{errors.firstName.message}</p>
               )}
             </div>
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1.5">Nom <span className="text-red-500">*</span></label>
+              <label className="block text-sm font-medium text-[var(--afc-text)] mb-1.5">Nom <span className="text-[var(--destructive)]">*</span></label>
               <input className="input-field" {...register('lastName')} />
               {errors.lastName && (
-                <p className="mt-1 text-sm text-red-600">{errors.lastName.message}</p>
+                <p className="mt-1 text-sm text-[var(--destructive)]">{errors.lastName.message}</p>
               )}
             </div>
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1.5">
-              Photo de profil <span className="text-red-500">*</span>
+            <label className="block text-sm font-medium text-[var(--afc-text)] mb-1.5">
+              Photo de profil <span className="text-[var(--destructive)]">*</span>
             </label>
             <div className="flex items-center gap-4 flex-wrap">
               {profilePhotoUrl && !photoLoadError ? (
@@ -180,16 +180,16 @@ export default function CompleteProfilePage() {
                   key={profilePhotoUrl}
                   src={profilePhotoUrl.startsWith('http') ? profilePhotoUrl : `${API_BASE.replace(/\/$/, '')}${profilePhotoUrl.startsWith('/') ? profilePhotoUrl : `/${profilePhotoUrl}`}`}
                   alt="Photo de profil"
-                  className="h-20 w-20 rounded-full object-cover object-center border-2 border-gray-200 bg-gray-100"
+                  className="h-20 w-20 rounded-full object-cover object-center border-2 border-[var(--afc-border)] bg-[var(--secondary)]"
                   onError={() => setPhotoLoadError(true)}
                 />
               ) : (
-                <div className="h-20 w-20 rounded-full bg-gray-100 border-2 border-dashed border-gray-300 flex items-center justify-center text-gray-400 text-xs text-center px-1">
+                <div className="h-20 w-20 rounded-full bg-[var(--secondary)] border-2 border-dashed border-[var(--afc-border)] flex items-center justify-center text-[var(--afc-muted-3)] text-xs text-center px-1">
                   Aucune photo
                 </div>
               )}
               <label className="cursor-pointer">
-                <span className="inline-block px-4 py-2 rounded-xl bg-[var(--sky-blue)] text-white text-sm font-medium hover:opacity-90">
+                <span className="inline-block px-4 py-2 rounded-xl bg-[var(--sky-blue)] text-[var(--primary-foreground)] text-sm font-medium hover:opacity-90">
                   Choisir une image
                 </span>
                 <input
@@ -201,23 +201,23 @@ export default function CompleteProfilePage() {
               </label>
             </div>
             {errors.profilePhotoUrl && (
-              <p className="mt-1 text-sm text-red-600">{errors.profilePhotoUrl.message}</p>
+              <p className="mt-1 text-sm text-[var(--destructive)]">{errors.profilePhotoUrl.message}</p>
             )}
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1.5">Email (optionnel)</label>
+            <label className="block text-sm font-medium text-[var(--afc-text)] mb-1.5">Email (optionnel)</label>
             <input type="email" className="input-field" {...register('email')} />
-            {errors.email && <p className="mt-1 text-sm text-red-600">{errors.email.message}</p>}
+            {errors.email && <p className="mt-1 text-sm text-[var(--destructive)]">{errors.email.message}</p>}
           </div>
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1.5">
+            <label className="block text-sm font-medium text-[var(--afc-text)] mb-1.5">
               Quartier (optionnel)
             </label>
             <input className="input-field" {...register('neighborhood')} />
           </div>
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1.5">
+            <label className="block text-sm font-medium text-[var(--afc-text)] mb-1.5">
               Contact secondaire (optionnel)
             </label>
             <input className="input-field" {...register('secondaryContact')} />
@@ -246,7 +246,7 @@ export default function CompleteProfilePage() {
               style={{ containerStyle: { backgroundColor: '#000' } }}
             />
           </div>
-          <div className="p-4 bg-gray-900 flex items-center justify-between gap-4">
+          <div className="p-4 bg-[var(--afc-card)] flex items-center justify-between gap-4">
             <input
               type="range"
               min={1}
@@ -260,7 +260,7 @@ export default function CompleteProfilePage() {
               <button
                 type="button"
                 onClick={closeCropModal}
-                className="px-4 py-2 rounded-xl bg-gray-600 text-white text-sm font-medium"
+                className="px-4 py-2 rounded-xl bg-[var(--afc-card)] text-[var(--afc-text)] text-sm font-medium"
               >
                 Annuler
               </button>
@@ -268,7 +268,7 @@ export default function CompleteProfilePage() {
                 type="button"
                 onClick={handleCropConfirm}
                 disabled={uploading || !croppedAreaPixels}
-                className="px-4 py-2 rounded-xl bg-[var(--sky-blue)] text-white text-sm font-medium disabled:opacity-60"
+                className="px-4 py-2 rounded-xl bg-[var(--sky-blue)] text-[var(--primary-foreground)] text-sm font-medium disabled:opacity-60"
               >
                 {uploading ? 'Envoi…' : 'Valider'}
               </button>

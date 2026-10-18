@@ -34,7 +34,7 @@ export default function AmendesPage() {
   if (!canManage) {
     return (
       <div className="rounded-xl border border-[var(--afc-border)] bg-[var(--afc-card)] p-6">
-        <h1 className="mb-2 text-xl font-semibold text-[var(--afc-text)]">Amendes</h1>
+        <h1 className="mb-2 font-serif text-[22px] text-[var(--afc-text)]">Amendes</h1>
         <p className="text-sm text-[var(--afc-muted)]">L&rsquo;accès à cette page est réservé à l&rsquo;Admin et au trésorier.</p>
       </div>
     );
@@ -44,7 +44,7 @@ export default function AmendesPage() {
     <div className="space-y-5">
       <header className="flex flex-wrap items-end justify-between gap-4 pt-1">
         <div>
-          <h1 className="text-[28px] font-light tracking-[-0.02em] text-[var(--afc-text)]">Amendes</h1>
+          <h1 className="font-serif text-[22px] text-[var(--afc-text)]">Amendes</h1>
           <p className="mt-0.5 text-sm text-[var(--afc-muted)]">Suivi des pénalités et des règlements.</p>
         </div>
         <button className="afc-button-primary w-full sm:w-auto" onClick={openWizard}>
@@ -155,8 +155,8 @@ export default function AmendesPage() {
                   <td className="px-5 py-3.5 text-right">
                     {fine.status === 'UNPAID' ? (
                       <span className="inline-flex gap-3">
-                        <button title="Marquer comme réglée" className="font-medium text-emerald-400 transition hover:text-emerald-300 hover:underline" onClick={() => settleFine(fine.id)}>Régler</button>
-                        <button title="Annuler cette amende" className="font-medium text-red-400 transition hover:text-red-300 hover:underline" onClick={() => cancelFine(fine.id)}>Annuler</button>
+                        <button title="Marquer comme réglée" className="font-medium text-[var(--afc-badge-blue-text)] transition hover:text-[var(--afc-badge-blue-text)] hover:underline" onClick={() => settleFine(fine.id)}>Régler</button>
+                        <button title="Annuler cette amende" className="font-medium text-[var(--afc-badge-red-text)] transition hover:text-[var(--afc-badge-red-text)] hover:underline" onClick={() => cancelFine(fine.id)}>Annuler</button>
                       </span>
                     ) : <span className="text-[var(--afc-muted-3)]">—</span>}
                   </td>

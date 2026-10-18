@@ -50,7 +50,7 @@ function LivreBureau() {
   if (loading) {
     return (
       <div className="flex justify-center py-20">
-        <div className="inline-block h-10 w-10 animate-spin rounded-full border-4 border-[#C9A048] border-r-transparent" />
+        <div className="inline-block h-10 w-10 animate-spin rounded-full border-4 border-[var(--primary)] border-r-transparent" />
       </div>
     );
   }
@@ -59,7 +59,7 @@ function LivreBureau() {
     <div className="space-y-5">
       <header className="flex flex-col gap-3 pt-1 sm:flex-row sm:items-end sm:justify-between">
         <div>
-          <h1 className="text-[28px] font-light tracking-[-0.02em] text-[var(--afc-text)]">Livre de caisse</h1>
+          <h1 className="font-serif text-[22px] text-[var(--afc-text)]">Livre de caisse</h1>
           <p className="mt-0.5 text-sm text-[var(--afc-muted)]">
             Historique unifié : cotisations, allocations vers sous-caisses, dépenses et retraits.
           </p>
@@ -73,7 +73,7 @@ function LivreBureau() {
 
       {/* Livre de caisse */}
       <section className="overflow-hidden rounded-xl border border-[var(--afc-border)] bg-[var(--afc-card)]">
-        <h2 className="border-b border-[var(--afc-border)] px-6 py-4 text-lg font-semibold text-[var(--afc-text)]">
+        <h2 className="border-b border-[var(--afc-border)] px-6 py-4 font-serif text-lg text-[var(--afc-text)]">
           Mouvements
         </h2>
         <div className="max-h-[520px] overflow-x-auto overflow-y-auto">
@@ -131,7 +131,7 @@ function LivreBureau() {
                       </>
                     )}
                   </td>
-                  <td className={`px-6 py-3 text-right font-semibold ${entry.type === 'entree' ? 'text-emerald-400' : 'text-red-400'}`}>
+                  <td className={`px-6 py-3 text-right font-semibold ${entry.type === 'entree' ? 'text-[var(--afc-badge-blue-text)]' : 'text-[var(--afc-badge-red-text)]'}`}>
                     {entry.type === 'entree' ? '+' : '−'}
                     {entry.amount.toLocaleString('fr-FR')} FCFA
                   </td>
@@ -148,7 +148,7 @@ function LivreBureau() {
             <button
               type="button"
               onClick={() => setLivreLimit((n) => n + 100)}
-              className="text-sm font-medium text-[#C9A048] transition hover:text-[#DDB65C] hover:underline"
+              className="text-sm font-medium text-[var(--primary)] transition hover:text-[var(--primary)] hover:underline"
             >
               Charger plus de mouvements
             </button>
@@ -158,7 +158,7 @@ function LivreBureau() {
 
       {/* Entrées récentes */}
       <div className="overflow-hidden rounded-xl border border-[var(--afc-border)] bg-[var(--afc-card)]">
-        <h2 className="border-b border-[var(--afc-border)] px-6 py-4 text-lg font-semibold text-[var(--afc-text)]">
+        <h2 className="border-b border-[var(--afc-border)] px-6 py-4 font-serif text-lg text-[var(--afc-text)]">
           Entrées récentes
         </h2>
         <p className="border-b border-[rgba(var(--afc-hl),0.04)] px-6 py-2 text-sm text-[var(--afc-muted)]">
@@ -187,7 +187,7 @@ function LivreBureau() {
                       ? new Date(p.periodYear, p.periodMonth - 1).toLocaleString('fr-FR', { month: 'long', year: 'numeric' })
                       : '—'}
                   </td>
-                  <td className="px-6 py-3 font-medium text-emerald-400">
+                  <td className="px-6 py-3 font-medium text-[var(--afc-badge-blue-text)]">
                     {Number(p.amount).toLocaleString('fr-FR')} FCFA
                   </td>
                   <td className="px-6 py-3 text-sm text-[var(--afc-muted-2)]">
@@ -212,7 +212,7 @@ function LivreBureau() {
             <button
               type="button"
               onClick={() => setPaymentsLimit((n) => n + 50)}
-              className="text-sm font-medium text-[#C9A048] transition hover:text-[#DDB65C] hover:underline"
+              className="text-sm font-medium text-[var(--primary)] transition hover:text-[var(--primary)] hover:underline"
             >
               Charger plus de paiements
             </button>

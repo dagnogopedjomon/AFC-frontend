@@ -60,10 +60,10 @@ export default function NewMemberPage() {
   if (!canCreate) {
     return (
       <div className="card">
-        <h1 className="text-xl font-bold text-[var(--foreground)] mb-2">
+        <h1 className="font-serif text-[22px] text-[var(--foreground)] mb-2">
           Inviter un membre
         </h1>
-        <p className="text-gray-600 mb-4">
+        <p className="text-[var(--afc-muted)] mb-4">
           Seul l’Admin peut inviter des membres (Admin ≠ Président).
         </p>
         <Link href="/dashboard/membres" className="text-[var(--sky-blue-dark)] hover:underline">
@@ -84,18 +84,18 @@ export default function NewMemberPage() {
         </Link>
       </div>
       <div>
-        <h1 className="text-2xl font-bold text-[var(--foreground)]">
+        <h1 className="font-serif text-[22px] text-[var(--foreground)]">
           Inviter un membre
         </h1>
-        <p className="text-gray-600 mt-1">
+        <p className="text-[var(--afc-muted)] mt-1">
           Saisissez le téléphone. La personne sera créée comme membre ; le rôle (Président, Trésorier, etc.) pourra être attribué après élections depuis sa fiche.
         </p>
       </div>
 
       {activationLink && (
-        <div className="card max-w-xl border-l-4 border-l-amber-400 bg-amber-50">
-          <h2 className="font-semibold text-amber-900">SMS non envoyé — lien d’activation à transmettre manuellement</h2>
-          <p className="mt-1 text-sm text-amber-800">
+        <div className="card max-w-xl border-l-4 border-l-[var(--afc-badge-amber-border)] bg-[var(--afc-badge-amber-bg)]">
+          <h2 className="font-semibold text-[var(--afc-badge-amber-text)]">SMS non envoyé — lien d’activation à transmettre manuellement</h2>
+          <p className="mt-1 text-sm text-[var(--afc-badge-amber-text)]">
             Copiez ce lien et transmettez-le au membre (WhatsApp, email…). Il expire dans 24h.
           </p>
           <div className="mt-3 flex flex-col gap-2 sm:flex-row">
@@ -120,14 +120,14 @@ export default function NewMemberPage() {
       <div className="card max-w-xl">
         <form onSubmit={handleSubmit(onSubmit)} className="space-y-5">
           {error && (
-            <div className="rounded-xl bg-red-50 text-red-700 px-4 py-3 text-sm">
+            <div className="rounded-xl bg-[var(--afc-badge-red-bg)] text-[var(--destructive)] px-4 py-3 text-sm">
               {error}
             </div>
           )}
 
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1.5">
-              Téléphone <span className="text-red-500">*</span>
+            <label className="block text-sm font-medium text-[var(--afc-text)] mb-1.5">
+              Téléphone <span className="text-[var(--destructive)]">*</span>
             </label>
             <Controller
               name="phone"
@@ -142,7 +142,7 @@ export default function NewMemberPage() {
               )}
             />
             {errors.phone && (
-              <p className="mt-1 text-sm text-red-600">{errors.phone.message}</p>
+              <p className="mt-1 text-sm text-[var(--destructive)]">{errors.phone.message}</p>
             )}
           </div>
 
@@ -156,7 +156,7 @@ export default function NewMemberPage() {
             </button>
             <Link
               href="/dashboard/membres"
-              className="px-5 py-2.5 rounded-xl border border-gray-200 text-gray-700 hover:bg-gray-50 transition font-medium"
+              className="px-5 py-2.5 rounded-xl border border-[var(--afc-border)] text-[var(--afc-text)] hover:bg-[var(--secondary)] transition font-medium"
             >
               Annuler
             </Link>

@@ -98,7 +98,7 @@ export default function DepensesPage() {
     <div className="min-w-0 space-y-5 overflow-x-hidden">
       <div className="flex flex-wrap items-end justify-between gap-4 pt-1">
         <div>
-          <h1 className="text-[28px] font-light tracking-[-0.02em] text-[var(--afc-text)]">Dépenses</h1>
+          <h1 className="font-serif text-[22px] text-[var(--afc-text)]">Dépenses</h1>
           <p className="mt-0.5 text-sm text-[var(--afc-muted)]">Sorties de caisse</p>
         </div>
         <div className="flex max-w-full flex-wrap items-center justify-end gap-3">
@@ -144,7 +144,7 @@ export default function DepensesPage() {
                     <span className="font-semibold text-[var(--afc-text)]">{Number(e.amount).toLocaleString('fr-FR')} FCFA</span>
                     <span className="truncate text-right text-xs text-[var(--afc-muted)]">{e.requestedBy.firstName} {e.requestedBy.lastName}</span>
                   </div>
-                  {e.status === 'REJECTED' && e.rejectReason && <p className="mt-2 text-xs text-red-400">Motif : {e.rejectReason}</p>}
+                  {e.status === 'REJECTED' && e.rejectReason && <p className="mt-2 text-xs text-[var(--afc-badge-red-text)]">Motif : {e.rejectReason}</p>}
                   {canAct && (
                     <div className="mt-3 flex flex-wrap gap-2">
                       {e.status === 'PENDING_TREASURER' && (isTreasurer || isAdmin) && <>
@@ -193,7 +193,7 @@ export default function DepensesPage() {
                         <button
                           type="button"
                           onClick={() => setExpenseDetail(e)}
-                          className="block max-w-full truncate text-left transition hover:text-[#C9A048] hover:underline"
+                          className="block max-w-full truncate text-left transition hover:text-[var(--primary)] hover:underline"
                           title="Cliquer pour voir la description complète"
                         >
                           {e.description}
@@ -219,18 +219,18 @@ export default function DepensesPage() {
                         <td className="px-6 py-3.5">
                           {e.status === 'PENDING_TREASURER' && (isTreasurer || isAdmin) && (
                             <div className="flex gap-3">
-                              <button type="button" onClick={() => handleValidateTreasurer(e.id)} disabled={actioning === e.id} className="text-sm font-medium text-emerald-400 transition hover:text-emerald-300 disabled:opacity-60">Valider</button>
-                              <button type="button" onClick={() => handleReject(e.id)} disabled={actioning === e.id} className="text-sm font-medium text-red-400 transition hover:text-red-300 disabled:opacity-60">Rejeter</button>
+                              <button type="button" onClick={() => handleValidateTreasurer(e.id)} disabled={actioning === e.id} className="text-sm font-medium text-[var(--afc-badge-blue-text)] transition hover:text-[var(--afc-badge-blue-text)] disabled:opacity-60">Valider</button>
+                              <button type="button" onClick={() => handleReject(e.id)} disabled={actioning === e.id} className="text-sm font-medium text-[var(--afc-badge-red-text)] transition hover:text-[var(--afc-badge-red-text)] disabled:opacity-60">Rejeter</button>
                             </div>
                           )}
                           {e.status === 'PENDING_COMMISSIONER' && (isCommissioner || isAdmin) && (
                             <div className="flex gap-3">
-                              {isCommissioner && <button type="button" onClick={() => handleValidateCommissioner(e.id)} disabled={actioning === e.id} className="text-sm font-medium text-emerald-400 transition hover:text-emerald-300 disabled:opacity-60">Valider</button>}
-                              <button type="button" onClick={() => handleReject(e.id)} disabled={actioning === e.id} className="text-sm font-medium text-red-400 transition hover:text-red-300 disabled:opacity-60">Rejeter</button>
+                              {isCommissioner && <button type="button" onClick={() => handleValidateCommissioner(e.id)} disabled={actioning === e.id} className="text-sm font-medium text-[var(--afc-badge-blue-text)] transition hover:text-[var(--afc-badge-blue-text)] disabled:opacity-60">Valider</button>}
+                              <button type="button" onClick={() => handleReject(e.id)} disabled={actioning === e.id} className="text-sm font-medium text-[var(--afc-badge-red-text)] transition hover:text-[var(--afc-badge-red-text)] disabled:opacity-60">Rejeter</button>
                             </div>
                           )}
-                          {e.status === 'APPROVED' && <span className="text-sm text-emerald-400">Validée</span>}
-                          {e.status === 'REJECTED' && <span className="text-sm text-red-400">Rejetée</span>}
+                          {e.status === 'APPROVED' && <span className="text-sm text-[var(--afc-badge-blue-text)]">Validée</span>}
+                          {e.status === 'REJECTED' && <span className="text-sm text-[var(--afc-badge-red-text)]">Rejetée</span>}
                         </td>
                       )}
                     </tr>
@@ -244,7 +244,7 @@ export default function DepensesPage() {
           )}
           {expenses.length > 0 && expenses.length >= limit && (
             <div className="border-t border-[var(--afc-border)] px-6 py-3 text-center">
-              <button type="button" onClick={() => setLimit((n) => n + 50)} className="text-sm font-medium text-[#C9A048] transition hover:text-[#DDB65C] hover:underline">
+              <button type="button" onClick={() => setLimit((n) => n + 50)} className="text-sm font-medium text-[var(--primary)] transition hover:text-[var(--primary)] hover:underline">
                 Charger plus de dépenses
               </button>
             </div>
@@ -256,7 +256,7 @@ export default function DepensesPage() {
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 p-4">
           <div className="w-full max-w-lg space-y-4 rounded-2xl border border-[rgba(var(--afc-hl),0.08)] bg-[var(--afc-card)] p-6 shadow-xl">
             <div className="flex items-center justify-between">
-              <h3 className="text-lg font-semibold text-[var(--afc-text)]">Détail de la dépense</h3>
+              <h3 className="font-serif text-lg text-[var(--afc-text)]">Détail de la dépense</h3>
               <button type="button" onClick={() => setExpenseDetail(null)} className="text-2xl leading-none text-[var(--afc-muted)] transition hover:text-[var(--afc-text)]">&times;</button>
             </div>
             <div className="space-y-2 text-sm text-[var(--afc-text-soft)]">

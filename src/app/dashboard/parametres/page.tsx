@@ -45,13 +45,13 @@ export default function ParametresPage() {
   return (
     <div className="space-y-5">
       <header className="border-b border-[var(--afc-border)] pb-5 pt-1">
-        <h1 className="text-[28px] font-light tracking-[-0.02em] text-[var(--afc-text)]">Paramètres</h1>
+        <h1 className="font-serif text-[22px] text-[var(--afc-text)]">Paramètres</h1>
         <p className="mt-0.5 text-sm text-[var(--afc-muted)]">Configuration du club et de l&apos;application</p>
       </header>
 
       <div className="max-w-2xl rounded-xl border border-[var(--afc-border)] bg-[var(--afc-card)] p-5">
         <div className="mb-6 flex items-start gap-3">
-          <div className="rounded-lg bg-[#C9A048]/10 p-2 text-[#C9A048]"><KeyRound size={20}/></div>
+          <div className="rounded-lg bg-[var(--primary)]/10 p-2 text-[var(--primary)]"><KeyRound size={20}/></div>
           <div>
             <h2 className="font-semibold text-[var(--afc-text)]">Modifier le mot de passe</h2>
             <p className="text-sm text-[var(--afc-muted)]">Utilisez au moins 8 caractères.</p>
@@ -78,7 +78,7 @@ export default function ParametresPage() {
         <section className="max-w-4xl rounded-xl border border-[var(--afc-border)] bg-[var(--afc-card)] p-5">
           <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
             <div>
-              <h2 className="text-xl font-semibold text-[var(--afc-text)]">Catégories de dépense</h2>
+              <h2 className="font-serif text-xl text-[var(--afc-text)]">Catégories de dépense</h2>
               <p className="mt-1 max-w-2xl text-sm leading-6 text-[var(--afc-muted)]">
                 Liste des catégories proposées lors de l&apos;enregistrement d&apos;une dépense courante.<br/>
                 Désactivez plutôt que de supprimer si des dépenses y sont déjà liées.
@@ -111,12 +111,12 @@ export default function ParametresPage() {
                     title={category.isActive?'Désactiver':'Réactiver'}
                     aria-label={category.isActive?'Désactiver':'Réactiver'}
                     onClick={()=>administrationApi.updateCategory(category.id,{isActive:!category.isActive}).then(loadCategories)}
-                    className={`relative h-8 w-14 rounded-full transition ${category.isActive?'bg-[#C9A048]':'bg-white/10'}`}
+                    className={`relative h-8 w-14 rounded-full transition ${category.isActive?'bg-[var(--primary)]':'bg-white/10'}`}
                   >
-                    <span className={`absolute top-1 h-6 w-6 rounded-full bg-white shadow-sm transition ${category.isActive?'right-1':'left-1'}`}/>
+                    <span className={`absolute top-1 h-6 w-6 rounded-full bg-[var(--card)] shadow-sm transition ${category.isActive?'right-1':'left-1'}`}/>
                   </button>
-                  <button type="button" title="Modifier" aria-label="Modifier" onClick={()=>{setEditingCategoryId(category.id);setCategoryName(category.name);setShowCategoryForm(true);}} className="text-[var(--afc-text-soft)] transition hover:text-[#C9A048]"><Pencil size={18}/></button>
-                  <button type="button" title="Désactiver la catégorie" aria-label="Désactiver la catégorie" onClick={()=>administrationApi.updateCategory(category.id,{isActive:false}).then(loadCategories)} className="text-amber-400 transition hover:text-amber-300"><Trash2 size={18}/></button>
+                  <button type="button" title="Modifier" aria-label="Modifier" onClick={()=>{setEditingCategoryId(category.id);setCategoryName(category.name);setShowCategoryForm(true);}} className="text-[var(--afc-text-soft)] transition hover:text-[var(--primary)]"><Pencil size={18}/></button>
+                  <button type="button" title="Désactiver la catégorie" aria-label="Désactiver la catégorie" onClick={()=>administrationApi.updateCategory(category.id,{isActive:false}).then(loadCategories)} className="text-[var(--afc-badge-amber-text)] transition hover:text-[var(--afc-badge-amber-text)]"><Trash2 size={18}/></button>
                 </div>
               </li>
             ))}

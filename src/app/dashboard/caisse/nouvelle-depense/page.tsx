@@ -76,8 +76,8 @@ export default function NouvelleDepensePage() {
   if (!canCreate) {
     return (
       <div className="card">
-        <h1 className="text-xl font-bold text-[var(--foreground)] mb-2">Nouvelle dépense</h1>
-        <p className="text-gray-600 mb-4">
+        <h1 className="font-serif text-[22px] text-[var(--foreground)] mb-2">Nouvelle dépense</h1>
+        <p className="text-[var(--afc-muted)] mb-4">
           Seuls l’Admin et le Trésorier peuvent créer une dépense. La validation se fait en 2 niveaux (Trésorier puis Commissaire).
         </p>
         <Link href="/dashboard/caisse" className="text-[var(--sky-blue-dark)] hover:underline">
@@ -98,8 +98,8 @@ export default function NouvelleDepensePage() {
         </Link>
       </div>
       <div>
-        <h1 className="text-2xl font-bold text-[var(--foreground)]">Nouvelle dépense</h1>
-        <p className="text-gray-600 mt-1">
+        <h1 className="font-serif text-[22px] text-[var(--foreground)]">Nouvelle dépense</h1>
+        <p className="text-[var(--afc-muted)] mt-1">
           La dépense devra être validée par le Trésorier puis par le Commissaire aux comptes.
         </p>
       </div>
@@ -107,12 +107,12 @@ export default function NouvelleDepensePage() {
       <div className="card max-w-xl">
         <form onSubmit={handleSubmit(onSubmit)} className="space-y-5">
           {error && (
-            <div className="rounded-xl bg-red-50 text-red-700 px-4 py-3 text-sm">{error}</div>
+            <div className="rounded-xl bg-[var(--afc-badge-red-bg)] text-[var(--destructive)] px-4 py-3 text-sm">{error}</div>
           )}
 
           {boxes.length > 1 && (
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1.5">Sous-caisse à débiter</label>
+              <label className="block text-sm font-medium text-[var(--afc-text)] mb-1.5">Sous-caisse à débiter</label>
               <select className="input-field" {...register('cashBoxId')}>
                 <option value="">Caisse par défaut</option>
                 {boxes.map((b) => (
@@ -125,7 +125,7 @@ export default function NouvelleDepensePage() {
           )}
 
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1.5">Montant (FCFA) <span className="text-red-500">*</span></label>
+            <label className="block text-sm font-medium text-[var(--afc-text)] mb-1.5">Montant (FCFA) <span className="text-[var(--destructive)]">*</span></label>
             <input
               type="number"
               min="1"
@@ -134,12 +134,12 @@ export default function NouvelleDepensePage() {
               {...register('amount', { valueAsNumber: true })}
             />
             {errors.amount && (
-              <p className="mt-1 text-sm text-red-600">{errors.amount.message}</p>
+              <p className="mt-1 text-sm text-[var(--destructive)]">{errors.amount.message}</p>
             )}
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1.5">Description <span className="text-red-500">*</span></label>
+            <label className="block text-sm font-medium text-[var(--afc-text)] mb-1.5">Description <span className="text-[var(--destructive)]">*</span></label>
             <textarea
               rows={3}
               className="input-field"
@@ -147,33 +147,33 @@ export default function NouvelleDepensePage() {
               {...register('description')}
             />
             {errors.description && (
-              <p className="mt-1 text-sm text-red-600">{errors.description.message}</p>
+              <p className="mt-1 text-sm text-[var(--destructive)]">{errors.description.message}</p>
             )}
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1.5">Catégorie</label>
+            <label className="block text-sm font-medium text-[var(--afc-text)] mb-1.5">Catégorie</label>
             <select className="input-field" {...register('categoryId')}><option value="">Sans catégorie</option>{categories.map(category=><option key={category.id} value={category.id}>{category.name}</option>)}</select>
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1.5">Bénéficiaire (optionnel)</label>
+            <label className="block text-sm font-medium text-[var(--afc-text)] mb-1.5">Bénéficiaire (optionnel)</label>
             <input
               type="text"
               className="input-field"
               placeholder="Ex. Jean Dupont, Activité Noël, Collecte solidarité…"
               {...register('beneficiary')}
             />
-            <p className="mt-1 text-xs text-gray-500">Pour qui ou pour quelle activité / collecte — visible par tous (transparence).</p>
+            <p className="mt-1 text-xs text-[var(--afc-muted)]">Pour qui ou pour quelle activité / collecte — visible par tous (transparence).</p>
           </div>
 
-          <div><label className="block text-sm font-medium text-gray-700 mb-1.5">Note interne (optionnelle)</label><textarea rows={2} className="input-field" {...register('note')}/></div>
+          <div><label className="block text-sm font-medium text-[var(--afc-text)] mb-1.5">Note interne (optionnelle)</label><textarea rows={2} className="input-field" {...register('note')}/></div>
 
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1.5">Date de la dépense <span className="text-red-500">*</span></label>
+            <label className="block text-sm font-medium text-[var(--afc-text)] mb-1.5">Date de la dépense <span className="text-[var(--destructive)]">*</span></label>
             <input type="date" className="input-field" {...register('expenseDate')} />
             {errors.expenseDate && (
-              <p className="mt-1 text-sm text-red-600">{errors.expenseDate.message}</p>
+              <p className="mt-1 text-sm text-[var(--destructive)]">{errors.expenseDate.message}</p>
             )}
           </div>
 
@@ -187,7 +187,7 @@ export default function NouvelleDepensePage() {
             </button>
             <Link
               href="/dashboard/caisse"
-              className="px-5 py-2.5 rounded-xl border border-gray-200 text-gray-700 hover:bg-gray-50 transition font-medium"
+              className="px-5 py-2.5 rounded-xl border border-[var(--afc-border)] text-[var(--afc-text)] hover:bg-[var(--secondary)] transition font-medium"
             >
               Annuler
             </Link>

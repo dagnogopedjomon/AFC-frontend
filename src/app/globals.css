@@ -1,268 +1,408 @@
-/* The reference product uses Inter for the interface and Fraunces for
-   editorial headings / financial figures. Keep the fallbacks local so the
-   layout remains stable when the network is unavailable during development. */
-@import url('https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600&family=Inter:wght@400;500;600;700&family=Poppins:wght@400;500;600;700&display=swap');
-@import '@fontsource/poppins/400.css';
-@import '@fontsource/poppins/500.css';
-@import '@fontsource/poppins/600.css';
-@import '@fontsource/poppins/700.css';
+/* ============================================================
+ * Charte graphique AFC v1.0 (16 octobre 2026)
+ * Trois polices, trois rôles :
+ *   Fraunces       → titres et grands chiffres
+ *   Inter          → texte courant, boutons, formulaires, menu
+ *   JetBrains Mono → repères : en-têtes de tableau, dates, montants
+ * Replis : Fraunces → Georgia, Inter → police système, Mono → Menlo.
+ * ============================================================ */
+@import url('https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300..600;1,9..144,300..600&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap');
 @import 'sweetalert2/dist/sweetalert2.min.css';
 @import "tailwindcss";
 @custom-variant dark (&:where(.dark, .dark *));
 
+/* ============================================================
+ * Jetons — thème clair (référence de la charte)
+ * ============================================================ */
 :root {
-  --background: #f7f9fb;
-  --foreground: #172033;
-  --sky-blue: #315f9e;
-  --sky-blue-light: #5f83b5;
-  --sky-blue-dark: #254a7c;
-  --sky-blue-soft: #edf3fb;
-  /* Bleu de fond plus clair pour les pages d’accueil / login (meilleure visibilité de l’image) */
-  --sky-blue-soft-lighter: #f0f9ff;
-  --sidebar-bg: #edf1f4;
+  --background: #f9fafb;        /* fond de page */
+  --foreground: #21252c;        /* encre */
+  --card: #ffffff;              /* fond des cartes, champs, menus */
+  --secondary: #edf0f3;         /* fond discret */
+  --muted-foreground: #6a727c;  /* texte secondaire */
+  --primary: #2f68b1;           /* bleu AFC */
+  --primary-foreground: #ffffff;
+  --destructive: #cc5233;       /* rouge terre */
+  --destructive-foreground: #ffffff;
+  --border-color: #d3d9de;
+  --chart-1: #2f68b1;
+  --chart-2: #759fd7;           /* bleu clair */
+  --chart-3: #cc5233;
+  --chart-4: #ddac3c;           /* ocre */
+  --chart-4-ink: #98680f;       /* ocre foncé — seule version lisible en texte */
+  --chart-5: #7f64b4;           /* violet */
+  --sidebar: #edf0f3;
   --sidebar-accent: #ffffff;
-  --sidebar-text: #172033;
-  --sidebar-text-muted: #64748b;
-  --font-interface: "Poppins", "Poppins Fallback", "Segoe UI", Arial, sans-serif;
-  --font-editorial: "Poppins", "Poppins Fallback", "Segoe UI", Arial, sans-serif;
-  --font-technical: "Poppins", "Poppins Fallback", "Segoe UI", Arial, sans-serif;
-  --afc-navy-deep: #10162a;
-  --afc-navy-panel: #171f38;
-  --afc-navy-line: rgba(255, 255, 255, 0.08);
-  --afc-gold: #c9a048;
-  --afc-gold-dark: #a9843a;
+  --radius: 0.625rem;
+  --grid-line: rgba(0, 0, 0, 0.035);
+  --shadow-tile: 0 1px 2px rgba(16, 32, 64, .05), 0 1px 3px rgba(16, 32, 64, .04);
+  --shadow-dialog: 0 1px 2px rgba(16, 32, 64, .05), 0 18px 40px -24px rgba(16, 32, 64, .3);
 
-  /* Palette du dashboard (sombre par défaut) — basculée par [data-theme="light"] */
-  --afc-bg: #0e1116;
-  --afc-sidebar: #0b0e13;
-  --afc-card: #171c27;
-  --afc-text: #edeff3;
-  --afc-text-soft: #c3c7d1;
-  --afc-muted: #6b7280;
-  --afc-muted-2: #9ca3af;
-  --afc-muted-3: #4b505c;
-  --afc-muted-4: #8a8f9b;
-  --afc-hl: 255, 255, 255;
-  --afc-tooltip-bg: #1d2431;
-  --afc-border: rgba(255, 255, 255, 0.08);
+  /* Polices */
+  --font-interface: "Inter", system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  --font-editorial: "Fraunces", Georgia, "Times New Roman", serif;
+  --font-technical: "JetBrains Mono", ui-monospace, "SF Mono", Menlo, Consolas, monospace;
 
-  /* Badges de statut — tons ajustés par thème pour rester lisibles */
-  --afc-badge-blue-bg: rgba(46, 95, 163, 0.4);
-  --afc-badge-blue-text: #8fb4e8;
-  --afc-badge-blue-border: rgba(59, 130, 246, 0.3);
-  --afc-badge-emerald-bg: rgba(6, 95, 70, 0.3);
-  --afc-badge-emerald-text: #52c08a;
-  --afc-badge-emerald-border: rgba(16, 185, 129, 0.3);
-  --afc-badge-amber-bg: rgba(120, 53, 15, 0.3);
-  --afc-badge-amber-text: #e3a84e;
-  --afc-badge-amber-border: rgba(217, 119, 6, 0.3);
-  --afc-badge-red-bg: rgba(127, 29, 29, 0.3);
-  --afc-badge-red-text: #e28a87;
-  --afc-badge-red-border: rgba(220, 38, 38, 0.3);
-  --afc-badge-violet-bg: rgba(76, 29, 149, 0.3);
-  --afc-badge-violet-text: #b39ce8;
-  --afc-badge-violet-border: rgba(124, 58, 237, 0.3);
+  /* ——— Alias historiques : l'application pointe déjà sur ces noms ——— */
+  --sky-blue: var(--primary);
+  --sky-blue-light: var(--chart-2);
+  --sky-blue-dark: var(--primary);
+  --sky-blue-soft: var(--secondary);
+  --sky-blue-soft-lighter: var(--background);
+  --sidebar-bg: var(--sidebar);
+  --sidebar-text: var(--foreground);
+  --sidebar-text-muted: var(--muted-foreground);
+  --afc-gold: var(--primary);        /* l'or est remplacé par le bleu AFC */
+  --afc-gold-dark: var(--primary);
+  --afc-navy-deep: var(--background);
+  --afc-navy-panel: var(--secondary);
+  --afc-navy-line: var(--border-color);
 
-  --afc-avatar-bg: rgba(46, 95, 163, 0.35);
-  --afc-avatar-text: #8fb4e8;
+  /* Palette applicative (claire par défaut : « fonds clairs, traits fins ») */
+  --afc-bg: var(--background);
+  --afc-sidebar: var(--sidebar);
+  --afc-card: var(--card);
+  --afc-text: var(--foreground);
+  --afc-text-soft: #3c424b;
+  --afc-muted: var(--muted-foreground);
+  --afc-muted-2: var(--muted-foreground);
+  --afc-muted-3: #8c939c;
+  --afc-muted-4: var(--muted-foreground);
+  --afc-hl: 33, 37, 44;              /* canal de surbrillance : encre en clair */
+  --afc-tooltip-bg: var(--card);
+  --afc-border: var(--border-color);
+  --afc-border-soft: rgba(33, 37, 44, 0.08);
+
+  /* Badges d'état — sens des couleurs de la charte */
+  --afc-badge-blue-bg: rgba(47, 104, 177, 0.10);
+  --afc-badge-blue-text: #2f68b1;
+  --afc-badge-blue-border: rgba(47, 104, 177, 0.25);
+  --afc-badge-emerald-bg: rgba(47, 104, 177, 0.10);   /* « réussi » = bleu AFC */
+  --afc-badge-emerald-text: #2f68b1;
+  --afc-badge-emerald-border: rgba(47, 104, 177, 0.25);
+  --afc-badge-amber-bg: rgba(221, 172, 60, 0.14);
+  --afc-badge-amber-text: #98680f;                     /* ocre foncé, jamais l'ocre clair */
+  --afc-badge-amber-border: rgba(221, 172, 60, 0.38);
+  --afc-badge-red-bg: rgba(204, 82, 51, 0.10);
+  --afc-badge-red-text: #b4482c;
+  --afc-badge-red-border: rgba(204, 82, 51, 0.28);
+  --afc-badge-violet-bg: rgba(127, 100, 180, 0.12);
+  --afc-badge-violet-text: #6f55a3;
+  --afc-badge-violet-border: rgba(127, 100, 180, 0.28);
+
+  --afc-avatar-bg: rgba(47, 104, 177, 0.12);
+  --afc-avatar-text: #2f68b1;
+
+  --afc-table-head-bg: #f3f2ed;
+  --afc-table-head-text: #7a776c;
 }
 
-/* La sidebar reste toujours sombre, même en thème clair (voir data-theme="dark" sur l'aside/header mobile) */
+/* ============================================================
+ * Jetons — thème sombre (mêmes rôles, valeurs plus claires)
+ * ============================================================ */
 [data-theme='dark'] {
-  --afc-bg: #0e1116;
-  --afc-sidebar: #0b0e13;
-  --afc-card: #171c27;
-  --afc-text: #edeff3;
-  --afc-text-soft: #c3c7d1;
-  --afc-muted: #6b7280;
-  --afc-muted-2: #9ca3af;
-  --afc-muted-3: #4b505c;
-  --afc-muted-4: #8a8f9b;
+  --background: #14171a;
+  --foreground: #f1f2f3;
+  --card: #1e2124;
+  --secondary: #26282c;
+  --muted-foreground: #93999f;
+  --primary: #78a6e2;
+  --primary-foreground: #151d28;
+  --destructive: #d6745c;
+  --destructive-foreground: #10161e;
+  --border-color: #34383d;
+  --chart-1: #78a6e2;
+  --chart-2: #a5c2e9;
+  --chart-3: #d6745c;
+  --chart-4: #e4bf67;
+  --chart-4-ink: #e4bf67;
+  --chart-5: #a189d2;
+  --sidebar: #1e2124;
+  --sidebar-accent: #292d32;
+  --grid-line: rgba(255, 255, 255, 0.04);
+  --shadow-tile: 0 1px 2px rgba(0, 0, 0, .3);
+  --shadow-dialog: 0 1px 2px rgba(0, 0, 0, .3), 0 18px 40px -24px rgba(0, 0, 0, .7);
+  color-scheme: dark;
+
+  --afc-bg: var(--background);
+  --afc-sidebar: var(--sidebar);
+  --afc-card: var(--card);
+  --afc-text: var(--foreground);
+  --afc-text-soft: #d6d9dc;
+  --afc-muted: var(--muted-foreground);
+  --afc-muted-2: var(--muted-foreground);
+  --afc-muted-3: #767c83;
+  --afc-muted-4: var(--muted-foreground);
   --afc-hl: 255, 255, 255;
-  --afc-tooltip-bg: #1d2431;
-  --afc-border: rgba(255, 255, 255, 0.08);
+  --afc-tooltip-bg: var(--card);
+  --afc-border: var(--border-color);
+  --afc-border-soft: rgba(255, 255, 255, 0.08);
+
+  --afc-badge-blue-bg: rgba(120, 166, 226, 0.16);
+  --afc-badge-blue-text: #9cc0ec;
+  --afc-badge-blue-border: rgba(120, 166, 226, 0.32);
+  --afc-badge-emerald-bg: rgba(120, 166, 226, 0.16);
+  --afc-badge-emerald-text: #9cc0ec;
+  --afc-badge-emerald-border: rgba(120, 166, 226, 0.32);
+  --afc-badge-amber-bg: rgba(228, 191, 103, 0.16);
+  --afc-badge-amber-text: #e4bf67;
+  --afc-badge-amber-border: rgba(228, 191, 103, 0.32);
+  --afc-badge-red-bg: rgba(214, 116, 92, 0.16);
+  --afc-badge-red-text: #e28f77;
+  --afc-badge-red-border: rgba(214, 116, 92, 0.32);
+  --afc-badge-violet-bg: rgba(161, 137, 210, 0.16);
+  --afc-badge-violet-text: #b7a3de;
+  --afc-badge-violet-border: rgba(161, 137, 210, 0.32);
+
+  --afc-avatar-bg: rgba(120, 166, 226, 0.18);
+  --afc-avatar-text: #9cc0ec;
+
+  --afc-table-head-bg: var(--secondary);
+  --afc-table-head-text: var(--muted-foreground);
 }
 
-[data-theme='light'] {
-  --afc-bg: #f5f6f8;
-  --afc-sidebar: #ffffff;
-  --afc-card: #ffffff;
-  --afc-text: #172033;
-  --afc-text-soft: #475569;
-  --afc-muted: #64748b;
-  --afc-muted-2: #6b7280;
-  --afc-muted-3: #94a3b8;
-  --afc-muted-4: #64748b;
-  --afc-hl: 15, 23, 42;
-  --afc-tooltip-bg: #ffffff;
-  --afc-navy-line: rgba(15, 23, 42, 0.12);
-  --afc-border: #e2e5ea;
-  --afc-avatar-bg: #dbeafe;
-  --afc-avatar-text: #1d4ed8;
-
-  --afc-badge-blue-bg: #eff6ff;
-  --afc-badge-blue-text: #1d4ed8;
-  --afc-badge-blue-border: #bfdbfe;
-  --afc-badge-emerald-bg: #ecfdf5;
-  --afc-badge-emerald-text: #047857;
-  --afc-badge-emerald-border: #a7f3d0;
-  --afc-badge-amber-bg: #fffbeb;
-  --afc-badge-amber-text: #b45309;
-  --afc-badge-amber-border: #fde68a;
-  --afc-badge-red-bg: #fef2f2;
-  --afc-badge-red-text: #b91c1c;
-  --afc-badge-red-border: #fecaca;
-  --afc-badge-violet-bg: #f5f3ff;
-  --afc-badge-violet-text: #6d28d9;
-  --afc-badge-violet-border: #ddd6fe;
-}
+/* Le thème clair reste explicitement disponible (bouton de bascule). */
+[data-theme='light'] { color-scheme: light; }
 
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
-  --color-sky-blue: var(--sky-blue);
-  --color-sky-blue-light: var(--sky-blue-light);
-  --color-sky-blue-dark: var(--sky-blue-dark);
-  --color-sky-blue-soft: var(--sky-blue-soft);
-  --color-sky-blue-soft-lighter: var(--sky-blue-soft-lighter);
+  --color-card: var(--card);
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-secondary: var(--secondary);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-destructive: var(--destructive);
+  --color-chart-1: var(--chart-1);
+  --color-chart-2: var(--chart-2);
+  --color-chart-3: var(--chart-3);
+  --color-chart-4: var(--chart-4);
+  --color-chart-5: var(--chart-5);
+  --color-sky-blue: var(--primary);
+  --color-sky-blue-light: var(--chart-2);
+  --color-sky-blue-dark: var(--primary);
+  --color-sky-blue-soft: var(--secondary);
+  --color-sky-blue-soft-lighter: var(--background);
   --font-sans: var(--font-interface);
   --font-serif: var(--font-editorial);
   --font-mono: var(--font-technical);
+
+  /* Rayons de la charte : 6 px petits éléments, 8 px boutons, 10 px champs,
+     14 px cartes et fenêtres, pilule pour les badges. */
+  --radius-sm: 6px;
+  --radius-md: 8px;
+  --radius-lg: 10px;
+  --radius-xl: 14px;
+  --radius-2xl: 14px;
+  --radius-3xl: 18px;
+
+  /* « Des angles doux, des traits fins » : presque pas d'ombre. */
+  --shadow-xs: 0 1px 2px rgba(16, 32, 64, .04);
+  --shadow-sm: var(--shadow-tile);
+  --shadow-md: var(--shadow-tile);
+  --shadow-lg: var(--shadow-dialog);
+  --shadow-xl: var(--shadow-dialog);
 }
 
 body {
   background: var(--background);
   color: var(--foreground);
-  font-family: var(--font-sans);
+  font-family: var(--font-interface);
+  font-size: 15px;
+  line-height: 1.6;
   -webkit-tap-highlight-color: transparent;
   overscroll-behavior-y: none;
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+  caret-color: var(--primary);
+  transition: background-color .35s ease, color .35s ease;
 }
+
+::selection { background: var(--primary); color: var(--primary-foreground); }
+:focus-visible { outline: 2px solid var(--primary); outline-offset: 2px; }
 
 @media (min-width: 1024px) {
   .dashboard-content-offset { padding-left: 64px !important; }
 }
 
-/* One typographic system across every dashboard screen. The reference uses
-   serif display type for headings and amounts, while controls, labels and
-   tables stay in the neutral sans-serif face. */
+/* ============================================================
+ * Hiérarchie des textes (tailles de la charte)
+ * ============================================================ */
 main h1,
 main h2,
 main h3,
 .font-serif {
   font-family: var(--font-editorial);
   font-weight: 400;
+  text-wrap: balance;
 }
 
-main h1 { letter-spacing: -.025em; }
+main h1 { letter-spacing: -.02em; }
+
+/* Un mot en italique bleu par grand titre. */
+.afc-accent-word {
+  font-family: var(--font-editorial);
+  font-style: italic;
+  font-weight: 400;
+  color: var(--primary);
+}
+
+/* Étiquette de section : « — SECTION » en mono, capitales espacées. */
+.afc-eyebrow {
+  font-family: var(--font-technical);
+  font-size: 10.5px;
+  font-weight: 500;
+  letter-spacing: .14em;
+  text-transform: uppercase;
+  color: var(--muted-foreground);
+}
+
+/* Grand chiffre : Fraunces léger, chiffres tabulaires. */
+.afc-figure {
+  font-family: var(--font-editorial);
+  font-weight: 300;
+  font-variant-numeric: tabular-nums;
+  letter-spacing: -.01em;
+}
+
+.afc-mono,
+.tabular {
+  font-family: var(--font-technical);
+  font-variant-numeric: tabular-nums;
+}
 
 button, input, select, textarea { font: inherit; }
 
+/* ============================================================
+ * Composants : champs, boutons, cartes
+ * ============================================================ */
 .afc-input {
   width: 100%;
-  border: 1px solid #dbe2ea;
-  border-radius: 0.75rem;
-  background: #fff;
-  padding: 0.8rem 0.95rem;
-  color: #172033;
+  border: 1px solid var(--border-color);
+  border-radius: 10px;
+  background: var(--card);
+  padding: 0.7rem 0.9rem;
+  color: var(--foreground);
   outline: none;
   transition: border-color .18s ease, box-shadow .18s ease;
 }
-.afc-input:focus { border-color: #315f9e; box-shadow: 0 0 0 3px rgba(49,95,158,.12); }
-.afc-button-primary {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  gap: .5rem;
-  min-height: 2.75rem;
-  border-radius: 9999px;
-  background: linear-gradient(180deg, #DDB65C 0%, #C9A048 100%);
-  padding: .7rem 1.15rem;
-  color: #171308;
-  font-size: .875rem;
-  font-weight: 700;
-  box-shadow: 0 4px 14px rgba(201,160,72,.3);
-  transition: box-shadow .18s ease, transform .18s ease;
-}
-.afc-button-primary:hover { box-shadow: 0 6px 18px rgba(201,160,72,.4); transform: translateY(-1px); }
-.afc-button-primary:active { transform: translateY(0); }
-.afc-button-primary:disabled { cursor: not-allowed; opacity: .55; }
-
-/* Safe area pour iPhone (encoche + barre de gestes) en mode PWA */
-.safe-area-pb {
-  padding-bottom: max(0.5rem, env(safe-area-inset-bottom));
-}
-.safe-area-pt {
-  padding-top: env(safe-area-inset-top);
+.afc-input::placeholder { color: var(--muted-foreground); }
+.afc-input:focus {
+  border-color: var(--primary);
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--primary) 20%, transparent);
 }
 
+/* Bouton principal : bleu AFC, 40 px de haut, rayon 8 px, Inter 500. */
+.afc-button-primary,
 .btn-primary {
   display: inline-flex;
   align-items: center;
   justify-content: center;
   gap: .5rem;
-  min-height: 2.75rem;
-  border-radius: 9999px;
-  background: linear-gradient(180deg, #DDB65C 0%, #C9A048 100%);
-  padding: .7rem 1.15rem;
-  color: #171308;
+  min-height: 40px;
+  border-radius: 8px;
+  background: var(--primary);
+  padding: .55rem 1rem;
+  color: var(--primary-foreground);
+  font-family: var(--font-interface);
   font-size: .875rem;
-  font-weight: 700;
-  box-shadow: 0 4px 14px rgba(201,160,72,.3);
-  transition: box-shadow .18s ease, transform .18s ease;
+  font-weight: 500;
+  border: 1px solid transparent;
+  box-shadow: none;
+  transition: background-color .18s ease, transform .12s ease;
 }
-.btn-primary:hover { box-shadow: 0 6px 18px rgba(201,160,72,.4); transform: translateY(-1px); }
-.btn-primary:active { transform: translateY(0); }
-.btn-primary:focus-visible { outline: 2px solid var(--afc-gold); outline-offset: 2px; }
-.btn-primary:disabled { cursor: not-allowed; opacity: .55; }
+.afc-button-primary:hover,
+.btn-primary:hover { background: color-mix(in srgb, var(--primary) 88%, black); }
+.afc-button-primary:active,
+.btn-primary:active { transform: translateY(1px); }
+.btn-primary:focus-visible { outline: 2px solid var(--primary); outline-offset: 2px; }
+.afc-button-primary:disabled,
+.btn-primary:disabled { cursor: not-allowed; opacity: .55; transform: none; }
+
+/* Bouton secondaire (contour) et bouton discret. */
+.afc-button-secondary {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: .5rem;
+  min-height: 40px;
+  border-radius: 8px;
+  border: 1px solid var(--border-color);
+  background: var(--card);
+  padding: .55rem 1rem;
+  color: var(--foreground);
+  font-size: .875rem;
+  font-weight: 500;
+  transition: background-color .18s ease, border-color .18s ease;
+}
+.afc-button-secondary:hover { background: var(--secondary); }
+.afc-button-ghost {
+  display: inline-flex;
+  align-items: center;
+  gap: .4rem;
+  color: var(--primary);
+  font-size: .875rem;
+  font-weight: 500;
+}
+
+/* Safe area pour iPhone (encoche + barre de gestes) en mode PWA */
+.safe-area-pb { padding-bottom: max(0.5rem, env(safe-area-inset-bottom)); }
+.safe-area-pt { padding-top: env(safe-area-inset-top); }
 
 .input-field,
 .input {
-  @apply w-full rounded-lg border border-slate-200 bg-white px-4 py-3 text-[var(--foreground)] placeholder:text-slate-400 focus:border-[var(--sky-blue)] focus:ring-2 focus:ring-[var(--sky-blue-soft)] outline-none transition;
+  @apply w-full rounded-lg border px-4 py-3 outline-none transition;
+  border-color: var(--border-color);
+  background: var(--card);
+  color: var(--foreground);
+}
+.input-field::placeholder,
+.input::placeholder { color: var(--muted-foreground); }
+.input-field:focus,
+.input:focus {
+  border-color: var(--primary);
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--primary) 18%, transparent);
 }
 
-/* Login carte sombre : pas de classe .input-field (évite texte noir var(--foreground)) */
+/* Écran de connexion — panneau de marque + carte, aux jetons de la charte. */
 [data-login-dark] .login-dark-input {
-  color: #f5f5f5 !important;
-  -webkit-text-fill-color: #f5f5f5;
+  color: var(--foreground) !important;
+  -webkit-text-fill-color: var(--foreground);
 }
-
 [data-login-dark] .login-dark-input::placeholder {
-  color: #a3a3a3;
+  color: var(--muted-foreground);
   opacity: 1;
 }
-
 [data-login-dark] .login-dark-input:-webkit-autofill,
 [data-login-dark] .login-dark-input:-webkit-autofill:hover,
 [data-login-dark] .login-dark-input:-webkit-autofill:focus {
-  -webkit-text-fill-color: #f5f5f5 !important;
-  caret-color: #38bdf8;
-  box-shadow: 0 0 0 1000px #404040 inset !important;
+  -webkit-text-fill-color: var(--foreground) !important;
+  caret-color: var(--primary);
+  box-shadow: 0 0 0 1000px var(--card) inset !important;
   transition: background-color 99999s ease-out;
 }
 
-/* Écran de connexion — thème sombre navy/gold validé */
 .afc-login-input {
   width: 100%;
-  border: 1px solid var(--afc-navy-line);
-  border-radius: 0.75rem;
-  background: rgba(var(--afc-hl), 0.04);
-  padding: 0.85rem 1rem;
-  color: var(--afc-text);
+  border: 1px solid var(--border-color);
+  border-radius: 10px;
+  background: var(--card);
+  padding: 0.75rem 0.9rem;
+  color: var(--foreground);
   outline: none;
-  transition: border-color .18s ease, box-shadow .18s ease, background .18s ease;
+  transition: border-color .18s ease, box-shadow .18s ease;
 }
-.afc-login-input::placeholder { color: var(--afc-muted); }
+.afc-login-input::placeholder { color: var(--muted-foreground); }
 .afc-login-input:focus {
-  border-color: var(--afc-gold);
-  background: rgba(255, 255, 255, 0.06);
-  box-shadow: 0 0 0 3px rgba(201, 160, 72, .16);
+  border-color: var(--primary);
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--primary) 20%, transparent);
 }
 .afc-login-input:-webkit-autofill,
 .afc-login-input:-webkit-autofill:hover,
 .afc-login-input:-webkit-autofill:focus {
-  -webkit-text-fill-color: #edeff3 !important;
-  caret-color: var(--afc-gold);
-  box-shadow: 0 0 0 1000px var(--afc-navy-panel) inset !important;
+  -webkit-text-fill-color: var(--foreground) !important;
+  caret-color: var(--primary);
+  box-shadow: 0 0 0 1000px var(--card) inset !important;
   transition: background-color 99999s ease-out;
 }
 
@@ -271,114 +411,175 @@ button, input, select, textarea { font: inherit; }
   align-items: center;
   justify-content: center;
   gap: .5rem;
-  min-height: 2.85rem;
-  border-radius: .6rem;
-  background: linear-gradient(180deg, #DDB65C 0%, var(--afc-gold) 100%);
-  padding: .75rem 1.2rem;
-  color: #171308;
-  font-size: .875rem;
-  font-weight: 700;
-  box-shadow: 0 4px 14px rgba(201,160,72,.3);
-  transition: box-shadow .18s ease, transform .18s ease;
+  min-height: 44px;
+  border-radius: 8px;
+  background: var(--primary);
+  padding: .7rem 1.2rem;
+  color: var(--primary-foreground);
+  font-size: .9375rem;
+  font-weight: 500;
+  transition: background-color .18s ease, transform .12s ease;
 }
-.afc-login-button:hover { box-shadow: 0 6px 18px rgba(201,160,72,.4); transform: translateY(-1px); }
-.afc-login-button:active { transform: translateY(0); }
+.afc-login-button:hover { background: color-mix(in srgb, var(--primary) 88%, black); }
+.afc-login-button:active { transform: translateY(1px); }
 .afc-login-button:disabled { cursor: not-allowed; opacity: .55; }
 
+/* Carte : fond blanc, trait fin, aucune ombre. */
 .card {
-  @apply bg-white rounded-xl shadow-sm border border-slate-200/80 p-6 transition-all duration-200;
+  background: var(--card);
+  border: 1px solid var(--border-color);
+  border-radius: 14px;
+  padding: 1.25rem;
+  transition: border-color .2s ease, background-color .2s ease;
 }
-.card-hover:hover {
-  @apply shadow-md border-slate-300;
+.card-hover:hover { border-color: color-mix(in srgb, var(--primary) 35%, var(--border-color)); }
+
+/* Quadrillé discret de 56 px, estompé en dégradé radial. */
+.brand-grid { position: relative; }
+.brand-grid::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background-image:
+    linear-gradient(to right, var(--grid-line) 1px, transparent 1px),
+    linear-gradient(to bottom, var(--grid-line) 1px, transparent 1px);
+  background-size: 56px 56px;
+  background-position: -1px -1px;
+  pointer-events: none;
+  mask-image: radial-gradient(ellipse 80% 60% at 30% 40%, black 30%, transparent 80%);
+  -webkit-mask-image: radial-gradient(ellipse 80% 60% at 30% 40%, black 30%, transparent 80%);
+  z-index: 0;
 }
 
+/* Mouvement : fondu avec une montée de 8 px, 0,6 s, retards échelonnés. */
+.fade-in { animation: afcFadeUp .6s cubic-bezier(.2,.7,.2,1) both; }
+.fade-in.delay-1 { animation-delay: .08s; }
+.fade-in.delay-2 { animation-delay: .16s; }
+.fade-in.delay-3 { animation-delay: .24s; }
+@keyframes afcFadeUp {
+  from { opacity: 0; transform: translateY(8px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+/* ============================================================
+ * Tableaux : en-tête en mono capitales, lignes séparées d'un trait fin,
+ * montants à droite en chiffres tabulaires.
+ * ============================================================ */
 main table { border-collapse: separate; border-spacing: 0; font-size: .875rem; }
-/* Tables sombres (écrans redesign) : neutralise les règles main/thead/th du thème clair */
-main table.afc-table-dark thead { background: transparent !important; }
-main table.afc-table-dark th { color: var(--afc-muted) !important; }
-main table.afc-table-dark th, main table.afc-table-dark td { border-bottom-color: rgba(var(--afc-hl),0.05) !important; }
-main table.afc-table-dark tbody tr:hover { background: rgba(var(--afc-hl),0.03); }
+main table tbody { font-family: var(--font-interface); }
+main thead { background: var(--afc-table-head-bg); }
+main th {
+  color: var(--afc-table-head-text) !important;
+  font-family: var(--font-technical);
+  font-size: .75rem !important;
+  font-weight: 500;
+  letter-spacing: .08em;
+  text-transform: uppercase;
+}
+main th, main td { border-bottom-color: var(--afc-border-soft) !important; }
+main tbody tr { transition: background-color .15s ease; }
+main tbody tr:hover { background: rgba(var(--afc-hl), 0.03); }
+main label { color: var(--muted-foreground); }
+main input:not([type="checkbox"]):not([type="radio"]),
+main select,
+main textarea { border-color: var(--border-color); }
 
-/* Badges de statut — mêmes classes en clair et en sombre, couleurs ajustées par thème */
+/* Tables des écrans redesignés : elles suivent désormais le thème. */
+main table.afc-table-dark thead { background: var(--afc-table-head-bg) !important; }
+main table.afc-table-dark th { color: var(--afc-table-head-text) !important; }
+main table.afc-table-dark th,
+main table.afc-table-dark td { border-bottom-color: var(--afc-border-soft) !important; }
+main table.afc-table-dark tbody tr:hover { background: rgba(var(--afc-hl), 0.03); }
+
+/* ============================================================
+ * Badges d'état — pilule, texte 12 px.
+ * Bleu : payé, actif, mensuelle · Rouge terre : retard, annulé
+ * Violet : exceptionnelle, bureau, avance · Ocre : partiel, ouverte
+ * Gris : neutre, inactif, prospect
+ * ============================================================ */
 .afc-badge-blue { background-color: var(--afc-badge-blue-bg); color: var(--afc-badge-blue-text); border-color: var(--afc-badge-blue-border); }
 .afc-badge-emerald { background-color: var(--afc-badge-emerald-bg); color: var(--afc-badge-emerald-text); border-color: var(--afc-badge-emerald-border); }
 .afc-badge-amber { background-color: var(--afc-badge-amber-bg); color: var(--afc-badge-amber-text); border-color: var(--afc-badge-amber-border); }
 .afc-badge-red { background-color: var(--afc-badge-red-bg); color: var(--afc-badge-red-text); border-color: var(--afc-badge-red-border); }
 .afc-badge-violet { background-color: var(--afc-badge-violet-bg); color: var(--afc-badge-violet-text); border-color: var(--afc-badge-violet-border); }
-.afc-badge-gray { background-color: rgba(var(--afc-hl),0.06); color: var(--afc-muted-2); border-color: rgba(var(--afc-hl),0.08); }
-/* Les données tabulaires suivent la même typographie Poppins partout. */
-main table tbody { font-family: var(--font-technical); }
-main thead { background: #eef3f7; }
-main th { color: #5f6b7c !important; font-size: .7rem !important; letter-spacing: .08em; text-transform: uppercase; }
-main th, main td { border-bottom-color: #edf0f3 !important; }
-main tbody tr { transition: background-color .15s ease; }
-main tbody tr:hover { background: #fafbfd; }
-main label { color: #475569; }
-main input:not([type="checkbox"]):not([type="radio"]),
-main select,
-main textarea { border-color: #dbe2ea; }
+.afc-badge-gray { background-color: rgba(var(--afc-hl), 0.06); color: var(--muted-foreground); border-color: rgba(var(--afc-hl), 0.10); }
+
+/* Badge de type : JetBrains Mono, capitales. */
+.afc-badge-type {
+  font-family: var(--font-technical);
+  font-size: 11px;
+  letter-spacing: .06em;
+  text-transform: uppercase;
+}
 
 @media (max-width: 640px) {
   .card { padding: 1rem; }
   main table { font-size: .78rem; }
   main th, main td { padding-left: .75rem !important; padding-right: .75rem !important; }
 }
-.link-accent {
-  @apply text-[var(--sky-blue-dark)] font-medium hover:text-[var(--sky-blue)] transition;
-}
 
-/* Toasts (Sonner) — style unifié : fond vert clair, coche, bouton fermer */
+.link-accent {
+  color: var(--primary);
+  font-weight: 500;
+  transition: color .15s ease;
+}
+.link-accent:hover { color: color-mix(in srgb, var(--primary) 80%, black); }
+
+/* ============================================================
+ * Toasts (Sonner) — aux couleurs de la charte
+ * ============================================================ */
+[data-rich-colors='true'][data-sonner-toast] {
+  border-radius: 14px !important;
+  box-shadow: var(--shadow-dialog) !important;
+}
 [data-rich-colors='true'][data-sonner-toast][data-type='success'] {
-  background: #f0fdf4 !important;
-  border: 1px solid #bbf7d0 !important;
-  border-radius: 1rem !important;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08) !important;
-  color: #166534 !important;
+  background: var(--afc-badge-blue-bg) !important;
+  border: 1px solid var(--afc-badge-blue-border) !important;
+  color: var(--afc-badge-blue-text) !important;
 }
 [data-rich-colors='true'][data-sonner-toast][data-type='success'] [data-close-button] {
-  background: #f0fdf4 !important;
-  border-color: #bbf7d0 !important;
-  color: #166534 !important;
+  background: var(--card) !important;
+  border-color: var(--afc-badge-blue-border) !important;
+  color: var(--afc-badge-blue-text) !important;
   border-radius: 9999px !important;
 }
 [data-rich-colors='true'][data-sonner-toast][data-type='error'] {
-  border-radius: 1rem !important;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08) !important;
+  background: var(--afc-badge-red-bg) !important;
+  border: 1px solid var(--afc-badge-red-border) !important;
+  color: var(--afc-badge-red-text) !important;
 }
 [data-rich-colors='true'][data-sonner-toast][data-type='warning'] {
-  border-radius: 1rem !important;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08) !important;
+  background: var(--afc-badge-amber-bg) !important;
+  border: 1px solid var(--afc-badge-amber-border) !important;
+  color: var(--afc-badge-amber-text) !important;
 }
 [data-rich-colors='true'][data-sonner-toast][data-type='info'] {
-  border-radius: 1rem !important;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08) !important;
+  background: var(--afc-badge-blue-bg) !important;
+  border: 1px solid var(--afc-badge-blue-border) !important;
+  color: var(--afc-badge-blue-text) !important;
 }
 
-/* Bannière défilante (marquee) pour les retards de paiement */
+/* ============================================================
+ * Bannière défilante (retards de paiement) et clignotement
+ * ============================================================ */
 @keyframes marquee {
   0% { transform: translateX(0); }
   100% { transform: translateX(-50%); }
 }
-
 .animate-marquee {
   display: flex;
   animation: marquee 30s linear infinite;
   width: max-content;
 }
+.animate-marquee:hover { animation-play-state: paused; }
 
-.animate-marquee:hover {
-  animation-play-state: paused;
-}
-
-/* Texte clignotant rouge pour les dates de clôture */
 @keyframes blink-red {
   0%, 100% { opacity: 1; }
-  50% { opacity: 0.4; }
+  50% { opacity: 0.45; }
 }
-
 .animate-blink-red {
   animation: blink-red 1.2s ease-in-out infinite;
-  color: #dc2626;
+  color: var(--destructive);
 }
 
 @keyframes afc-marquee {
@@ -395,7 +596,10 @@ main textarea { border-color: #dbe2ea; }
   animation: afc-marquee 24s linear infinite;
 }
 .afc-marquee:hover .afc-marquee-track { animation-play-state: paused; }
+
+/* Tout mouvement s'arrête si la personne a demandé de réduire les animations. */
 @media (prefers-reduced-motion: reduce) {
   .afc-marquee-track { position: static; animation: none; }
   .afc-marquee-track > :nth-child(2) { display: none; }
+  .animate-marquee, .animate-blink-red, .fade-in { animation: none !important; }
 }

@@ -183,7 +183,7 @@ function MemberDetailPageInner() {
   if (!canView) {
     return (
       <div className="rounded-xl border border-[var(--afc-border)] bg-[var(--afc-card)] p-6">
-        <h1 className="mb-2 text-xl font-semibold text-[var(--afc-text)]">Fiche membre</h1>
+        <h1 className="mb-2 font-serif text-[22px] text-[var(--afc-text)]">Fiche membre</h1>
         <p className="text-[var(--afc-muted)]">L&rsquo;accès à cette page est réservé à l&rsquo;Admin et au bureau.</p>
         <div className="mt-4"><BackLink /></div>
       </div>
@@ -193,7 +193,7 @@ function MemberDetailPageInner() {
   if (loading) {
     return (
       <div className="flex justify-center rounded-xl border border-[var(--afc-border)] bg-[var(--afc-card)] py-12">
-        <div className="inline-block h-10 w-10 animate-spin rounded-full border-4 border-[#C9A048] border-r-transparent" />
+        <div className="inline-block h-10 w-10 animate-spin rounded-full border-4 border-[var(--primary)] border-r-transparent" />
       </div>
     );
   }
@@ -242,17 +242,17 @@ function MemberDetailPageInner() {
 
       {editing ? (
         <div className="rounded-xl border border-[var(--afc-border)] bg-[var(--afc-card)] p-5">
-          <h2 className="mb-4 text-lg font-semibold text-[var(--afc-text)]">Modifier le profil</h2>
+          <h2 className="mb-4 font-serif text-lg text-[var(--afc-text)]">Modifier le profil</h2>
           <form onSubmit={handleSubmit(onSubmit)} className="max-w-md space-y-4">
             <div>
               <label className="mb-1 block text-sm font-medium text-[var(--afc-text-soft)]">Prénom</label>
               <input {...register('firstName')} className="afc-login-input w-full text-sm" />
-              {errors.firstName && <p className="mt-1 text-sm text-red-400">{errors.firstName.message}</p>}
+              {errors.firstName && <p className="mt-1 text-sm text-[var(--afc-badge-red-text)]">{errors.firstName.message}</p>}
             </div>
             <div>
               <label className="mb-1 block text-sm font-medium text-[var(--afc-text-soft)]">Nom</label>
               <input {...register('lastName')} className="afc-login-input w-full text-sm" />
-              {errors.lastName && <p className="mt-1 text-sm text-red-400">{errors.lastName.message}</p>}
+              {errors.lastName && <p className="mt-1 text-sm text-[var(--afc-badge-red-text)]">{errors.lastName.message}</p>}
             </div>
             {isAdmin && (
               <div>
@@ -264,7 +264,7 @@ function MemberDetailPageInner() {
                     </option>
                   ))}
                 </select>
-                {errors.role && <p className="mt-1 text-sm text-red-400">{errors.role.message}</p>}
+                {errors.role && <p className="mt-1 text-sm text-[var(--afc-badge-red-text)]">{errors.role.message}</p>}
               </div>
             )}
             {isAdmin && (
@@ -284,7 +284,7 @@ function MemberDetailPageInner() {
             <div>
               <label className="mb-1 block text-sm font-medium text-[var(--afc-text-soft)]">Email</label>
               <input type="email" {...register('email')} className="afc-login-input w-full text-sm" />
-              {errors.email && <p className="mt-1 text-sm text-red-400">{errors.email.message}</p>}
+              {errors.email && <p className="mt-1 text-sm text-[var(--afc-badge-red-text)]">{errors.email.message}</p>}
             </div>
             <div>
               <label className="mb-1 block text-sm font-medium text-[var(--afc-text-soft)]">Quartier</label>
@@ -297,7 +297,7 @@ function MemberDetailPageInner() {
             <div>
               <label className="mb-1 block text-sm font-medium text-[var(--afc-text-soft)]">Nouveau mot de passe (laisser vide pour ne pas changer)</label>
               <input type="password" {...register('password')} className="afc-login-input w-full text-sm" autoComplete="new-password" />
-              {errors.password && <p className="mt-1 text-sm text-red-400">{errors.password.message}</p>}
+              {errors.password && <p className="mt-1 text-sm text-[var(--afc-badge-red-text)]">{errors.password.message}</p>}
             </div>
             <div className="flex gap-2 pt-2">
               <button type="submit" disabled={isSubmitting} className="afc-button-primary">
@@ -325,7 +325,7 @@ function MemberDetailPageInner() {
               </div>
             )}
             <div className="flex-1 space-y-2">
-              <h1 className="text-2xl font-semibold text-[var(--afc-text)]">
+              <h1 className="font-serif text-[22px] text-[var(--afc-text)]">
                 {member.firstName} {member.lastName}
               </h1>
               <p className="text-[var(--afc-muted-2)]">
@@ -380,7 +380,7 @@ function MemberDetailPageInner() {
 
       {auditLog.length > 0 && (
         <div className="rounded-xl border border-[var(--afc-border)] bg-[var(--afc-card)] p-5">
-          <h2 className="mb-4 text-lg font-semibold text-[var(--afc-text)]">Historique des actions</h2>
+          <h2 className="mb-4 font-serif text-lg text-[var(--afc-text)]">Historique des actions</h2>
           <ul className="space-y-2 text-sm">
             {auditLog.map((entry) => (
               <li key={entry.id} className="flex flex-wrap items-baseline gap-2 border-b border-[rgba(var(--afc-hl),0.04)] py-2 last:border-0">

@@ -33,8 +33,8 @@ export default function RapportsPage() {
   if (!canAccess) {
     return (
       <div className="card">
-        <h1 className="text-xl font-bold text-[var(--foreground)] mb-2">Rapports</h1>
-        <p className="text-gray-600">Réservé à l’Admin, au Trésorier et au Commissaire.</p>
+        <h1 className="font-serif text-[22px] text-[var(--foreground)] mb-2">Rapports</h1>
+        <p className="text-[var(--afc-muted)]">Réservé à l’Admin, au Trésorier et au Commissaire.</p>
         <Link href="/dashboard" className="mt-4 inline-block text-[var(--sky-blue-dark)] hover:underline">
           ← Tableau de bord
         </Link>
@@ -46,8 +46,8 @@ export default function RapportsPage() {
     <div className="space-y-8">
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <div>
-          <h1 className="text-2xl font-bold text-[var(--foreground)]">Rapports</h1>
-          <p className="text-gray-600 mt-1">Rapport mensuel, annuel et export des transactions.</p>
+          <h1 className="font-serif text-[22px] text-[var(--foreground)]">Rapports</h1>
+          <p className="text-[var(--afc-muted)] mt-1">Rapport mensuel, annuel et export des transactions.</p>
         </div>
         <div className="flex gap-2 items-center">
           <select
@@ -80,7 +80,7 @@ export default function RapportsPage() {
           <button
             type="button"
             onClick={() => reportsApi.downloadPdf(year, month)}
-            className="rounded-xl border border-[var(--sky-blue)] bg-white px-4 py-2 text-sm font-medium text-[var(--sky-blue-dark)] hover:bg-[var(--sky-blue-soft)]"
+            className="rounded-xl border border-[var(--sky-blue)] bg-[var(--card)] px-4 py-2 text-sm font-medium text-[var(--sky-blue-dark)] hover:bg-[var(--sky-blue-soft)]"
           >
             Export PDF
           </button>
@@ -88,7 +88,7 @@ export default function RapportsPage() {
       </div>
 
       {error && (
-        <div className="rounded-xl bg-red-50 text-red-700 px-4 py-3">{error}</div>
+        <div className="rounded-xl bg-[var(--afc-badge-red-bg)] text-[var(--destructive)] px-4 py-3">{error}</div>
       )}
 
       {loading ? (
@@ -99,30 +99,30 @@ export default function RapportsPage() {
         <>
           {monthly && (
             <div className="card">
-              <h2 className="text-lg font-semibold text-[var(--foreground)] mb-4">
+              <h2 className="font-serif text-lg text-[var(--foreground)] mb-4">
                 Rapport mensuel — {monthly.period.label}
               </h2>
               <div className="grid gap-4 sm:grid-cols-3 mb-6">
                 <div>
-                  <p className="text-sm text-gray-500">Entrées</p>
-                  <p className="text-xl font-semibold text-green-700">
+                  <p className="text-sm text-[var(--afc-muted)]">Entrées</p>
+                  <p className="afc-figure text-[26px] text-[var(--primary)]">
                     {monthly.totalEntries.toLocaleString('fr-FR')} FCFA
                   </p>
                 </div>
                 <div>
-                  <p className="text-sm text-gray-500">Sorties</p>
-                  <p className="text-xl font-semibold text-red-700">
+                  <p className="text-sm text-[var(--afc-muted)]">Sorties</p>
+                  <p className="afc-figure text-[26px] text-[var(--destructive)]">
                     {monthly.totalExits.toLocaleString('fr-FR')} FCFA
                   </p>
                 </div>
                 <div>
-                  <p className="text-sm text-gray-500">Solde</p>
-                  <p className="text-xl font-semibold text-[var(--sky-blue-dark)]">
+                  <p className="text-sm text-[var(--afc-muted)]">Solde</p>
+                  <p className="afc-figure text-[26px] text-[var(--sky-blue-dark)]">
                     {monthly.solde.toLocaleString('fr-FR')} FCFA
                   </p>
                 </div>
               </div>
-              <p className="text-sm text-gray-500">
+              <p className="text-sm text-[var(--afc-muted)]">
                 {monthly.payments.length} paiement(s), {monthly.expenses.length} dépense(s) approuvée(s).
               </p>
             </div>
@@ -130,25 +130,25 @@ export default function RapportsPage() {
 
           {annual && (
             <div className="card">
-              <h2 className="text-lg font-semibold text-[var(--foreground)] mb-4">
+              <h2 className="font-serif text-lg text-[var(--foreground)] mb-4">
                 Rapport annuel — {annual.year}
               </h2>
               <div className="grid gap-4 sm:grid-cols-3 mb-6">
                 <div>
-                  <p className="text-sm text-gray-500">Total encaissé dans la caisse</p>
-                  <p className="text-xl font-semibold text-green-700">
+                  <p className="text-sm text-[var(--afc-muted)]">Total encaissé dans la caisse</p>
+                  <p className="afc-figure text-[26px] text-[var(--primary)]">
                     {annual.totalEntries.toLocaleString('fr-FR')} FCFA
                   </p>
                 </div>
                 <div>
-                  <p className="text-sm text-gray-500">Total sorties</p>
-                  <p className="text-xl font-semibold text-red-700">
+                  <p className="text-sm text-[var(--afc-muted)]">Total sorties</p>
+                  <p className="afc-figure text-[26px] text-[var(--destructive)]">
                     {annual.totalExits.toLocaleString('fr-FR')} FCFA
                   </p>
                 </div>
                 <div>
-                  <p className="text-sm text-gray-500">Solde</p>
-                  <p className="text-xl font-semibold text-[var(--sky-blue-dark)]">
+                  <p className="text-sm text-[var(--afc-muted)]">Solde</p>
+                  <p className="afc-figure text-[26px] text-[var(--sky-blue-dark)]">
                     {annual.solde.toLocaleString('fr-FR')} FCFA
                   </p>
                 </div>
@@ -156,16 +156,16 @@ export default function RapportsPage() {
               <div className="overflow-x-auto">
                 <table className="w-full text-sm">
                   <thead>
-                    <tr className="border-b border-gray-100 bg-[var(--sky-blue-soft)]">
+                    <tr className="border-b border-[var(--afc-border)] bg-[var(--sky-blue-soft)]">
                       <th className="px-4 py-2 text-left text-[var(--sky-blue-dark)]">Mois</th>
-                      <th className="px-4 py-2 text-left text-gray-600">Entrées</th>
-                      <th className="px-4 py-2 text-left text-gray-600">Sorties</th>
-                      <th className="px-4 py-2 text-left text-gray-600">Solde</th>
+                      <th className="px-4 py-2 text-left text-[var(--afc-muted)]">Entrées</th>
+                      <th className="px-4 py-2 text-left text-[var(--afc-muted)]">Sorties</th>
+                      <th className="px-4 py-2 text-left text-[var(--afc-muted)]">Solde</th>
                     </tr>
                   </thead>
                   <tbody>
                     {annual.months.map((m) => (
-                      <tr key={`${m.year}-${m.month}`} className="border-b border-gray-50">
+                      <tr key={`${m.year}-${m.month}`} className="border-b border-[var(--afc-border)]">
                         <td className="px-4 py-2">{m.label}</td>
                         <td className="px-4 py-2">{m.totalEntries.toLocaleString('fr-FR')}</td>
                         <td className="px-4 py-2">{m.totalExits.toLocaleString('fr-FR')}</td>

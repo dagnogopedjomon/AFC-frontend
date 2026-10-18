@@ -83,7 +83,7 @@ export function CaisseMembre() {
   return (
     <div className="space-y-5">
       <header className="pt-1">
-        <h1 className="text-[28px] font-light tracking-[-0.02em] text-[var(--afc-text)]">La caisse du club</h1>
+        <h1 className="font-serif text-[22px] text-[var(--afc-text)]">La caisse du club</h1>
         <p className="mt-0.5 text-sm text-[var(--afc-muted)]">Entrées et sorties de l&rsquo;association.</p>
       </header>
 
@@ -95,7 +95,7 @@ export function CaisseMembre() {
             key={value}
             type="button"
             onClick={() => { setTab(value); reset(); }}
-            className={`-mb-px border-b-2 px-1 pb-2.5 text-sm font-medium transition ${tab === value ? 'border-[#C9A048] text-[#C9A048]' : 'border-transparent text-[var(--afc-muted)] hover:text-[var(--afc-text)]'}`}
+            className={`-mb-px border-b-2 px-1 pb-2.5 text-sm font-medium transition ${tab === value ? 'border-[var(--primary)] text-[var(--primary)]' : 'border-transparent text-[var(--afc-muted)] hover:text-[var(--afc-text)]'}`}
           >
             {label}
           </button>
@@ -122,13 +122,13 @@ export function CaisseMembre() {
 
       <div className="flex items-end justify-between">
         <p className="text-sm text-[var(--afc-muted)]">Total de la période</p>
-        <p className="text-xl font-semibold text-[var(--afc-text)]">{fcfa(total)}</p>
+        <p className="afc-figure text-[26px] text-[var(--afc-text)]">{fcfa(total)}</p>
       </div>
 
       <section className="overflow-hidden rounded-xl border border-[var(--afc-border)] bg-[var(--afc-card)]">
         {loading ? (
           <div className="flex justify-center py-12">
-            <div className="inline-block h-8 w-8 animate-spin rounded-full border-4 border-[#C9A048] border-r-transparent" />
+            <div className="inline-block h-8 w-8 animate-spin rounded-full border-4 border-[var(--primary)] border-r-transparent" />
           </div>
         ) : visible.length === 0 ? (
           <p className="p-10 text-center text-sm text-[var(--afc-muted)]">Aucune {countLabel} sur cette période.</p>

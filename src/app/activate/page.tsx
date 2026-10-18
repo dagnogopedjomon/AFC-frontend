@@ -176,11 +176,11 @@ function ActivateContent() {
 
   if (!phoneFromUrl && step === 'otp') {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-neutral-800 px-4">
-        <div className="card w-full max-w-md shadow-xl border border-neutral-600/30">
-          <img src="/images/afcimage.jpeg" alt="AFC" className="h-20 w-20 object-cover rounded-xl mx-auto mb-3" />
-          <h1 className="text-xl font-bold text-[var(--sky-blue-dark)] mb-2">Activation</h1>
-          <p className="text-gray-600 mb-4">
+      <div className="brand-grid min-h-screen flex items-center justify-center bg-[var(--secondary)] px-4">
+        <div className="card w-full max-w-md shadow-xl border border-[var(--afc-border)]/30">
+          <img src="/images/logo-afc.png" alt="Amicale Football Club" className="mx-auto mb-3 h-14 w-auto object-contain" />
+          <h1 className="font-serif text-[22px] text-[var(--primary)] mb-2">Activation</h1>
+          <p className="text-[var(--afc-muted)] mb-4">
             Utilisez le lien reçu par SMS ou WhatsApp pour activer votre compte. Le lien doit contenir votre numéro de téléphone.
           </p>
           <a href="/login" className="text-[var(--sky-blue-dark)] hover:underline font-medium">
@@ -193,26 +193,29 @@ function ActivateContent() {
 
   if (verifying) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-neutral-800 px-4">
-        <div className="card w-full max-w-md shadow-xl border border-neutral-600/30 flex flex-col items-center py-10">
-          <img src="/images/afcimage.jpeg" alt="AFC" className="h-20 w-20 object-cover rounded-xl mb-4" />
+      <div className="brand-grid min-h-screen flex items-center justify-center bg-[var(--secondary)] px-4">
+        <div className="card w-full max-w-md shadow-xl border border-[var(--afc-border)]/30 flex flex-col items-center py-10">
+          <img src="/images/logo-afc.png" alt="Amicale Football Club" className="mb-4 h-14 w-auto object-contain" />
           <div className="inline-block h-8 w-8 animate-spin rounded-full border-4 border-[var(--sky-blue)] border-r-transparent mb-3" />
-          <p className="text-gray-600 text-sm">Vérification en cours…</p>
+          <p className="text-[var(--afc-muted)] text-sm">Vérification en cours…</p>
         </div>
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-neutral-800 px-4">
-      <div className="card w-full max-w-md shadow-xl border border-neutral-600/30">
+    <div className="brand-grid min-h-screen flex items-center justify-center bg-[var(--secondary)] px-4">
+      <div className="card w-full max-w-md shadow-xl border border-[var(--afc-border)]/30">
         <div className="flex flex-col items-center mb-6">
-          <img src="/images/afcimage.jpeg" alt="AFC" className="h-20 w-20 object-cover rounded-xl mb-3" />
-          <p className="text-gray-600 mt-1">Activation de votre compte</p>
+          <img src="/images/logo-afc.png" alt="Amicale Football Club" className="mb-3 h-14 w-auto object-contain" />
+          <p className="afc-eyebrow">— Activation</p>
+          <h1 className="mt-1 font-serif text-[22px] text-[var(--afc-text)]">
+            Activez votre <span className="afc-accent-word">compte</span>.
+          </h1>
         </div>
 
         {error && (
-          <div className="rounded-xl bg-red-50 text-red-700 px-4 py-3 text-sm mb-4">
+          <div className="rounded-xl bg-[var(--afc-badge-red-bg)] text-[var(--destructive)] px-4 py-3 text-sm mb-4">
             {error}
           </div>
         )}
@@ -220,13 +223,13 @@ function ActivateContent() {
         {/* Étape 1 : Envoyer le code OTP */}
         {step === 'otp' && (
           <div className="space-y-4">
-            <p className="text-gray-600 text-sm">
+            <p className="text-[var(--afc-muted)] text-sm">
               Un code va être envoyé au <strong>{phone || 'numéro indiqué dans le lien'}</strong> (WhatsApp ou SMS).
             </p>
             {!phoneFromUrl && (
               <div>
-                <label htmlFor="activate-phone" className="block text-sm font-medium text-gray-700 mb-1">
-                  Téléphone <span className="text-red-500">*</span>
+                <label htmlFor="activate-phone" className="block text-sm font-medium text-[var(--afc-text)] mb-1">
+                  Téléphone <span className="text-[var(--destructive)]">*</span>
                 </label>
                 <input
                   id="activate-phone"
@@ -253,18 +256,18 @@ function ActivateContent() {
         {step === 'code' && (
           <form onSubmit={codeForm.handleSubmit(onCodeSubmit)} className="space-y-4">
             {demoCode ? (
-              <div className="rounded-xl bg-amber-50 border border-amber-200 px-4 py-3 mb-2">
-                <p className="text-amber-800 font-medium text-sm">Mode démo (SMS/WhatsApp indisponibles)</p>
-                <p className="text-amber-700 text-sm mt-1">Votre code : <strong className="text-lg">{demoCode}</strong></p>
+              <div className="rounded-xl bg-[var(--afc-badge-amber-bg)] border border-[var(--afc-badge-amber-border)] px-4 py-3 mb-2">
+                <p className="text-[var(--afc-badge-amber-text)] font-medium text-sm">Mode démo (SMS/WhatsApp indisponibles)</p>
+                <p className="text-[var(--afc-badge-amber-text)] text-sm mt-1">Votre code : <strong className="text-lg">{demoCode}</strong></p>
               </div>
             ) : (
-              <p className="text-gray-600 text-sm">
+              <p className="text-[var(--afc-muted)] text-sm">
                 Saisissez le code reçu au <strong>{phone}</strong> (valide 15 min).
               </p>
             )}
             <div>
-              <label htmlFor="activate-code" className="block text-sm font-medium text-gray-700 mb-1">
-                Code <span className="text-red-500">*</span>
+              <label htmlFor="activate-code" className="block text-sm font-medium text-[var(--afc-text)] mb-1">
+                Code <span className="text-[var(--destructive)]">*</span>
               </label>
               <input
                 id="activate-code"
@@ -276,7 +279,7 @@ function ActivateContent() {
                 {...codeForm.register('code')}
               />
               {codeForm.formState.errors.code && (
-                <p className="mt-1 text-sm text-red-600">{codeForm.formState.errors.code.message}</p>
+                <p className="mt-1 text-sm text-[var(--destructive)]">{codeForm.formState.errors.code.message}</p>
               )}
             </div>
             <button
@@ -289,7 +292,7 @@ function ActivateContent() {
             <button
               type="button"
               onClick={() => setStep('otp')}
-              className="w-full text-sm text-gray-500 hover:text-gray-700"
+              className="w-full text-sm text-[var(--afc-muted)] hover:text-[var(--afc-text)]"
             >
               Changer de numéro / Renvoyer le code
             </button>
@@ -298,16 +301,16 @@ function ActivateContent() {
 
         {/* Étape 3 : Définir le mot de passe */}
         {step === 'password' && !phoneFetchedFromToken && (
-          <p className="text-gray-600 text-sm">Chargement…</p>
+          <p className="text-[var(--afc-muted)] text-sm">Chargement…</p>
         )}
         {step === 'password' && phoneFetchedFromToken && (
           <form onSubmit={passwordForm.handleSubmit(onPasswordSubmit)} className="space-y-4">
-            <p className="text-gray-600 text-sm">
+            <p className="text-[var(--afc-muted)] text-sm">
               Choisissez un mot de passe pour vous connecter à l’application.
             </p>
             <div>
-              <label htmlFor="activate-password" className="block text-sm font-medium text-gray-700 mb-1">
-                Mot de passe <span className="text-red-500">*</span>
+              <label htmlFor="activate-password" className="block text-sm font-medium text-[var(--afc-text)] mb-1">
+                Mot de passe <span className="text-[var(--destructive)]">*</span>
               </label>
               <div className="relative">
                 <input
@@ -320,21 +323,21 @@ function ActivateContent() {
                 <button
                   type="button"
                   onClick={() => setShowPassword((v) => !v)}
-                  className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 hover:text-gray-700"
+                  className="absolute right-3 top-1/2 -translate-y-1/2 text-[var(--afc-muted)] hover:text-[var(--afc-text)]"
                   aria-label={showPassword ? 'Masquer le mot de passe' : 'Afficher le mot de passe'}
                 >
                   {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
                 </button>
               </div>
               {passwordForm.formState.errors.password && (
-                <p className="mt-1 text-sm text-red-600">
+                <p className="mt-1 text-sm text-[var(--destructive)]">
                   {passwordForm.formState.errors.password.message}
                 </p>
               )}
             </div>
             <div>
-              <label htmlFor="activate-confirm" className="block text-sm font-medium text-gray-700 mb-1">
-                Confirmer le mot de passe <span className="text-red-500">*</span>
+              <label htmlFor="activate-confirm" className="block text-sm font-medium text-[var(--afc-text)] mb-1">
+                Confirmer le mot de passe <span className="text-[var(--destructive)]">*</span>
               </label>
               <div className="relative">
                 <input
@@ -347,14 +350,14 @@ function ActivateContent() {
                 <button
                   type="button"
                   onClick={() => setShowConfirm((v) => !v)}
-                  className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 hover:text-gray-700"
+                  className="absolute right-3 top-1/2 -translate-y-1/2 text-[var(--afc-muted)] hover:text-[var(--afc-text)]"
                   aria-label={showConfirm ? 'Masquer le mot de passe' : 'Afficher le mot de passe'}
                 >
                   {showConfirm ? <EyeOff size={18} /> : <Eye size={18} />}
                 </button>
               </div>
               {passwordForm.formState.errors.confirm && (
-                <p className="mt-1 text-sm text-red-600">
+                <p className="mt-1 text-sm text-[var(--destructive)]">
                   {passwordForm.formState.errors.confirm.message}
                 </p>
               )}
@@ -369,7 +372,7 @@ function ActivateContent() {
           </form>
         )}
 
-        <p className="mt-6 text-center text-sm text-gray-500">
+        <p className="mt-6 text-center text-sm text-[var(--afc-muted)]">
           <a href="/login" className="text-[var(--sky-blue-dark)] hover:underline">
             Retour à la connexion
           </a>
@@ -382,10 +385,10 @@ function ActivateContent() {
 export default function ActivatePage() {
   return (
     <Suspense fallback={
-      <div className="min-h-screen flex items-center justify-center bg-neutral-800 px-4">
-        <div className="card w-full max-w-md shadow-xl border border-neutral-600/30 animate-pulse">
-          <div className="h-8 bg-gray-200 rounded w-3/4 mb-4" />
-          <div className="h-4 bg-gray-200 rounded w-full" />
+      <div className="brand-grid min-h-screen flex items-center justify-center bg-[var(--secondary)] px-4">
+        <div className="card w-full max-w-md shadow-xl border border-[var(--afc-border)]/30 animate-pulse">
+          <div className="h-8 bg-[var(--secondary)] rounded w-3/4 mb-4" />
+          <div className="h-4 bg-[var(--secondary)] rounded w-full" />
         </div>
       </div>
     }>

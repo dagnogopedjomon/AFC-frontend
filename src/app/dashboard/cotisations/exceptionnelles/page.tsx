@@ -110,7 +110,7 @@ export default function CotisationsExceptionnellesPage() {
   if (loading) {
     return (
       <div className="flex items-center justify-center py-12">
-        <Loader2 className="h-8 w-8 animate-spin text-[#C9A048]" />
+        <Loader2 className="h-8 w-8 animate-spin text-[var(--primary)]" />
       </div>
     );
   }
@@ -119,7 +119,7 @@ export default function CotisationsExceptionnellesPage() {
     <div className="space-y-5">
       <header className="flex flex-col gap-4 pt-1 sm:flex-row sm:items-end sm:justify-between">
         <div>
-          <h1 className="text-[28px] font-light tracking-[-0.02em] text-[var(--afc-text)]">Cotisations exceptionnelles</h1>
+          <h1 className="font-serif text-[22px] text-[var(--afc-text)]">Cotisations exceptionnelles</h1>
           <p className="mt-0.5 text-sm text-[var(--afc-muted)]">Cadeaux, équipements, événements, actions surprises.</p>
         </div>
         {canAct && (
@@ -131,7 +131,7 @@ export default function CotisationsExceptionnellesPage() {
 
       {showForm && (
         <div className="rounded-xl border border-[var(--afc-border)] bg-[var(--afc-card)] p-5">
-          <h2 className="mb-4 text-lg font-semibold text-[var(--afc-text)]">Nouvelle cotisation exceptionnelle</h2>
+          <h2 className="mb-4 font-serif text-lg text-[var(--afc-text)]">Nouvelle cotisation exceptionnelle</h2>
           <form onSubmit={handleCreate} className="space-y-4">
             <div>
               <label className="mb-1 block text-sm font-medium text-[var(--afc-text-soft)]">Nom / motif</label>
@@ -171,7 +171,7 @@ export default function CotisationsExceptionnellesPage() {
                 type="checkbox"
                 checked={form.isOpenAmount}
                 onChange={(e) => setForm({ ...form, isOpenAmount: e.target.checked, amount: e.target.checked ? '' : form.amount })}
-                className="h-4 w-4 accent-[#C9A048]"
+                className="h-4 w-4 accent-[var(--primary)]"
               />
               Montant libre (chaque membre donne ce qu&apos;il veut)
             </label>
@@ -197,7 +197,7 @@ export default function CotisationsExceptionnellesPage() {
                       type="checkbox"
                       checked={form.targetMemberIds.includes(m.id)}
                       onChange={() => toggleMember(m.id)}
-                      className="h-4 w-4 accent-[#C9A048]"
+                      className="h-4 w-4 accent-[var(--primary)]"
                     />
                     {m.firstName} {m.lastName}
                   </label>
@@ -226,7 +226,7 @@ export default function CotisationsExceptionnellesPage() {
                 <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
                   <div>
                     <div className="flex items-center gap-2">
-                      <h3 className="text-lg font-semibold text-[var(--afc-text)]">{c.name}</h3>
+                      <h3 className="font-serif text-lg text-[var(--afc-text)]">{c.name}</h3>
                       {isClosed && <span className="rounded-full border border-[rgba(var(--afc-hl),0.08)] bg-[rgba(var(--afc-hl),0.06)] px-2 py-0.5 text-xs text-[var(--afc-muted-2)]">Clôturée et remise</span>}
                       {isPending && <span className="afc-badge-amber rounded-full border px-2 py-0.5 text-xs">Clôturée — en attente de réception</span>}
                     </div>
@@ -245,7 +245,7 @@ export default function CotisationsExceptionnellesPage() {
                   <div className="flex items-center gap-2">
                     <Link
                       href={`/dashboard/cotisations/exceptionnelles/voir?id=${c.id}`}
-                      className="rounded-xl border border-[rgba(var(--afc-hl),0.08)] bg-[rgba(var(--afc-hl),0.03)] px-4 py-2 text-sm font-medium text-[var(--afc-text-soft)] transition hover:border-[#C9A048]/40 hover:text-[#C9A048]"
+                      className="rounded-xl border border-[rgba(var(--afc-hl),0.08)] bg-[rgba(var(--afc-hl),0.03)] px-4 py-2 text-sm font-medium text-[var(--afc-text-soft)] transition hover:border-[var(--primary)]/40 hover:text-[var(--primary)]"
                     >
                       Détails
                     </Link>
@@ -272,7 +272,7 @@ export default function CotisationsExceptionnellesPage() {
 
       <section className="overflow-hidden rounded-xl border border-[var(--afc-border)] bg-[var(--afc-card)]">
         <div className="flex flex-col gap-4 border-b border-[var(--afc-border)] px-6 py-5 xl:flex-row xl:items-center xl:justify-between">
-          <h2 className="text-xl font-semibold text-[var(--afc-text)]">Journal des paiements exceptionnels</h2>
+          <h2 className="font-serif text-xl text-[var(--afc-text)]">Journal des paiements exceptionnels</h2>
           <div className="flex flex-wrap items-center gap-2">
             <select aria-label="Filtrer par cotisation" className="afc-login-input !w-auto min-w-52 !py-2 text-sm" value={paymentContributionId} onChange={(e) => setPaymentContributionId(e.target.value)}>
               <option value="ALL">Toutes les cotisations</option>
@@ -282,12 +282,12 @@ export default function CotisationsExceptionnellesPage() {
               <Search size={15} strokeWidth={1.6} className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-[var(--afc-muted-3)]"/>
               <input aria-label="Rechercher un membre" className="afc-login-input !w-64 !py-2 !pl-9 text-sm" placeholder="Rechercher membre…" value={paymentQuery} onChange={(e) => setPaymentQuery(e.target.value)} />
             </div>
-            <button type="button" onClick={exportPayments} disabled={visiblePayments.length === 0} className="inline-flex items-center gap-2 rounded-lg border border-[rgba(var(--afc-hl),0.08)] bg-[rgba(var(--afc-hl),0.03)] px-4 py-2 text-sm font-medium text-[var(--afc-text-soft)] transition hover:border-[#C9A048]/40 hover:text-[#C9A048] disabled:opacity-50"><Download size={16} strokeWidth={1.8}/> CSV</button>
+            <button type="button" onClick={exportPayments} disabled={visiblePayments.length === 0} className="inline-flex items-center gap-2 rounded-lg border border-[rgba(var(--afc-hl),0.08)] bg-[rgba(var(--afc-hl),0.03)] px-4 py-2 text-sm font-medium text-[var(--afc-text-soft)] transition hover:border-[var(--primary)]/40 hover:text-[var(--primary)] disabled:opacity-50"><Download size={16} strokeWidth={1.8}/> CSV</button>
           </div>
         </div>
         <div className="flex items-center justify-between border-b border-[var(--afc-border)] bg-[rgba(var(--afc-hl),0.02)] px-6 py-3 text-sm text-[var(--afc-muted)]">
           <span>{visiblePayments.length} paiement{visiblePayments.length === 1 ? '' : 's'}</span>
-          <strong className="font-mono text-[#C9A048]">Total : {totalPayments.toLocaleString('fr-FR')} F</strong>
+          <strong className="font-mono text-[var(--primary)]">Total : {totalPayments.toLocaleString('fr-FR')} F</strong>
         </div>
         <div className="overflow-x-auto">
           <table className="afc-table-dark w-full text-left text-sm">
@@ -305,7 +305,7 @@ export default function CotisationsExceptionnellesPage() {
                   <td className="whitespace-nowrap px-6 py-3 text-[var(--afc-muted-2)]">{new Date(payment.paidAt).toLocaleDateString('fr-FR')}</td>
                   <td className="px-6 py-3 font-medium text-[var(--afc-text)]">{payment.member ? `${payment.member.firstName} ${payment.member.lastName}` : '—'}</td>
                   <td className="px-6 py-3 text-[var(--afc-muted-2)]">{payment.contribution?.name ?? '—'}</td>
-                  <td className="px-6 py-3 text-right font-semibold text-emerald-400">{Number(payment.amount).toLocaleString('fr-FR')} FCFA</td>
+                  <td className="px-6 py-3 text-right font-semibold text-[var(--afc-badge-blue-text)]">{Number(payment.amount).toLocaleString('fr-FR')} FCFA</td>
                 </tr>
               ))}
             </tbody>

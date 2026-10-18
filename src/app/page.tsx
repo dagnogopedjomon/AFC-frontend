@@ -19,7 +19,7 @@ export default function Home() {
   }, [loading, token, user, router]);
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-[var(--sky-blue-soft)]">
+    <div className="min-h-screen flex items-center justify-center bg-[var(--background)]">
       <div className="text-center text-[var(--foreground)]">
         <div className="inline-block h-10 w-10 animate-spin rounded-full border-4 border-solid border-[var(--sky-blue)] border-r-transparent" />
         <p className="mt-4 text-lg">Chargement…</p>

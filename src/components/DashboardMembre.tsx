@@ -18,7 +18,7 @@ const PERIODS = [
 function Kpi({ icon, label, value, note }: { icon: ReactNode; label: string; value: string; note: string }) {
   return (
     <div className="flex items-center gap-4 rounded-xl border border-[var(--afc-border)] bg-[var(--afc-card)] p-4">
-      <div className="grid h-12 w-12 shrink-0 place-items-center rounded-xl border border-[rgba(var(--afc-hl),0.08)] bg-[rgba(var(--afc-hl),0.04)] text-[#C9A048]">{icon}</div>
+      <div className="grid h-12 w-12 shrink-0 place-items-center rounded-xl border border-[rgba(var(--afc-hl),0.08)] bg-[rgba(var(--afc-hl),0.04)] text-[var(--primary)]">{icon}</div>
       <div className="min-w-0">
         <p className="text-[11px] font-semibold uppercase tracking-[.16em] text-[var(--afc-muted)]">{label}</p>
         <p className="mt-0.5 font-serif text-3xl text-[var(--afc-text)]">{value} <span className="font-sans text-xs text-[var(--afc-muted)]">F CFA</span></p>
@@ -106,7 +106,7 @@ export function DashboardMembre() {
   if (loading) {
     return (
       <div className="grid min-h-64 place-items-center rounded-xl border border-[var(--afc-border)] bg-[var(--afc-card)]">
-        <div className="h-8 w-8 animate-spin rounded-full border-4 border-[#C9A048] border-r-transparent" />
+        <div className="h-8 w-8 animate-spin rounded-full border-4 border-[var(--primary)] border-r-transparent" />
       </div>
     );
   }
@@ -141,12 +141,12 @@ export function DashboardMembre() {
               <div className="space-y-2">
                 {situation.balance < 0 && (
                   <div>
-                    <span className="font-serif text-3xl text-red-500">{money(-situation.balance)}</span> <span className="text-xs text-[var(--afc-muted)]">F CFA de retard</span>
+                    <span className="font-serif text-3xl text-[var(--destructive)]">{money(-situation.balance)}</span> <span className="text-xs text-[var(--afc-muted)]">F CFA de retard</span>
                   </div>
                 )}
                 {situation.advanceMonths > 0 && (
                   <div>
-                    <span className="font-serif text-2xl text-emerald-500">+{money(situation.advance)}</span> <span className="text-xs text-[var(--afc-muted)]">F CFA d’avance ({situation.advanceMonths} mois)</span>
+                    <span className="font-serif text-2xl text-[var(--primary)]">+{money(situation.advance)}</span> <span className="text-xs text-[var(--afc-muted)]">F CFA d’avance ({situation.advanceMonths} mois)</span>
                   </div>
                 )}
               </div>

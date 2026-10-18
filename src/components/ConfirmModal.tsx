@@ -29,27 +29,30 @@ export function ConfirmModal({
   if (!open) return null;
 
   return (
+    /* Fenêtre de la charte : trait fin + ombre large, fond de page flouté derrière. */
     <div
-      className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50"
+      className="fixed inset-0 z-50 flex items-center justify-center bg-black/30 p-4 backdrop-blur-[2px]"
       role="dialog"
       aria-modal="true"
       aria-labelledby="confirm-modal-title"
       aria-describedby="confirm-modal-desc"
     >
-      <div className="bg-white rounded-2xl shadow-xl max-w-md w-full p-6 border border-slate-200">
-        <h2 id="confirm-modal-title" className="text-lg font-semibold text-[var(--foreground)] mb-2">
-          {title}
-        </h2>
-        <p id="confirm-modal-desc" className="text-slate-600 text-sm mb-6">
-          {message}
-        </p>
-        <div className="flex justify-end gap-3">
+      <div className="fade-in w-full max-w-[520px] overflow-hidden rounded-[14px] border border-[var(--afc-border)] bg-[var(--card)] shadow-lg">
+        <div className="px-6 pb-5 pt-6">
+          <h2 id="confirm-modal-title" className="font-serif text-xl text-[var(--foreground)]">
+            {title}
+          </h2>
+          <p id="confirm-modal-desc" className="mt-2 text-sm text-[var(--afc-muted)]">
+            {message}
+          </p>
+        </div>
+        <div className="flex justify-end gap-3 border-t border-[var(--afc-border)] bg-[var(--secondary)] px-6 py-4">
           {!singleButton && (
             <button
               type="button"
               onClick={onCancel}
               disabled={loading}
-              className="px-4 py-2 rounded-xl border border-slate-200 text-slate-700 hover:bg-slate-50 font-medium disabled:opacity-60"
+              className="afc-button-secondary disabled:opacity-60"
             >
               {cancelLabel}
             </button>
@@ -60,8 +63,8 @@ export function ConfirmModal({
             disabled={loading}
             className={
               danger
-                ? 'px-4 py-2 rounded-xl bg-red-600 text-white hover:bg-red-700 font-medium disabled:opacity-60'
-                : 'px-4 py-2 rounded-xl bg-[var(--sky-blue)] text-white hover:bg-[var(--sky-blue-dark)] font-medium disabled:opacity-60'
+                ? 'btn-primary bg-[var(--destructive)] text-white hover:bg-[var(--destructive)] disabled:opacity-60'
+                : 'btn-primary disabled:opacity-60'
             }
           >
             {loading ? '…' : confirmLabel}

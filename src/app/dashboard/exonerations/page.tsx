@@ -18,7 +18,7 @@ export default function ExonerationsPage(){
   if (!canManage) {
     return (
       <div className="rounded-xl border border-[var(--afc-border)] bg-[var(--afc-card)] p-6">
-        <h1 className="mb-2 text-xl font-semibold text-[var(--afc-text)]">Mois exonérés</h1>
+        <h1 className="mb-2 font-serif text-[22px] text-[var(--afc-text)]">Mois exonérés</h1>
         <p className="text-sm text-[var(--afc-muted)]">L&rsquo;accès à cette page est réservé à l&rsquo;Admin et au trésorier.</p>
       </div>
     );
@@ -26,7 +26,7 @@ export default function ExonerationsPage(){
   return (
     <div className="space-y-5">
       <header className="pt-1">
-        <h1 className="text-[28px] font-light tracking-[-0.02em] text-[var(--afc-text)]">Mois exonérés</h1>
+        <h1 className="font-serif text-[22px] text-[var(--afc-text)]">Mois exonérés</h1>
         <p className="mt-0.5 text-sm text-[var(--afc-muted)]">Les mois exonérés ne génèrent ni retard, ni suspension.</p>
       </header>
       <form onSubmit={submit} className="grid gap-4 rounded-xl border border-[var(--afc-border)] bg-[var(--afc-card)] p-5 md:grid-cols-4">
@@ -69,7 +69,7 @@ export default function ExonerationsPage(){
                 <td className="p-4 font-medium text-[var(--afc-text)]">{r.member.firstName} {r.member.lastName}</td>
                 <td className="p-4 text-[var(--afc-text-soft)]">{new Date(r.periodYear,r.periodMonth-1).toLocaleString('fr-FR',{month:'long',year:'numeric'})}</td>
                 <td className="p-4 text-[var(--afc-muted-2)]">{r.reason||'—'}</td>
-                <td className="p-4 text-right"><button className="font-medium text-red-400 transition hover:text-red-300" onClick={()=>administrationApi.deleteExemption(r.id).then(load)}>Retirer</button></td>
+                <td className="p-4 text-right"><button className="font-medium text-[var(--afc-badge-red-text)] transition hover:text-[var(--afc-badge-red-text)]" onClick={()=>administrationApi.deleteExemption(r.id).then(load)}>Retirer</button></td>
               </tr>
             ))}
           </tbody>

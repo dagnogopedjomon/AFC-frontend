@@ -86,7 +86,7 @@ export function JekoPayButton({ contributionId, fineId, amount, periodYear, peri
   return (
     <div className="space-y-3">
       <div>
-        <p className="text-xs font-medium text-gray-500 uppercase tracking-wide mb-2">Méthode de paiement</p>
+        <p className="text-xs font-medium text-[var(--afc-muted)] uppercase tracking-wide mb-2">Méthode de paiement</p>
         <div className="flex flex-wrap gap-2">
           {PAYMENT_METHODS.map((m) => (
             <button
@@ -95,8 +95,8 @@ export function JekoPayButton({ contributionId, fineId, amount, periodYear, peri
               onClick={() => setMethod(m.id)}
               className={`px-3 py-1.5 rounded-lg text-sm font-medium border transition-all ${
                 method === m.id
-                  ? 'bg-[var(--sky-blue)] text-white border-[var(--sky-blue)]'
-                  : 'bg-white text-gray-600 border-gray-200 hover:border-[var(--sky-blue)]'
+                  ? 'bg-[var(--sky-blue)] text-[var(--primary-foreground)] border-[var(--sky-blue)]'
+                  : 'bg-[var(--card)] text-[var(--afc-muted)] border-[var(--afc-border)] hover:border-[var(--sky-blue)]'
               }`}
             >
               {m.label}
@@ -107,7 +107,7 @@ export function JekoPayButton({ contributionId, fineId, amount, periodYear, peri
 
       {method !== 'card' && (
         <div>
-          <p className="text-xs font-medium text-gray-500 uppercase tracking-wide mb-1">Numéro de téléphone</p>
+          <p className="text-xs font-medium text-[var(--afc-muted)] uppercase tracking-wide mb-1">Numéro de téléphone</p>
           <input
             type="tel"
             value={phone}
@@ -115,7 +115,7 @@ export function JekoPayButton({ contributionId, fineId, amount, periodYear, peri
             placeholder="+2250700000000"
             className="input-field w-full"
           />
-          <p className="text-xs text-gray-400 mt-1">Format international ex: +2250701234567</p>
+          <p className="text-xs text-[var(--afc-muted-3)] mt-1">Format international ex: +2250701234567</p>
         </div>
       )}
 
@@ -131,7 +131,7 @@ export function JekoPayButton({ contributionId, fineId, amount, periodYear, peri
           <><CreditCard size={18} /> Payer {amountLabel} en ligne</>
         )}
       </button>
-      <p className="text-xs text-gray-400 text-center">Wave · Orange Money · MTN · Moov · Djamo · Carte bancaire</p>
+      <p className="text-xs text-[var(--afc-muted-3)] text-center">Wave · Orange Money · MTN · Moov · Djamo · Carte bancaire</p>
     </div>
   );
 }

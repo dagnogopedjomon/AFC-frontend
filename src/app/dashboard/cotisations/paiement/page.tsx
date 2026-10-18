@@ -108,7 +108,7 @@ export default function PaiementPage() {
   return (
     <div className="mx-auto max-w-3xl space-y-5">
       <header className="pt-1">
-        <h1 className="text-[28px] font-light tracking-[-0.02em] text-[var(--afc-text)]">Paiement déjà reçu</h1>
+        <h1 className="font-serif text-[22px] text-[var(--afc-text)]">Paiement déjà reçu</h1>
         <p className="mt-1 text-sm text-[var(--afc-muted)]">Enregistrez rapidement un paiement encaissé hors de l&rsquo;application.</p>
       </header>
 
@@ -117,7 +117,7 @@ export default function PaiementPage() {
 
       <section className="space-y-4 rounded-xl border border-[var(--afc-border)] bg-[var(--afc-card)] p-5">
         <div>
-          <h2 className="text-lg font-semibold text-[var(--afc-text)]">Créer un lien de versement</h2>
+          <h2 className="font-serif text-lg text-[var(--afc-text)]">Créer un lien de versement</h2>
           <p className="mt-1 text-sm text-[var(--afc-muted)]">Envoyez un lien unique pour une cotisation, un don ou un autre motif.</p>
         </div>
         <form onSubmit={createPaymentLink} className="grid gap-4 sm:grid-cols-2">
@@ -148,7 +148,7 @@ export default function PaiementPage() {
         {generatedLink && (
           <div className="afc-badge-emerald flex flex-col gap-2 rounded-xl border p-3 sm:flex-row sm:items-center">
             <input readOnly value={generatedLink} className="min-w-0 flex-1 rounded-lg border-0 bg-transparent text-sm outline-none"/>
-            <button type="button" className="rounded-lg bg-emerald-700 px-3 py-2 text-sm font-semibold text-white transition hover:bg-emerald-600" onClick={() => navigator.clipboard?.writeText(generatedLink)}>Copier le lien</button>
+            <button type="button" className="rounded-lg bg-[var(--primary)] px-3 py-2 text-sm font-semibold text-[var(--primary-foreground)] transition hover:bg-[var(--primary)]" onClick={() => navigator.clipboard?.writeText(generatedLink)}>Copier le lien</button>
           </div>
         )}
       </section>
@@ -165,7 +165,7 @@ export default function PaiementPage() {
           <label className="mb-2 block text-sm font-medium text-[var(--afc-text-soft)]">Durée couverte</label>
           <div className="grid grid-cols-2 gap-2 sm:grid-cols-4">
             {[1, 3, 6, 12].map((value) => (
-              <button key={value} type="button" onClick={() => setMonths(value)} className={`rounded-xl border px-3 py-2 font-semibold transition ${months === value ? 'border-[#C9A048]/50 bg-[#C9A048]/10 text-[#C9A048]' : 'border-[rgba(var(--afc-hl),0.08)] bg-[rgba(var(--afc-hl),0.02)] text-[var(--afc-muted-2)] hover:border-[rgba(var(--afc-hl),0.16)]'}`}>
+              <button key={value} type="button" onClick={() => setMonths(value)} className={`rounded-xl border px-3 py-2 font-semibold transition ${months === value ? 'border-[var(--primary)]/50 bg-[var(--primary)]/10 text-[var(--primary)]' : 'border-[rgba(var(--afc-hl),0.08)] bg-[rgba(var(--afc-hl),0.02)] text-[var(--afc-muted-2)] hover:border-[rgba(var(--afc-hl),0.16)]'}`}>
                 {value === 12 ? '1 an' : `${value} mois`}
               </button>
             ))}

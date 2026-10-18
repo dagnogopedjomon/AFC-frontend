@@ -8,12 +8,15 @@ import { useAuth } from '@/lib/auth-context';
 import { DashboardMembre } from '@/components/DashboardMembre';
 import { EcheanceBanner } from '@/components/EcheanceBanner';
 import { caisseApi, contributionsApi, membersApi, reportsApi, activitiesApi, type CaisseSummary, type AnnualContributionMatrix, type AnnualReport, type Member, type Payment, type Expense, type Activity } from '@/lib/api';
+import { CHARTE } from '@/lib/charte';
 
 const money = (n: number) => n.toLocaleString('fr-FR');
 const monthName = new Intl.DateTimeFormat('fr-FR', { month: 'long', year: 'numeric' });
 const shortMonth = new Intl.DateTimeFormat('fr-FR', { month: 'short' });
+const dateCourt = new Intl.DateTimeFormat('fr-FR', { day: '2-digit', month: 'short', year: 'numeric' });
 const formatAxis = (v: number) => (v >= 1000 ? Math.round(v / 1000) + 'k' : String(v));
 
+/** Tuile de chiffre de la charte : étiquette en capitales, grand chiffre Fraunces léger, ligne de tendance. */
 function Metric({
   title,
   iconBg,
@@ -28,12 +31,12 @@ function Metric({
   footer?: React.ReactNode;
 }) {
   return (
-    <div className="rounded-xl border border-[var(--afc-border)] bg-[var(--afc-card)] p-4">
+    <div className="rounded-xl border border-[var(--afc-border)] bg-[var(--afc-card)] p-4 shadow-sm">
       <div className="flex items-center gap-2">
-        <div className="grid h-[26px] w-[26px] shrink-0 place-items-center rounded-[7px]" style={{ background: iconBg }}>
+        <div className="grid h-[26px] w-[26px] shrink-0 place-items-center rounded-md" style={{ background: iconBg }}>
           {icon}
         </div>
-        <p className="text-[11px] tracking-[0.2px] text-[var(--afc-muted-4)]">{title}</p>
+        <p className="afc-eyebrow min-w-0 break-words leading-tight">{title}</p>
       </div>
       <div className="mt-2.5 flex items-baseline gap-1">{children}</div>
       {footer && <div className="mt-1 text-[11px] text-[var(--afc-muted)]">{footer}</div>}
@@ -56,8 +59,10 @@ function MemberHome() {
   return (
     <div className="space-y-6">
       <header>
-        <h1 className="font-serif text-2xl font-semibold text-[var(--afc-text)]">{greeting}, {user?.firstName ?? ''}</h1>
-        <p className="mt-1 text-[13px] text-[var(--afc-muted-4)]">Votre situation et la trésorerie du club.</p>
+        <h1 className="font-serif text-[22px] text-[var(--afc-text)]">
+          {greeting}, <span className="afc-accent-word">{user?.firstName ?? ''}</span>.
+        </h1>
+        <p className="mt-1 text-[13px] text-[var(--afc-muted)]">Votre situation et la trésorerie du club.</p>
       </header>
       <EcheanceBanner audience="member" />
       <DashboardMembre />
@@ -108,18 +113,15 @@ function BureauDashboard() {
 
   return (
     <div className="space-y-6">
-      <header className="flex items-center justify-between gap-4">
+      <header className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
         <div>
-          <h1 className="font-serif text-2xl font-semibold text-[var(--afc-text)]">{greeting}, {user?.firstName ?? ''}</h1>
-          <p className="mt-1 text-[13px] text-[var(--afc-muted-4)]">Votre trésorerie du club et l&apos;activité des 30 derniers jours.</p>
+          <h1 className="font-serif text-[22px] text-[var(--afc-text)]">
+            {greeting}, <span className="afc-accent-word">{user?.firstName ?? ''}</span>.
+          </h1>
+          <p className="mt-1 text-[13px] text-[var(--afc-muted)]">Votre trésorerie du club et l&apos;activité des 30 derniers jours.</p>
         </div>
-        <Link
-          href="/dashboard/cotisations/paiement"
-          className="group flex items-center gap-2.5 rounded-full bg-gradient-to-b from-[#DDB65C] to-[#C9A048] py-2.5 pl-3 pr-5 text-[13px] font-semibold text-[#171308] shadow-[0_4px_14px_rgba(201,160,72,0.35)] transition hover:shadow-[0_6px_18px_rgba(201,160,72,0.45)] hover:-translate-y-px active:translate-y-0"
-        >
-          <span className="grid h-6 w-6 place-items-center rounded-full bg-[#171308]/10 transition group-hover:bg-[#171308]/15">
-            <Plus size={14} aria-hidden="true" />
-          </span>
+        <Link href="/dashboard/cotisations/paiement" className="btn-primary shrink-0">
+          <Plus size={16} strokeWidth={1.8} aria-hidden="true" />
           Nouveau paiement
         </Link>
       </header>
@@ -128,95 +130,105 @@ function BureauDashboard() {
 
       {loading ? (
         <div className="grid min-h-64 place-items-center rounded-xl border border-[var(--afc-border)] bg-[var(--afc-card)]">
-          <div className="h-8 w-8 animate-spin rounded-full border-4 border-[#C9A048] border-r-transparent" />
+          <div className="h-8 w-8 animate-spin rounded-full border-4 border-[var(--primary)] border-r-transparent" />
         </div>
       ) : (
         <>
-          <div className="grid gap-3.5 grid-cols-2 lg:grid-cols-4">
+          <div className="grid gap-4 grid-cols-2 lg:grid-cols-4">
             <Link href="/dashboard/caisse" className="block">
-              <Metric title="CAISSE DE DÉPART" iconBg="rgba(201,160,72,0.16)" icon={<Wallet size={14} color="#C9A048" />} footer="Fonds avant l'application">
-                <span className="font-serif text-xl text-[var(--afc-text)]">{money(Number(currentBox?.openingBalance ?? 0))}</span>
+              <Metric title="Caisse de départ" iconBg="rgba(47,104,177,0.12)" icon={<Wallet size={14} color={CHARTE.primary} />} footer="Fonds avant l'application">
+                <span className="afc-figure text-[28px] text-[var(--afc-text)]">{money(Number(currentBox?.openingBalance ?? 0))}</span>
                 <span className="font-sans text-xs text-[var(--afc-muted)]">F CFA</span>
               </Metric>
             </Link>
             <Link href="/dashboard/caisse" className="block">
               <Metric
-                title="CAISSE GLOBALE"
-                iconBg="rgba(46,95,163,0.2)"
-                icon={<ArrowUpRight size={14} color="#2E5FA3" />}
-                footer={<span className="font-medium text-[#52C08A]">↗ Solde net</span>}
+                title="Caisse globale · solde net"
+                iconBg="rgba(47,104,177,0.12)"
+                icon={<ArrowUpRight size={14} color={CHARTE.primary} />}
+                footer={<span className="font-medium text-[var(--primary)]">↗ Solde net</span>}
               >
-                <span className="font-serif text-xl text-[var(--afc-text)]">{money(Number(caisse?.global.solde ?? 0))}</span>
+                <span className="afc-figure text-[28px] text-[var(--afc-text)]">{money(Number(caisse?.global.solde ?? 0))}</span>
                 <span className="font-sans text-xs text-[var(--afc-muted)]">F CFA</span>
               </Metric>
             </Link>
             <Metric
-              title="CAISSE COURANTE"
-              iconBg="rgba(46,95,163,0.2)"
-              icon={<Wallet size={14} color="#2E5FA3" />}
-              footer={<span className="font-medium text-[#52C08A]">↗ Solde net</span>}
+              title="Caisse · courante"
+              iconBg="rgba(47,104,177,0.12)"
+              icon={<Wallet size={14} color={CHARTE.primary} />}
+              footer={<span className="font-medium text-[var(--primary)]">↗ Solde net</span>}
             >
-              <span className="font-serif text-xl text-[var(--afc-text)]">{money(Number(currentBox?.solde ?? 0))}</span>
+              <span className="afc-figure text-[28px] text-[var(--afc-text)]">{money(Number(currentBox?.solde ?? 0))}</span>
               <span className="font-sans text-xs text-[var(--afc-muted)]">F</span>
             </Metric>
-            <Metric title="CAISSE EXCEPTIONNELLE" iconBg="rgba(255,255,255,0.06)" icon={<Wallet size={14} color="var(--afc-text-soft)" />} footer="Solde net">
-              <span className="font-serif text-xl text-[var(--afc-text)]">{money(Number(exceptional?.solde ?? 0))}</span>
+            <Metric title="Caisse · exceptionnelle" iconBg="rgba(127,100,180,0.14)" icon={<Wallet size={14} color={CHARTE.chart5} />} footer="Solde net">
+              <span className="afc-figure text-[28px] text-[var(--afc-text)]">{money(Number(exceptional?.solde ?? 0))}</span>
               <span className="font-sans text-xs text-[var(--afc-muted)]">F</span>
             </Metric>
-            <Metric title="MEMBRES ACTIFS" iconBg="rgba(255,255,255,0.06)" icon={<Users size={14} color="var(--afc-text-soft)" />} footer={`${inactive} inactif${inactive !== 1 ? 's' : ''}`}>
-              <span className="font-serif text-xl text-[var(--afc-text)]">{active.length}</span>
+            <Metric title="Membres actifs" iconBg="rgba(var(--afc-hl),0.06)" icon={<Users size={14} color={CHARTE.muted} />} footer={`${inactive} inactif${inactive !== 1 ? 's' : ''}`}>
+              <span className="afc-figure text-[28px] text-[var(--afc-text)]">{active.length}</span>
               <span className="font-sans text-xs text-[var(--afc-muted)]">/ {members.length}</span>
             </Metric>
             <Metric
-              title={('À JOUR · ' + monthName.format(now)).toUpperCase()}
-              iconBg="rgba(82,192,138,0.16)"
-              icon={<ArrowUpRight size={14} color="#52C08A" />}
-              footer={<span className="font-medium text-[#52C08A]">↗ {rate}% du club concerné</span>}
+              title={'À jour · ' + monthName.format(now)}
+              iconBg="rgba(47,104,177,0.12)"
+              icon={<ArrowUpRight size={14} color={CHARTE.primary} />}
+              footer={<span className="font-medium text-[var(--primary)]">↗ {rate}% du club concerné</span>}
             >
-              <span className="font-serif text-xl text-[var(--afc-text)]">{paid}</span>
+              <span className="afc-figure text-[28px] text-[var(--afc-text)]">{paid}</span>
               <span className="font-sans text-xs text-[var(--afc-muted)]">/ {rows.length}</span>
             </Metric>
-            <Metric title="DÉPENSES TOTAL" iconBg="rgba(255,255,255,0.06)" icon={<CalendarDays size={14} color="var(--afc-text-soft)" />} footer={`${approvedExpenses.length} dépense${approvedExpenses.length !== 1 ? 's' : ''}`}>
-              <span className="font-serif text-xl text-[var(--afc-text)]">{money(expenseTotal)}</span>
+            <Metric title="Dépenses · total" iconBg="rgba(var(--afc-hl),0.06)" icon={<CalendarDays size={14} color={CHARTE.muted} />} footer={`${approvedExpenses.length} dépense${approvedExpenses.length !== 1 ? 's' : ''}`}>
+              <span className="afc-figure text-[28px] text-[var(--afc-text)]">{money(expenseTotal)}</span>
               <span className="font-sans text-xs text-[var(--afc-muted)]">F CFA</span>
             </Metric>
             <Metric
-              title="DÉBITEURS ≥ 2 MOIS"
-              iconBg="rgba(212,83,89,0.18)"
-              icon={<Users size={14} color="#E28A87" />}
-              footer={<span className="font-medium text-[#E28A87]">{money(late.reduce((s, m) => s + m.debt, 0))} F à recouvrer</span>}
+              title="Débiteurs ≥ 2 mois"
+              iconBg="rgba(204,82,51,0.14)"
+              icon={<Users size={14} color={CHARTE.destructive} />}
+              footer={<span className="font-medium text-[var(--destructive)]">{money(late.reduce((s, m) => s + m.debt, 0))} F à recouvrer</span>}
             >
-              <span className="font-serif text-xl text-[#E28A87]">{late.length}</span>
+              <span className="afc-figure text-[28px] text-[var(--destructive)]">{late.length}</span>
             </Metric>
           </div>
 
           <div className="grid gap-4 xl:grid-cols-[1.6fr_1fr]">
             <section className="rounded-xl border border-[var(--afc-border)] bg-[var(--afc-card)] p-5">
-              <h2 className="text-sm font-medium text-[var(--afc-text)]">Entrées et sorties</h2>
+              <h2 className="font-serif text-lg text-[var(--afc-text)]">Entrées et sorties</h2>
               <p className="text-xs text-[var(--afc-muted)]">Cotisations encaissées et dépenses, mois par mois</p>
               <div className="mt-4 h-[250px]">
                 <ResponsiveContainer width="100%" height="100%">
                   <BarChart data={chart}>
-                    <CartesianGrid vertical={false} stroke="rgba(255,255,255,0.06)" />
+                    <CartesianGrid vertical={false} stroke="rgba(var(--afc-hl),0.08)" />
                     <XAxis dataKey="month" axisLine={false} tickLine={false} tick={{ fill: 'var(--afc-muted)', fontSize: 11 }} />
                     <YAxis axisLine={false} tickLine={false} tick={{ fill: 'var(--afc-muted)', fontSize: 11 }} tickFormatter={formatAxis} allowDecimals={false} />
-                    <Tooltip contentStyle={{ background: '#1D2431', border: '1px solid rgba(255,255,255,0.08)', borderRadius: 8, color: 'var(--afc-text)' }} />
-                    <Legend wrapperStyle={{ fontSize: 12, color: 'var(--afc-muted-4)' }} />
-                    <Bar dataKey="Encaissé" fill="#2E5FA3" radius={[4, 4, 0, 0]} />
-                    <Bar dataKey="Dépensé" fill="#C9645A" radius={[4, 4, 0, 0]} />
+                    <Tooltip contentStyle={{ background: 'var(--afc-tooltip-bg)', border: '1px solid var(--afc-border)', borderRadius: 10, color: 'var(--afc-text)' }} />
+                    <Legend wrapperStyle={{ fontSize: 12, color: 'var(--afc-muted)' }} />
+                    <Bar dataKey="Encaissé" fill={CHARTE.primary} radius={[4, 4, 0, 0]} />
+                    <Bar dataKey="Dépensé" fill={CHARTE.destructive} radius={[4, 4, 0, 0]} />
                   </BarChart>
                 </ResponsiveContainer>
               </div>
             </section>
             <section className="rounded-xl border border-[var(--afc-border)] bg-[var(--afc-card)] p-5">
-              <h2 className="text-sm font-medium text-[var(--afc-text)]">Membres en retard</h2>
-              <p className="text-xs text-[var(--afc-muted)]">≥ 2 mois de retard — à relancer</p>
+              <div className="flex items-start justify-between gap-3">
+                <div>
+                  <h2 className="font-serif text-lg text-[var(--afc-text)]">Membres en retard</h2>
+                  <p className="text-xs text-[var(--afc-muted)]">≥ 2 mois de retard — à relancer</p>
+                </div>
+                <Link href="/dashboard/membres" className="afc-button-ghost shrink-0 text-[13px]">Voir tout →</Link>
+              </div>
               {late.length ? (
-                <div className="mt-3.5 divide-y divide-[rgba(var(--afc-hl),0.06)]">
+                <div className="mt-3.5 divide-y divide-[var(--afc-border-soft)]">
                   {late.slice(0, 5).map((m) => (
-                    <Link key={m.id} href={'/dashboard/membres/voir?id=' + m.id} className="flex items-center justify-between py-2.5 hover:opacity-80">
-                      <span className="text-[13px] font-medium text-[var(--afc-text)]">{m.firstName} {m.lastName}</span>
-                      <span className="rounded-full px-2.5 py-1 text-[11px] font-medium" style={{ background: 'rgba(212,83,89,0.16)', color: '#E28A87' }}>
+                    <Link key={m.id} href={'/dashboard/membres/voir?id=' + m.id} className="flex items-center justify-between py-3 hover:opacity-80">
+                      <span className="flex items-center gap-2.5">
+                        <span className="grid h-8 w-8 shrink-0 place-items-center rounded-full bg-[var(--afc-avatar-bg)] text-[11px] font-semibold text-[var(--afc-avatar-text)]">
+                          {m.firstName?.[0]}{m.lastName?.[0]}
+                        </span>
+                        <span className="text-[13px] font-medium text-[var(--afc-text)]">{m.firstName} {m.lastName}</span>
+                      </span>
+                      <span className="afc-badge-red rounded-full border px-2.5 py-1 text-[11px] font-medium">
                         {m.count} mois
                       </span>
                     </Link>
@@ -229,30 +241,35 @@ function BureauDashboard() {
           </div>
 
           <section className="overflow-hidden rounded-xl border border-[var(--afc-border)] bg-[var(--afc-card)]">
-            <div className="p-5">
-              <h2 className="text-sm font-medium text-[var(--afc-text)]">Activité récente</h2>
-              <p className="text-xs text-[var(--afc-muted)]">Derniers paiements enregistrés</p>
+            <div className="flex items-start justify-between gap-3 p-5">
+              <div>
+                <h2 className="font-serif text-lg text-[var(--afc-text)]">Activité récente</h2>
+                <p className="text-xs text-[var(--afc-muted)]">Derniers paiements enregistrés</p>
+              </div>
+              <Link href="/dashboard/cotisations/historique" className="afc-button-ghost shrink-0 text-[13px]">Tout l&apos;historique →</Link>
             </div>
             {payments.length ? (
               <div className="overflow-x-auto pb-2">
                 <table className="afc-table-dark w-full min-w-[700px] text-sm">
                   <thead>
-                    <tr className="bg-[rgba(var(--afc-hl),0.03)]">
-                      <th className="px-5 py-2.5 text-left text-[11px] font-medium text-[var(--afc-muted)]">DATE</th>
-                      <th className="px-5 py-2.5 text-left text-[11px] font-medium text-[var(--afc-muted)]">MEMBRE</th>
-                      <th className="px-5 py-2.5 text-left text-[11px] font-medium text-[var(--afc-muted)]">TYPE</th>
-                      <th className="px-5 py-2.5 text-left text-[11px] font-medium text-[var(--afc-muted)]">LIBELLÉ</th>
-                      <th className="px-5 py-2.5 text-left text-[11px] font-medium text-[var(--afc-muted)]">MONTANT</th>
+                    <tr>
+                      <th className="px-5 py-3 text-left">Date</th>
+                      <th className="px-5 py-3 text-left">Membre</th>
+                      <th className="px-5 py-3 text-left">Type</th>
+                      <th className="px-5 py-3 text-left">Libellé</th>
+                      <th className="px-5 py-3 text-right">Montant</th>
                     </tr>
                   </thead>
                   <tbody>
                     {payments.slice(0, 6).map((p) => (
-                      <tr key={p.id} className="border-t border-[rgba(var(--afc-hl),0.05)]">
-                        <td className="px-5 py-3 text-[var(--afc-muted-4)]">{new Date(p.paidAt).toLocaleDateString('fr-FR')}</td>
+                      <tr key={p.id} className="border-t border-[var(--afc-border-soft)]">
+                        <td className="afc-mono px-5 py-3 text-[13px] text-[var(--afc-muted)]">{dateCourt.format(new Date(p.paidAt))}</td>
                         <td className="px-5 py-3 font-medium text-[var(--afc-text)]">{p.member ? p.member.firstName + ' ' + p.member.lastName : 'Membre'}</td>
-                        <td className="px-5 py-3 text-[var(--afc-muted-4)]">Mensuelle</td>
-                        <td className="px-5 py-3 text-[var(--afc-muted-4)]">{p.periodYear && p.periodMonth ? monthName.format(new Date(p.periodYear, p.periodMonth - 1, 1)) : '—'}</td>
-                        <td className="px-5 py-3 font-semibold text-[#52C08A]">{money(Number(p.amount))} F</td>
+                        <td className="px-5 py-3">
+                          <span className="afc-badge-blue afc-badge-type rounded-full border px-2 py-0.5">Mensuelle</span>
+                        </td>
+                        <td className="px-5 py-3 text-[var(--afc-muted)]">{p.periodYear && p.periodMonth ? monthName.format(new Date(p.periodYear, p.periodMonth - 1, 1)) : '—'}</td>
+                        <td className="afc-mono px-5 py-3 text-right text-[13px] font-medium text-[var(--afc-text)]">{money(Number(p.amount))} F</td>
                       </tr>
                     ))}
                   </tbody>
@@ -265,10 +282,10 @@ function BureauDashboard() {
 
           <section className="flex items-center justify-between rounded-xl border border-[var(--afc-border)] bg-[var(--afc-card)] p-5">
             <div>
-              <h2 className="font-serif text-base font-semibold text-[var(--afc-text)]">Activités à venir</h2>
+              <h2 className="font-serif text-lg text-[var(--afc-text)]">Activités à venir</h2>
               <p className="text-xs text-[var(--afc-muted)]">{activities.length ? activities.length + ' activité(s)' : 'Aucune activité planifiée pour le moment.'}</p>
             </div>
-            <Link href="/dashboard/activites" className="text-[13px] font-medium text-[#C9A048]">Voir les activités →</Link>
+            <Link href="/dashboard/activites" className="text-[13px] font-medium text-[var(--primary)]">Voir les activités →</Link>
           </section>
         </>
       )}

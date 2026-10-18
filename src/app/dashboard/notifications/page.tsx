@@ -112,7 +112,7 @@ export default function NotificationsPage() {
   return (
     <div className="space-y-5">
       <header className="pt-1">
-        <h1 className="text-[28px] font-light tracking-[-0.02em] text-[var(--afc-text)]">
+        <h1 className="font-serif text-[22px] text-[var(--afc-text)]">
           {canAccess ? 'Notifications' : 'Mes notifications'}
         </h1>
         <p className="mt-0.5 text-sm text-[var(--afc-muted)]">
@@ -132,23 +132,23 @@ export default function NotificationsPage() {
       {/* Mes notifications (tous les utilisateurs) */}
       <div className="w-full rounded-xl border border-[var(--afc-border)] bg-[var(--afc-card)] p-5">
         <div className="mb-4 flex items-center justify-between">
-          <h2 className="flex items-center text-lg font-semibold text-[var(--afc-text)]">
+          <h2 className="flex items-center font-serif text-lg text-[var(--afc-text)]">
             Mes notifications
             {unreadCount > 0 && (
-              <span className="ml-2 inline-flex h-5 min-w-[1.25rem] items-center justify-center rounded-full bg-[#C9A048] px-1.5 text-xs font-bold text-[#171308]">
+              <span className="ml-2 inline-flex h-5 min-w-[1.25rem] items-center justify-center rounded-full bg-[var(--primary)] px-1.5 text-xs font-bold text-[var(--primary-foreground)]">
                 {unreadCount}
               </span>
             )}
           </h2>
           {unreadCount > 0 && (
-            <button type="button" onClick={markAllAsRead} className="text-sm font-medium text-[#C9A048] transition hover:text-[#DDB65C] hover:underline">
+            <button type="button" onClick={markAllAsRead} className="text-sm font-medium text-[var(--primary)] transition hover:text-[var(--primary)] hover:underline">
               Tout marquer comme lu
             </button>
           )}
         </div>
         {inAppLoading ? (
           <div className="flex justify-center py-8">
-            <div className="inline-block h-8 w-8 animate-spin rounded-full border-2 border-[#C9A048] border-r-transparent" />
+            <div className="inline-block h-8 w-8 animate-spin rounded-full border-2 border-[var(--primary)] border-r-transparent" />
           </div>
         ) : inAppList.length === 0 ? (
           <p className="py-6 text-sm text-[var(--afc-muted)]">Aucune notification.</p>
@@ -157,7 +157,7 @@ export default function NotificationsPage() {
             {inAppList.map((n) => (
               <li
                 key={n.id}
-                className={`rounded-xl border p-4 ${n.read ? 'border-[var(--afc-border)] bg-[rgba(var(--afc-hl),0.02)]' : 'border-[#C9A048]/30 bg-[#C9A048]/[0.06]'}`}
+                className={`rounded-xl border p-4 ${n.read ? 'border-[var(--afc-border)] bg-[rgba(var(--afc-hl),0.02)]' : 'border-[var(--primary)]/30 bg-[var(--primary)]/[0.06]'}`}
               >
                 <div className="flex items-start justify-between gap-2">
                   <div className="min-w-0 flex-1">
@@ -173,7 +173,7 @@ export default function NotificationsPage() {
                     <button
                       type="button"
                       onClick={() => markAsRead(n.id)}
-                      className="shrink-0 text-xs font-medium text-[#C9A048] transition hover:text-[#DDB65C] hover:underline"
+                      className="shrink-0 text-xs font-medium text-[var(--primary)] transition hover:text-[var(--primary)] hover:underline"
                     >
                       Marquer lu
                     </button>
@@ -189,12 +189,12 @@ export default function NotificationsPage() {
         <>
           {loading ? (
             <div className="flex justify-center rounded-xl border border-[var(--afc-border)] bg-[var(--afc-card)] py-12">
-              <div className="inline-block h-10 w-10 animate-spin rounded-full border-4 border-[#C9A048] border-r-transparent" />
+              <div className="inline-block h-10 w-10 animate-spin rounded-full border-4 border-[var(--primary)] border-r-transparent" />
             </div>
           ) : (
             <>
               <div className="w-full rounded-xl border border-[var(--afc-border)] bg-[var(--afc-card)] p-5">
-                <h2 className="mb-4 text-lg font-semibold text-[var(--afc-text)]">
+                <h2 className="mb-4 font-serif text-lg text-[var(--afc-text)]">
                   Envoyer un message à tous les membres en retard
                 </h2>
                 <p className="mb-4 text-sm text-[var(--afc-muted-2)]">
@@ -240,7 +240,7 @@ export default function NotificationsPage() {
                     />
                   </div>
                   <div>
-                    <label className="mb-1 block text-sm font-medium text-[var(--afc-text-soft)]">Message <span className="text-red-400">*</span></label>
+                    <label className="mb-1 block text-sm font-medium text-[var(--afc-text-soft)]">Message <span className="text-[var(--afc-badge-red-text)]">*</span></label>
                     <textarea
                       value={bulkMessage}
                       onChange={(e) => setBulkMessage(e.target.value)}
@@ -257,7 +257,7 @@ export default function NotificationsPage() {
               </div>
 
               <div className="overflow-hidden rounded-xl border border-[var(--afc-border)] bg-[var(--afc-card)]">
-                <h2 className="border-b border-[var(--afc-border)] px-6 py-4 text-lg font-semibold text-[var(--afc-text)]">
+                <h2 className="border-b border-[var(--afc-border)] px-6 py-4 font-serif text-lg text-[var(--afc-text)]">
                   Historique des envois
                 </h2>
                 <div className="overflow-x-auto">

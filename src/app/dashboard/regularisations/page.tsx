@@ -117,7 +117,7 @@ export default function RegularisationsAdminPage() {
   return (
     <div className="space-y-5">
       <header className="pt-1">
-        <h1 className="text-[28px] font-light tracking-[-0.02em] text-[var(--afc-text)]">Régularisations</h1>
+        <h1 className="font-serif text-[22px] text-[var(--afc-text)]">Régularisations</h1>
         <p className="mt-0.5 text-sm text-[var(--afc-muted)]">Consultez les dettes de chaque membre et créez un accord à partir de quatre mois impayés.</p>
       </header>
 
@@ -126,7 +126,7 @@ export default function RegularisationsAdminPage() {
 
       <div className="rounded-xl border border-[var(--afc-border)] bg-[var(--afc-card)] p-5">
         <div className="mb-4 flex items-center justify-between gap-3">
-          <h2 className="text-lg font-semibold text-[var(--afc-text)]">Membres en retard</h2>
+          <h2 className="font-serif text-lg text-[var(--afc-text)]">Membres en retard</h2>
           <span className="text-sm text-[var(--afc-muted)]">{candidates.length} membre{candidates.length !== 1 ? 's' : ''}</span>
         </div>
         {loading ? <p className="text-[var(--afc-muted)]">Chargement…</p> : candidates.length === 0 ? <p className="text-[var(--afc-muted)]">Tous les membres sont à jour.</p> : (
@@ -147,7 +147,7 @@ export default function RegularisationsAdminPage() {
                     <p className="font-semibold text-[var(--afc-text)]">{candidate.firstName} {candidate.lastName}</p>
                     <p className="text-xs text-[var(--afc-muted)]">{candidate.phone}</p>
                   </div>
-                  <span className="whitespace-nowrap font-bold text-amber-400">{candidate.debt.totalOwed.toLocaleString('fr-FR')} FCFA</span>
+                  <span className="whitespace-nowrap font-bold text-[var(--afc-badge-amber-text)]">{candidate.debt.totalOwed.toLocaleString('fr-FR')} FCFA</span>
                 </div>
                 <p className="mt-2 text-sm text-[var(--afc-muted-2)]"><strong className="text-[var(--afc-text-soft)]">{candidate.debt.unpaidMonths.length} mois :</strong> {candidate.debt.unpaidMonths.map((month) => month.label).join(', ')}</p>
                 <p className="mt-2 text-xs font-medium text-[var(--afc-muted)]">{activeByMember.has(candidate.id) ? 'Accord en cours : cliquer pour le modifier' : candidate.eligibleForAgreement ? 'Cliquer pour préparer un accord de régularisation' : 'Accord disponible à partir de 4 mois impayés'}</p>
@@ -158,7 +158,7 @@ export default function RegularisationsAdminPage() {
       </div>
 
       <form onSubmit={submit} className="space-y-4 rounded-xl border border-[var(--afc-border)] bg-[var(--afc-card)] p-5">
-        <h2 className="text-lg font-semibold text-[var(--afc-text)]">Créer un accord</h2>
+        <h2 className="font-serif text-lg text-[var(--afc-text)]">Créer un accord</h2>
         <div>
           <label className="mb-1 block text-sm font-medium text-[var(--afc-text-soft)]">Membre concerné</label>
           <select className="afc-login-input w-full text-sm" value={selectedId} onChange={(e) => setSelectedId(e.target.value)} required>
@@ -192,7 +192,7 @@ export default function RegularisationsAdminPage() {
             </>
           )}
         </div>
-        {selected && agreedAmount > 0 && <p className="text-sm text-emerald-400">Remise accordée : <strong>{Math.max(0, selected.debt.totalOwed - agreedAmount).toLocaleString('fr-FR')} FCFA</strong></p>}
+        {selected && agreedAmount > 0 && <p className="text-sm text-[var(--afc-badge-blue-text)]">Remise accordée : <strong>{Math.max(0, selected.debt.totalOwed - agreedAmount).toLocaleString('fr-FR')} FCFA</strong></p>}
         <div>
           <label className="mb-1 block text-sm font-medium text-[var(--afc-text-soft)]">Note interne / conditions</label>
           <textarea className="afc-login-input min-h-20 w-full text-sm" value={notes} onChange={(e) => setNotes(e.target.value)} />
@@ -201,9 +201,9 @@ export default function RegularisationsAdminPage() {
       </form>
 
       {editing && (
-        <form id="edit-agreement" onSubmit={submitEdit} className="space-y-4 rounded-xl border border-[#C9A048]/40 bg-[var(--afc-card)] p-5">
+        <form id="edit-agreement" onSubmit={submitEdit} className="space-y-4 rounded-xl border border-[var(--primary)]/40 bg-[var(--afc-card)] p-5">
           <div className="flex flex-wrap items-center justify-between gap-2">
-            <h2 className="text-lg font-semibold text-[var(--afc-text)]">Modifier l&rsquo;accord de {editing.member?.firstName} {editing.member?.lastName}</h2>
+            <h2 className="font-serif text-lg text-[var(--afc-text)]">Modifier l&rsquo;accord de {editing.member?.firstName} {editing.member?.lastName}</h2>
             <span className="afc-badge-blue rounded-full border px-3 py-1 text-xs font-semibold">{editing.mode === 'INSTALLMENT' ? 'Paiement par tranches' : 'Règlement négocié'}</span>
           </div>
           <p className="text-sm text-[var(--afc-muted)]">Dette initiale {editing.originalAmount.toLocaleString('fr-FR')} FCFA · déjà payé {editing.paidAmount.toLocaleString('fr-FR')} FCFA. Le type d&rsquo;accord ne peut pas changer : pour cela, annulez puis recréez l&rsquo;accord.</p>
@@ -226,7 +226,7 @@ export default function RegularisationsAdminPage() {
               </>
             )}
           </div>
-          <p className="text-sm text-emerald-400">Remise accordée : <strong>{Math.max(0, editing.originalAmount - editAgreed).toLocaleString('fr-FR')} FCFA</strong> · solde à régler : <strong>{Math.max(0, editAgreed - editing.paidAmount).toLocaleString('fr-FR')} FCFA</strong></p>
+          <p className="text-sm text-[var(--afc-badge-blue-text)]">Remise accordée : <strong>{Math.max(0, editing.originalAmount - editAgreed).toLocaleString('fr-FR')} FCFA</strong> · solde à régler : <strong>{Math.max(0, editAgreed - editing.paidAmount).toLocaleString('fr-FR')} FCFA</strong></p>
           <div>
             <label className="mb-1 block text-sm font-medium text-[var(--afc-text-soft)]">Note interne / conditions</label>
             <textarea className="afc-login-input min-h-20 w-full text-sm" value={editNotes} onChange={(e) => setEditNotes(e.target.value)} />
@@ -239,7 +239,7 @@ export default function RegularisationsAdminPage() {
       )}
 
       <div className="rounded-xl border border-[var(--afc-border)] bg-[var(--afc-card)] p-5">
-        <h2 className="mb-4 text-lg font-semibold text-[var(--afc-text)]">Historique des accords</h2>
+        <h2 className="mb-4 font-serif text-lg text-[var(--afc-text)]">Historique des accords</h2>
         {loading ? <p className="text-[var(--afc-muted)]">Chargement…</p> : agreements.length === 0 ? <p className="text-[var(--afc-muted)]">Aucun accord enregistré.</p> : (
           <div className="space-y-3">
             {agreements.map((a) => (
@@ -249,7 +249,7 @@ export default function RegularisationsAdminPage() {
                   <span className="flex items-center gap-3">
                     <span className="text-[var(--afc-muted-2)]">{STATUS_LABEL[a.status] ?? a.status}</span>
                     {activeByMember.get(a.memberId)?.id === a.id && (
-                      <button type="button" onClick={() => startEdit(a)} className="rounded-lg border border-[#C9A048]/50 px-3 py-1 text-xs font-semibold text-[#C9A048] transition hover:bg-[#C9A048]/10">Modifier</button>
+                      <button type="button" onClick={() => startEdit(a)} className="rounded-lg border border-[var(--primary)]/50 px-3 py-1 text-xs font-semibold text-[var(--primary)] transition hover:bg-[var(--primary)]/10">Modifier</button>
                     )}
                   </span>
                 </div>

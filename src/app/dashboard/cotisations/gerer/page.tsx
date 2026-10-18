@@ -68,7 +68,7 @@ export default function GererCotisationsPage() {
   if (!canAccess) {
     return (
       <div className="rounded-xl border border-[var(--afc-border)] bg-[var(--afc-card)] p-6">
-        <h1 className="mb-2 text-xl font-semibold text-[var(--afc-text)]">Gérer les cotisations</h1>
+        <h1 className="mb-2 font-serif text-[22px] text-[var(--afc-text)]">Gérer les cotisations</h1>
         <p className="text-sm text-[var(--afc-muted)]">Réservé à l&rsquo;Admin et au Trésorier.</p>
       </div>
     );
@@ -77,7 +77,7 @@ export default function GererCotisationsPage() {
   return (
     <div className="space-y-5">
       <header className="pt-1">
-        <h1 className="text-[28px] font-light tracking-[-0.02em] text-[var(--afc-text)]">Gérer les cotisations</h1>
+        <h1 className="font-serif text-[22px] text-[var(--afc-text)]">Gérer les cotisations</h1>
         <p className="mt-0.5 text-sm text-[var(--afc-muted)]">Liste des cotisations et création d&rsquo;exceptionnelles.</p>
       </header>
 
@@ -87,13 +87,13 @@ export default function GererCotisationsPage() {
 
       {loading ? (
         <div className="flex justify-center rounded-xl border border-[var(--afc-border)] bg-[var(--afc-card)] py-12">
-          <div className="inline-block h-10 w-10 animate-spin rounded-full border-4 border-[#C9A048] border-r-transparent" />
+          <div className="inline-block h-10 w-10 animate-spin rounded-full border-4 border-[var(--primary)] border-r-transparent" />
         </div>
       ) : (
         <>
           {monthly && (
             <div className="rounded-xl border border-[var(--afc-border)] bg-[var(--afc-card)] p-5">
-              <h2 className="mb-4 text-lg font-semibold text-[var(--afc-text)]">Cotisation de base (mensuelle)</h2>
+              <h2 className="mb-4 font-serif text-lg text-[var(--afc-text)]">Cotisation de base (mensuelle)</h2>
               {!editingMonthly ? (
                 <div className="flex flex-wrap items-center justify-between gap-4">
                   <div>
@@ -108,7 +108,7 @@ export default function GererCotisationsPage() {
                   <button
                     type="button"
                     onClick={() => setEditingMonthly(true)}
-                    className="rounded-xl border border-[#C9A048]/40 px-4 py-2 font-medium text-[#C9A048] transition hover:bg-[#C9A048]/10"
+                    className="rounded-xl border border-[var(--primary)]/40 px-4 py-2 font-medium text-[var(--primary)] transition hover:bg-[var(--primary)]/10"
                   >
                     Modifier
                   </button>
@@ -150,7 +150,7 @@ export default function GererCotisationsPage() {
 
           <div className="overflow-hidden rounded-xl border border-[var(--afc-border)] bg-[var(--afc-card)]">
             <div className="p-5 pb-0">
-              <h2 className="mb-4 text-lg font-semibold text-[var(--afc-text)]">Toutes les cotisations</h2>
+              <h2 className="mb-4 font-serif text-lg text-[var(--afc-text)]">Toutes les cotisations</h2>
             </div>
             <div className="overflow-x-auto">
               <table className="afc-table-dark w-full text-left">
@@ -347,12 +347,12 @@ function ExceptionalForm({
 
   return (
     <div className="rounded-xl border border-[var(--afc-border)] bg-[var(--afc-card)] p-5">
-      <h2 className="mb-4 text-lg font-semibold text-[var(--afc-text)]">Nouvelle cotisation exceptionnelle</h2>
+      <h2 className="mb-4 font-serif text-lg text-[var(--afc-text)]">Nouvelle cotisation exceptionnelle</h2>
       <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
         <div>
-          <label className="mb-1.5 block text-sm font-medium text-[var(--afc-text-soft)]">Nom <span className="text-red-400">*</span></label>
+          <label className="mb-1.5 block text-sm font-medium text-[var(--afc-text-soft)]">Nom <span className="text-[var(--afc-badge-red-text)]">*</span></label>
           <input className="afc-login-input w-full text-sm" placeholder="Ex. Cadeau naissance" {...register('name')} />
-          {errors.name && <p className="mt-1 text-sm text-red-400">{errors.name.message}</p>}
+          {errors.name && <p className="mt-1 text-sm text-[var(--afc-badge-red-text)]">{errors.name.message}</p>}
         </div>
         <div className="grid grid-cols-2 gap-4">
           <div>
@@ -365,7 +365,7 @@ function ExceptionalForm({
           </div>
         </div>
         <label className="flex items-center gap-2 text-sm text-[var(--afc-text-soft)]">
-          <input type="checkbox" {...register('isOpenAmount')} className="h-4 w-4 accent-[#C9A048]" />
+          <input type="checkbox" {...register('isOpenAmount')} className="h-4 w-4 accent-[var(--primary)]" />
           Montant libre (chaque membre donne ce qu&apos;il veut)
         </label>
         <div>
@@ -392,7 +392,7 @@ function ExceptionalForm({
                   type="checkbox"
                   checked={(targetMemberIds ?? []).includes(m.id)}
                   onChange={() => toggleMember(m.id)}
-                  className="h-4 w-4 accent-[#C9A048]"
+                  className="h-4 w-4 accent-[var(--primary)]"
                 />
                 {m.firstName} {m.lastName}
               </label>

@@ -39,7 +39,7 @@ export default function CotisationMensuellePage() {
   if (loading) {
     return (
       <div className="flex items-center justify-center py-12">
-        <Loader2 className="h-8 w-8 animate-spin text-[#C9A048]" />
+        <Loader2 className="h-8 w-8 animate-spin text-[var(--primary)]" />
       </div>
     );
   }
@@ -48,8 +48,8 @@ export default function CotisationMensuellePage() {
     return (
       <div className="space-y-5">
         <div>
-          <Link href="/dashboard/cotisations" className="font-medium text-[#C9A048] hover:underline">← Cotisations</Link>
-          <h1 className="mt-2 text-[28px] font-light tracking-[-0.02em] text-[var(--afc-text)]">Cotisation mensuelle</h1>
+          <Link href="/dashboard/cotisations" className="font-medium text-[var(--primary)] hover:underline">← Cotisations</Link>
+          <h1 className="mt-2 font-serif text-[22px] text-[var(--afc-text)]">Cotisation mensuelle</h1>
         </div>
         <div className="rounded-xl border border-[var(--afc-border)] bg-[var(--afc-card)] py-12 text-center">
           <p className="text-[var(--afc-muted)]">Aucune cotisation mensuelle définie pour l&apos;instant.</p>
@@ -112,7 +112,7 @@ export default function CotisationMensuellePage() {
     return (
       <div className="space-y-5">
         <header className="pt-1">
-          <h1 className="text-[28px] font-light tracking-[-0.02em] text-[var(--afc-text)]">Cotisation mensuelle</h1>
+          <h1 className="font-serif text-[22px] text-[var(--afc-text)]">Cotisation mensuelle</h1>
           <p className="mt-0.5 text-sm text-[var(--afc-muted)]">Suivi annuel des mensualités par membre.</p>
         </header>
 
@@ -124,16 +124,16 @@ export default function CotisationMensuellePage() {
               <button className="rounded-lg border border-[rgba(var(--afc-hl),0.08)] bg-[rgba(var(--afc-hl),0.03)] p-2 text-[var(--afc-text-soft)] transition hover:bg-[rgba(var(--afc-hl),0.06)]" onClick={() => setMatrixYear((y) => y + 1)} aria-label="Année suivante"><ChevronRight size={18} strokeWidth={1.8}/></button>
             </div>
             <div className="flex flex-wrap items-center gap-2">
-              <button type="button" onClick={openRecap} className="inline-flex items-center gap-2 rounded-lg border border-[rgba(var(--afc-hl),0.08)] bg-[rgba(var(--afc-hl),0.03)] px-4 py-2 text-sm font-medium text-[var(--afc-text-soft)] transition hover:border-[#C9A048]/40 hover:text-[#C9A048]"><ClipboardList size={16} strokeWidth={1.8}/> Récap</button>
-              <button type="button" onClick={openRelances} className="inline-flex items-center gap-2 rounded-lg border border-[rgba(var(--afc-hl),0.08)] bg-[rgba(var(--afc-hl),0.03)] px-4 py-2 text-sm font-medium text-[var(--afc-text-soft)] transition hover:border-[#C9A048]/40 hover:text-[#C9A048]"><Bell size={16} strokeWidth={1.8}/> Relances</button>
-              <button type="button" onClick={() => reportsApi.downloadExcel(matrixYear)} className="inline-flex items-center gap-2 rounded-lg border border-[rgba(var(--afc-hl),0.08)] bg-[rgba(var(--afc-hl),0.03)] px-4 py-2 text-sm font-medium text-[var(--afc-text-soft)] transition hover:border-[#C9A048]/40 hover:text-[#C9A048]"><Download size={16} strokeWidth={1.8}/> Exporter</button>
+              <button type="button" onClick={openRecap} className="inline-flex items-center gap-2 rounded-lg border border-[rgba(var(--afc-hl),0.08)] bg-[rgba(var(--afc-hl),0.03)] px-4 py-2 text-sm font-medium text-[var(--afc-text-soft)] transition hover:border-[var(--primary)]/40 hover:text-[var(--primary)]"><ClipboardList size={16} strokeWidth={1.8}/> Récap</button>
+              <button type="button" onClick={openRelances} className="inline-flex items-center gap-2 rounded-lg border border-[rgba(var(--afc-hl),0.08)] bg-[rgba(var(--afc-hl),0.03)] px-4 py-2 text-sm font-medium text-[var(--afc-text-soft)] transition hover:border-[var(--primary)]/40 hover:text-[var(--primary)]"><Bell size={16} strokeWidth={1.8}/> Relances</button>
+              <button type="button" onClick={() => reportsApi.downloadExcel(matrixYear)} className="inline-flex items-center gap-2 rounded-lg border border-[rgba(var(--afc-hl),0.08)] bg-[rgba(var(--afc-hl),0.03)] px-4 py-2 text-sm font-medium text-[var(--afc-text-soft)] transition hover:border-[var(--primary)]/40 hover:text-[var(--primary)]"><Download size={16} strokeWidth={1.8}/> Exporter</button>
               <Link href="/dashboard/cotisations/paiement" className="afc-button-primary"><Plus size={15} strokeWidth={2} aria-hidden="true" /> Enregistrer un paiement</Link>
             </div>
           </div>
           <div className="border-t border-[var(--afc-border)] pt-3 text-sm text-[var(--afc-muted)]">
             <strong className="text-[var(--afc-text)]">{paidInstallments} mensualités encaissées en {matrixYear}</strong>
             <span className="mx-2">·</span>
-            <strong className="text-[#C9A048]">{totalCollected.toLocaleString('fr-FR')} F</strong> total
+            <strong className="text-[var(--primary)]">{totalCollected.toLocaleString('fr-FR')} F</strong> total
             <span className="mx-2">·</span>
             <strong className="text-[var(--afc-text)]">{lateMembers}</strong> mensualité{lateMembers === 1 ? '' : 's'} en retard
           </div>
@@ -175,7 +175,7 @@ export default function CotisationMensuellePage() {
                   <p className="py-8 text-center text-[var(--afc-muted)]">Aucun membre en retard.</p>
                 ) : lateMembersList.map((member) => (
                   <label key={member.id} className="flex cursor-pointer items-center gap-3 border-b border-[rgba(var(--afc-hl),0.04)] py-3 last:border-0">
-                    <input type="checkbox" checked={selectedReminderIds.includes(member.id)} onChange={(event) => setSelectedReminderIds((ids) => event.target.checked ? [...ids, member.id] : ids.filter((id) => id !== member.id))} className="h-4 w-4 accent-[#C9A048]"/>
+                    <input type="checkbox" checked={selectedReminderIds.includes(member.id)} onChange={(event) => setSelectedReminderIds((ids) => event.target.checked ? [...ids, member.id] : ids.filter((id) => id !== member.id))} className="h-4 w-4 accent-[var(--primary)]"/>
                     <span className="grid h-9 w-9 place-items-center rounded-full bg-[var(--afc-avatar-bg)] text-xs font-semibold text-[var(--afc-avatar-text)]">{member.firstName[0]}{member.lastName[0]}</span>
                     <span className="min-w-0 flex-1">
                       <strong className="block text-sm text-[var(--afc-text)]">{member.firstName} {member.lastName}</strong>
@@ -204,7 +204,7 @@ export default function CotisationMensuellePage() {
             </div>
             <div className="flex rounded-lg bg-[rgba(var(--afc-hl),0.04)] p-1 text-sm">
               {([['ALL','Tous'],['CURRENT','À jour'],['LATE','En retard']] as const).map(([value,label]) => (
-                <button key={value} onClick={() => setMatrixFilter(value)} className={`rounded-md px-4 py-2 font-medium transition ${matrixFilter === value ? 'bg-[#C9A048] text-[#171308]' : 'text-[var(--afc-muted-2)] hover:text-[var(--afc-text)]'}`}>{label}</button>
+                <button key={value} onClick={() => setMatrixFilter(value)} className={`rounded-md px-4 py-2 font-medium transition ${matrixFilter === value ? 'bg-[var(--primary)] text-[var(--primary-foreground)]' : 'text-[var(--afc-muted-2)] hover:text-[var(--afc-text)]'}`}>{label}</button>
               ))}
             </div>
           </div>
@@ -261,14 +261,14 @@ export default function CotisationMensuellePage() {
   return (
     <div className="space-y-5">
       <div>
-        <Link href="/dashboard/cotisations" className="font-medium text-[#C9A048] hover:underline">← Cotisations</Link>
-        <h1 className="mt-2 text-[28px] font-light tracking-[-0.02em] text-[var(--afc-text)]">Cotisation mensuelle</h1>
+        <Link href="/dashboard/cotisations" className="font-medium text-[var(--primary)] hover:underline">← Cotisations</Link>
+        <h1 className="mt-2 font-serif text-[22px] text-[var(--afc-text)]">Cotisation mensuelle</h1>
         <p className="mt-1 text-sm text-[var(--afc-muted)]">Échéance le 10 de chaque mois.</p>
       </div>
 
       <div className="rounded-xl border border-[var(--afc-border)] bg-[var(--afc-card)] p-5">
-        <h2 className="text-lg font-semibold text-[var(--afc-text)]">{monthly.name}</h2>
-        <p className="mt-2 text-3xl font-semibold text-[#C9A048]">
+        <h2 className="font-serif text-lg text-[var(--afc-text)]">{monthly.name}</h2>
+        <p className="mt-2 text-3xl font-semibold text-[var(--primary)]">
           {monthly.amount ? Number(monthly.amount).toLocaleString('fr-FR') : '0'} FCFA
           <span className="text-sm font-normal text-[var(--afc-muted)]">/mois</span>
         </p>
@@ -287,7 +287,7 @@ export default function CotisationMensuellePage() {
         <p className="mb-3 text-sm text-[var(--afc-muted-2)]">Choisissez la durée à payer en avance.</p>
         <div className="mb-5 grid grid-cols-2 gap-2 sm:grid-cols-4">
           {[1, 3, 6, 12].map((months) => (
-            <button key={months} type="button" onClick={() => setDuration(months)} className={`rounded-xl border px-3 py-2 text-sm font-semibold transition ${duration === months ? 'border-[#C9A048]/50 bg-[#C9A048]/10 text-[#C9A048]' : 'border-[rgba(var(--afc-hl),0.08)] bg-[rgba(var(--afc-hl),0.02)] text-[var(--afc-muted-2)] hover:border-[rgba(var(--afc-hl),0.16)]'}`}>
+            <button key={months} type="button" onClick={() => setDuration(months)} className={`rounded-xl border px-3 py-2 text-sm font-semibold transition ${duration === months ? 'border-[var(--primary)]/50 bg-[var(--primary)]/10 text-[var(--primary)]' : 'border-[rgba(var(--afc-hl),0.08)] bg-[rgba(var(--afc-hl),0.02)] text-[var(--afc-muted-2)] hover:border-[rgba(var(--afc-hl),0.16)]'}`}>
               {months === 12 ? '1 an' : `${months} mois`}
             </button>
           ))}

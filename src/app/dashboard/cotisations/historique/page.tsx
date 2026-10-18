@@ -94,7 +94,7 @@ export default function HistoriquePage() {
   if (!canView) {
     return (
       <div className="rounded-xl border border-[var(--afc-border)] bg-[var(--afc-card)] p-6">
-        <h1 className="mb-2 text-xl font-semibold text-[var(--afc-text)]">Historique</h1>
+        <h1 className="mb-2 font-serif text-[22px] text-[var(--afc-text)]">Historique</h1>
         <p className="text-sm text-[var(--afc-muted)]">L&rsquo;accès à cette page est réservé à l&rsquo;Admin et au bureau. Consultez vos cotisations dans « Mes cotisations ».</p>
       </div>
     );
@@ -104,7 +104,7 @@ export default function HistoriquePage() {
     <div className="space-y-5">
       <header className="flex flex-wrap items-end justify-between gap-4 pt-1">
         <div>
-          <h1 className="text-[28px] font-light tracking-[-0.02em] text-[var(--afc-text)]">Historique</h1>
+          <h1 className="font-serif text-[22px] text-[var(--afc-text)]">Historique</h1>
           <p className="mt-0.5 text-sm text-[var(--afc-muted)]">Tous les paiements enregistrés.</p>
         </div>
         <Link href="/dashboard/cotisations/paiement" className="afc-button-primary shrink-0"><Plus size={15} strokeWidth={2} aria-hidden="true" /> Nouveau paiement</Link>
@@ -112,13 +112,13 @@ export default function HistoriquePage() {
 
       {/* Recherche des paiements — tracer qui a payé */}
       <div className="rounded-xl border border-[var(--afc-border)] bg-[var(--afc-card)] p-5">
-        <h2 className="mb-4 text-lg font-semibold text-[var(--afc-text)]">Recherche des paiements</h2>
+        <h2 className="mb-4 font-serif text-lg text-[var(--afc-text)]">Recherche des paiements</h2>
         <p className="mb-4 text-sm text-[var(--afc-muted-2)]">
           Recherchez par nom ou numéro de téléphone pour voir tous les paiements d&rsquo;un membre.
         </p>
         <div className="mb-4 flex w-fit flex-wrap gap-1 rounded-lg bg-[rgba(var(--afc-hl),0.04)] p-1 text-sm">
           {([['ALL','Tous'],['MONTHLY','Mensuelles'],['EXCEPTIONAL','Exceptionnelles']] as const).map(([value,label])=>(
-            <button key={value} type="button" onClick={()=>{setTypeFilter(value);setPaymentsPage(1);}} className={`rounded-md px-4 py-2 font-medium transition ${typeFilter===value?'bg-[#C9A048] text-[#171308]':'text-[var(--afc-muted-2)] hover:text-[var(--afc-text)]'}`}>{label}</button>
+            <button key={value} type="button" onClick={()=>{setTypeFilter(value);setPaymentsPage(1);}} className={`rounded-md px-4 py-2 font-medium transition ${typeFilter===value?'bg-[var(--primary)] text-[var(--primary-foreground)]':'text-[var(--afc-muted-2)] hover:text-[var(--afc-text)]'}`}>{label}</button>
           ))}
         </div>
         <div className="mb-4 grid gap-3 md:grid-cols-[minmax(240px,1fr)_180px_180px_auto]">
@@ -141,7 +141,7 @@ export default function HistoriquePage() {
         </div>
         {paymentsLoading ? (
           <div className="flex justify-center py-8">
-            <div className="inline-block h-8 w-8 animate-spin rounded-full border-4 border-[#C9A048] border-r-transparent" />
+            <div className="inline-block h-8 w-8 animate-spin rounded-full border-4 border-[var(--primary)] border-r-transparent" />
           </div>
         ) : (
           <div className="overflow-x-auto rounded-lg border border-[var(--afc-border)]">
@@ -177,7 +177,7 @@ export default function HistoriquePage() {
                       <td className="px-4 py-3 font-medium text-[var(--afc-text)]">{Number(p.amount).toLocaleString('fr-FR')} FCFA</td>
                       <td className="px-4 py-3 text-xs">
                         <span className="block text-[var(--afc-muted-2)]">{p.metadata?.includes('external_admin') ? 'Hors application' : 'En ligne / interne'}</span>
-                        {p.cancelledAt ? <span className="font-semibold text-red-400">Annulé</span> : user?.role === 'ADMIN' ? <button type="button" onClick={() => cancelPayment(p)} className="font-semibold text-red-400 transition hover:text-red-300 hover:underline">Annuler</button> : null}
+                        {p.cancelledAt ? <span className="font-semibold text-[var(--afc-badge-red-text)]">Annulé</span> : user?.role === 'ADMIN' ? <button type="button" onClick={() => cancelPayment(p)} className="font-semibold text-[var(--afc-badge-red-text)] transition hover:text-[var(--afc-badge-red-text)] hover:underline">Annuler</button> : null}
                       </td>
                     </tr>
                   ))
@@ -224,14 +224,14 @@ export default function HistoriquePage() {
 
       {loading ? (
         <div className="flex justify-center rounded-xl border border-[var(--afc-border)] bg-[var(--afc-card)] py-12">
-          <div className="inline-block h-10 w-10 animate-spin rounded-full border-4 border-[#C9A048] border-r-transparent" />
+          <div className="inline-block h-10 w-10 animate-spin rounded-full border-4 border-[var(--primary)] border-r-transparent" />
         </div>
       ) : (
         <>
           {summary && (
             <div className="rounded-xl border border-[var(--afc-border)] bg-[var(--afc-card)] p-5">
-              <h2 className="mb-4 text-lg font-semibold text-[var(--afc-text)]">Solde global (cotisation mensuelle)</h2>
-              <p className="text-2xl font-semibold text-[#C9A048]">
+              <h2 className="mb-4 font-serif text-lg text-[var(--afc-text)]">Solde global (cotisation mensuelle)</h2>
+              <p className="afc-figure text-[30px] text-[var(--primary)]">
                 {summary.totalCollected.toLocaleString('fr-FR')} FCFA
               </p>
               <p className="mt-1 text-sm text-[var(--afc-muted)]">Total collecté (toutes périodes)</p>
@@ -266,7 +266,7 @@ export default function HistoriquePage() {
           )}
 
           <div className="rounded-xl border border-[var(--afc-border)] bg-[var(--afc-card)] p-5">
-            <h2 className="mb-4 text-lg font-semibold text-[var(--afc-text)]">Historique par membre</h2>
+            <h2 className="mb-4 font-serif text-lg text-[var(--afc-text)]">Historique par membre</h2>
             <div className="mb-4">
               <label className="mb-1.5 block text-sm font-medium text-[var(--afc-text-soft)]">Choisir un membre</label>
               <select

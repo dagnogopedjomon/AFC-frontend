@@ -38,7 +38,7 @@ export default function MesAmendesPage() {
   return (
     <div className="space-y-5">
       <header className="pt-1">
-        <h1 className="text-[28px] font-light tracking-[-0.02em] text-[var(--afc-text)]">Mes amendes</h1>
+        <h1 className="font-serif text-[22px] text-[var(--afc-text)]">Mes amendes</h1>
         <p className="mt-0.5 text-sm text-[var(--afc-muted)]">Suivi de vos pénalités et de leurs règlements.</p>
       </header>
 
@@ -53,11 +53,11 @@ export default function MesAmendesPage() {
         </div>
         {loading ? (
           <div className="flex justify-center py-8">
-            <div className="inline-block h-8 w-8 animate-spin rounded-full border-4 border-[#C9A048] border-r-transparent" />
+            <div className="inline-block h-8 w-8 animate-spin rounded-full border-4 border-[var(--primary)] border-r-transparent" />
           </div>
         ) : (
           <>
-            {payError && <p className="px-4 pt-3 text-sm text-red-400">{payError}</p>}
+            {payError && <p className="px-4 pt-3 text-sm text-[var(--afc-badge-red-text)]">{payError}</p>}
             <div className="space-y-3 p-3 md:hidden">
               {visible.map((fine) => (
                 <article key={fine.id} className="rounded-xl border border-[var(--afc-border)] bg-[rgba(var(--afc-hl),0.02)] p-4">

@@ -1,8 +1,9 @@
 import Swal from 'sweetalert2';
 
+// Boutons des fenêtres SweetAlert aux couleurs de la charte (bleu AFC, texte secondaire).
 const defaults = {
-  confirmButtonColor: '#315f9e',
-  cancelButtonColor: '#64748b',
+  confirmButtonColor: '#2F68B1',
+  cancelButtonColor: '#6A727C',
   buttonsStyling: true,
 };
 

@@ -54,20 +54,20 @@ export interface PhoneInputProps {
 
 const VARIANTS = {
   dark: {
-    button: 'border-neutral-600 bg-neutral-700/50 text-neutral-100 hover:bg-neutral-700',
-    input: 'border-neutral-600 bg-neutral-700/50 text-neutral-100 caret-sky-400 placeholder:text-neutral-500 focus:border-sky-500 focus:ring-sky-500/25',
-    dropdown: 'border-neutral-600 bg-neutral-800',
-    item: 'text-neutral-100 hover:bg-neutral-700',
-    selectedItem: 'bg-neutral-700',
-    dial: 'text-neutral-400',
+    button: 'border-[var(--afc-border)] bg-[var(--afc-card)]/50 text-[var(--afc-muted-3)] hover:bg-[var(--afc-card)]',
+    input: 'border-[var(--afc-border)] bg-[var(--afc-card)]/50 text-[var(--afc-muted-3)] caret-[var(--afc-badge-blue-text)] placeholder:text-[var(--afc-muted)] focus:border-[var(--afc-badge-blue-border)] focus:ring-[var(--afc-badge-blue-border)]/25',
+    dropdown: 'border-[var(--afc-border)] bg-[var(--afc-card)]',
+    item: 'text-[var(--afc-muted-3)] hover:bg-[var(--afc-card)]',
+    selectedItem: 'bg-[var(--afc-card)]',
+    dial: 'text-[var(--afc-muted-3)]',
   },
   light: {
-    button: 'border-gray-300 bg-white text-gray-700 hover:bg-gray-50',
-    input: 'border-gray-300 bg-white text-[var(--foreground)] caret-sky-500 placeholder:text-gray-400 focus:border-[var(--sky-blue)] focus:ring-[var(--sky-blue-soft)]',
-    dropdown: 'border-gray-200 bg-white shadow-lg',
-    item: 'text-gray-700 hover:bg-gray-50',
-    selectedItem: 'bg-sky-50',
-    dial: 'text-gray-400',
+    button: 'border-[var(--afc-border)] bg-[var(--card)] text-[var(--afc-text)] hover:bg-[var(--secondary)]',
+    input: 'border-[var(--afc-border)] bg-[var(--card)] text-[var(--foreground)] caret-[var(--primary)] placeholder:text-[var(--afc-muted-3)] focus:border-[var(--sky-blue)] focus:ring-[var(--sky-blue-soft)]',
+    dropdown: 'border-[var(--afc-border)] bg-[var(--card)] shadow-lg',
+    item: 'text-[var(--afc-text)] hover:bg-[var(--secondary)]',
+    selectedItem: 'bg-[var(--afc-badge-blue-bg)]',
+    dial: 'text-[var(--afc-muted-3)]',
   },
 };
 

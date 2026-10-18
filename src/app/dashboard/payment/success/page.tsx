@@ -61,22 +61,22 @@ export default function PaymentSuccessPage() {
         {status === 'verifying' && (
           <>
             <Loader2 size={40} className="animate-spin mx-auto text-[var(--sky-blue)]" />
-            <p className="text-gray-600">Vérification du paiement…</p>
+            <p className="text-[var(--afc-muted)]">Vérification du paiement…</p>
           </>
         )}
         {status === 'paid' && (
           <>
-            <CheckCircle size={48} className="mx-auto text-green-500" />
-            <p className="text-green-700 font-semibold text-lg">Paiement confirmé !</p>
-            <p className="text-gray-500 text-sm">Votre compte sera réactivé automatiquement.</p>
-            <p className="text-gray-400 text-xs">Redirection en cours…</p>
+            <CheckCircle size={48} className="mx-auto text-[var(--primary)]" />
+            <p className="text-[var(--primary)] font-semibold text-lg">Paiement confirmé !</p>
+            <p className="text-[var(--afc-muted)] text-sm">Votre compte sera réactivé automatiquement.</p>
+            <p className="text-[var(--afc-muted-3)] text-xs">Redirection en cours…</p>
           </>
         )}
         {status === 'pending' && (
           <>
-            <Loader2 size={40} className="animate-spin mx-auto text-amber-500" />
-            <p className="text-amber-700 font-semibold">Paiement en cours de traitement…</p>
-            <p className="text-gray-500 text-sm">
+            <Loader2 size={40} className="animate-spin mx-auto text-[var(--afc-badge-amber-text)]" />
+            <p className="text-[var(--afc-badge-amber-text)] font-semibold">Paiement en cours de traitement…</p>
+            <p className="text-[var(--afc-muted)] text-sm">
               {retryCount < 5 ? `Vérification automatique (${retryCount + 1}/5)...` : 'Vérification automatique terminée.'}
             </p>
             <button onClick={handleRetry} className="btn-secondary w-full flex items-center justify-center gap-2">
@@ -90,9 +90,9 @@ export default function PaymentSuccessPage() {
         )}
         {status === 'error' && (
           <>
-            <XCircle size={48} className="mx-auto text-red-500" />
-            <p className="text-red-700 font-semibold">Impossible de vérifier le paiement.</p>
-            <p className="text-gray-500 text-sm mb-4">
+            <XCircle size={48} className="mx-auto text-[var(--destructive)]" />
+            <p className="text-[var(--destructive)] font-semibold">Impossible de vérifier le paiement.</p>
+            <p className="text-[var(--afc-muted)] text-sm mb-4">
               Si vous avez effectué le paiement, il sera traité automatiquement dans quelques minutes.
             </p>
             <button onClick={handleRetry} className="btn-primary w-full mb-2">
