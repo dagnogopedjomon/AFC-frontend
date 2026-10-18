@@ -44,7 +44,7 @@ export default function MesAmendesPage() {
 
       <section className="overflow-hidden rounded-xl border border-[var(--afc-border)] bg-[var(--afc-card)]">
         <div className="flex flex-wrap gap-2 p-4">
-          <select aria-label="Filtrer par statut" className="afc-login-input w-full text-sm sm:w-auto sm:min-w-40" value={statusFilter} onChange={(e) => setStatusFilter(e.target.value)}>
+          <select aria-label="Filtrer par statut" className="afc-login-input w-full text-sm sm:!w-auto sm:min-w-40" value={statusFilter} onChange={(e) => setStatusFilter(e.target.value)}>
             <option value="ALL">Tous les statuts</option>
             <option value="UNPAID">À régler</option>
             <option value="PAID">Réglées</option>

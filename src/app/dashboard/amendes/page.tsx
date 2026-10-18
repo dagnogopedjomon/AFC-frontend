@@ -94,17 +94,17 @@ export default function AmendesPage() {
       )}
 
       <section className="flex flex-wrap gap-2 rounded-xl border border-[var(--afc-border)] bg-[var(--afc-card)] p-4">
-        <select aria-label="Filtrer par statut" className="afc-login-input w-full !py-2 text-sm sm:w-auto sm:min-w-40" value={statusFilter} onChange={(e) => setStatusFilter(e.target.value)}>
+        <select aria-label="Filtrer par statut" className="afc-login-input w-full !py-2 text-sm sm:!w-auto sm:min-w-40" value={statusFilter} onChange={(e) => setStatusFilter(e.target.value)}>
           <option value="ALL">Tous les statuts</option>
           <option value="UNPAID">À régler</option>
           <option value="PAID">Réglées</option>
           <option value="CANCELLED">Annulées</option>
         </select>
-        <select aria-label="Filtrer par motif" className="afc-login-input w-full !py-2 text-sm sm:w-auto sm:min-w-44" value={reasonFilter} onChange={(e) => setReasonFilter(e.target.value)}>
+        <select aria-label="Filtrer par motif" className="afc-login-input w-full !py-2 text-sm sm:!w-auto sm:min-w-44" value={reasonFilter} onChange={(e) => setReasonFilter(e.target.value)}>
           <option value="ALL">Tous les motifs</option>
           {reasons.map((r) => <option key={r} value={r}>{r}</option>)}
         </select>
-        <select aria-label="Filtrer par membre" className="afc-login-input w-full !py-2 text-sm sm:w-auto sm:min-w-52" value={memberFilter} onChange={(e) => setMemberFilter(e.target.value)}>
+        <select aria-label="Filtrer par membre" className="afc-login-input w-full !py-2 text-sm sm:!w-auto sm:min-w-52" value={memberFilter} onChange={(e) => setMemberFilter(e.target.value)}>
           <option value="ALL">Sélectionner un membre…</option>
           {members.map((m) => <option key={m.id} value={m.id}>{m.firstName} {m.lastName}</option>)}
         </select>
