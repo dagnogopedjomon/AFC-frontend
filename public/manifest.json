@@ -5,17 +5,20 @@
   "start_url": "/dashboard",
   "display": "standalone",
   "orientation": "portrait",
-  "background_color": "#0f172a",
-  "theme_color": "#0ea5e9",
+  "background_color": "#F9FAFB",
+  "theme_color": "#2F68B1",
   "lang": "fr",
   "icons": [
     {
-      "src": "/images/afcimage.jpeg",
+      "src": "/logo.png",
       "sizes": "any",
-      "type": "image/jpeg",
-      "purpose": "any maskable"
+      "type": "image/png",
+      "purpose": "any"
     }
   ],
   "screenshots": [],
-  "categories": ["sports", "utilities"]
+  "categories": [
+    "sports",
+    "utilities"
+  ]
 }

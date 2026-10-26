@@ -1,0 +1,13 @@
+/*
+  X-Robots-Tag: noindex, nofollow
+  X-Content-Type-Options: nosniff
+  Referrer-Policy: strict-origin-when-cross-origin
+
+/regles/voix/*
+  Cache-Control: public, max-age=604800
+
+/images/*
+  Cache-Control: public, max-age=86400
+
+/fichiers/*
+  Cache-Control: public, max-age=3600
