@@ -5,12 +5,19 @@ import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
 import {
   LayoutDashboard,
-  Users,
+  UsersRound,
   Wallet,
-  PiggyBank,
+  Receipt,
   Landmark,
-  BarChart3,
+  Calendar,
   CalendarDays,
+  Sparkles,
+  History,
+  Activity,
+  FileSpreadsheet,
+  HandCoins,
+  CalendarOff,
+  BookOpen,
   Bell,
   LogOut,
   Menu,
@@ -39,8 +46,8 @@ const FINES_ROLES = ['ADMIN', 'TREASURER'];
 
 const baseNav = [
   { href: '/dashboard', label: 'Tableau de bord', icon: LayoutDashboard },
-  { href: '/dashboard/membres', label: 'Membres', icon: Users, roles: BUREAU_OR_ADMIN },
-  { href: '/dashboard/caisse/depenses', label: 'Dépenses', icon: Wallet, roles: CAISSE_ROLES },
+  { href: '/dashboard/membres', label: 'Membres', icon: UsersRound, roles: BUREAU_OR_ADMIN },
+  { href: '/dashboard/caisse/depenses', label: 'Dépenses', icon: Receipt, roles: CAISSE_ROLES },
   { href: '/dashboard/amendes', label: 'Amendes', icon: Gavel, roles: FINES_ROLES },
 ];
 
@@ -49,25 +56,25 @@ const systemNav = [
 ];
 
 const COTISATIONS_SUB = [
-  { href: '/dashboard/cotisations/mensuelle', label: 'Cotisations mensuelles' },
-  { href: '/dashboard/cotisations/exceptionnelles', label: 'Cotisations exceptionnelles' },
+  { href: '/dashboard/cotisations/mensuelle', label: 'Cotisations mensuelles', icon: CalendarDays },
+  { href: '/dashboard/cotisations/exceptionnelles', label: 'Cotisations exceptionnelles', icon: Sparkles },
 ];
 
 const COTISATIONS_ADMIN_SUB = [
-  { href: '/dashboard/cotisations/historique', label: 'Historique' },
-  { href: '/dashboard/cotisations/gerer', label: 'Gérer' },
-  { href: '/dashboard/regularisations', label: 'Régularisations' },
-  { href: '/dashboard/cotisations/paiement', label: 'Paiement déjà reçu' },
-  { href: '/dashboard/exonerations', label: 'Mois exonérés' },
+  { href: '/dashboard/cotisations/historique', label: 'Historique', icon: History },
+  { href: '/dashboard/cotisations/gerer', label: 'Gérer', icon: FileSpreadsheet },
+  { href: '/dashboard/regularisations', label: 'Régularisations', icon: Activity },
+  { href: '/dashboard/cotisations/paiement', label: 'Paiement déjà reçu', icon: HandCoins },
+  { href: '/dashboard/exonerations', label: 'Mois exonérés', icon: CalendarOff },
 ];
 
 const CAISSE_SUB = [
-  { href: '/dashboard/caisse', label: 'Vue d’ensemble', exact: true },
-  { href: '/dashboard/caisse/livre', label: 'Livre de caisse', exact: false },
+  { href: '/dashboard/caisse', label: 'Vue d’ensemble', exact: true, icon: Landmark },
+  { href: '/dashboard/caisse/livre', label: 'Livre de caisse', exact: false, icon: BookOpen },
 ];
 
 const memberNav = [
-  { href: '/dashboard/mes-cotisations', label: 'Mes cotisations', icon: Wallet },
+  { href: '/dashboard/mes-cotisations', label: 'Mes cotisations', icon: Calendar },
   { href: '/dashboard/mes-amendes', label: 'Mes amendes', icon: Gavel },
   { href: '/dashboard/caisse/livre', label: 'La caisse du club', icon: Landmark },
 ];
@@ -91,6 +98,13 @@ function breadcrumbLabel(pathname: string): string {
   return match?.label ?? 'Détail';
 }
 
+type NavSubItem = {
+  href: string;
+  label: string;
+  exact?: boolean;
+  icon?: React.ComponentType<{ className?: string; size?: number; strokeWidth?: number }>;
+};
+
 function NavGroupClient({
   label,
   icon: Icon,
@@ -104,13 +118,13 @@ function NavGroupClient({
   label: string;
   icon: React.ComponentType<{ className?: string; size?: number; strokeWidth?: number }>;
   pathname: string;
-  items: { href: string; label: string; exact?: boolean }[];
-  adminItems?: { href: string; label: string; exact?: boolean }[];
+  items: NavSubItem[];
+  adminItems?: NavSubItem[];
   isAdmin?: boolean;
   onClick?: () => void;
   collapsed?: boolean;
 }) {
-  const allItems: { href: string; label: string; exact?: boolean }[] = [...items, ...(isAdmin && adminItems ? adminItems : [])];
+  const allItems: NavSubItem[] = [...items, ...(isAdmin && adminItems ? adminItems : [])];
   const isParentActive = allItems.some((item) =>
     item.exact ? pathname === item.href.split('#')[0] : pathname.startsWith(item.href.split('#')[0]),
   );
@@ -140,27 +154,40 @@ function NavGroupClient({
             : 'border border-transparent text-[var(--afc-text-soft)] hover:bg-[rgba(var(--afc-hl),0.05)] hover:text-[var(--afc-text)]',
         )}
       >
-        <Icon className="shrink-0" size={19} strokeWidth={1.6} />
+        <Icon className={cn('shrink-0', !isParentActive && 'text-[var(--muted-foreground)]')} size={19} strokeWidth={1.7} />
         {!collapsed && <span className="flex-1 min-w-0 truncate text-left">{label}</span>}
         {!collapsed && <ChevronDown size={15} strokeWidth={1.8} className={cn('shrink-0 transition-transform', open && 'rotate-180')} />}
       </button>
       {open && !collapsed && (
         <div className="mt-0.5 ml-8 space-y-0.5">
-          {allItems.map((item) => (
-            <Link
-              key={item.href}
-              href={item.href}
-              onClick={onClick}
-              className={cn(
-                'flex items-center gap-2 rounded-lg px-3 py-2 text-sm font-medium transition',
-                (item.exact ? pathname === item.href.split('#')[0] : pathname.startsWith(item.href.split('#')[0]))
-                  ? 'bg-[var(--sidebar-accent)] font-semibold text-[var(--primary)] shadow-sm'
-                  : 'text-[var(--afc-text-soft)] hover:bg-[rgba(var(--afc-hl),0.05)] hover:text-[var(--afc-text)]',
-              )}
-            >
-              {item.label}
-            </Link>
-          ))}
+          {allItems.map((item) => {
+            const SubIcon = item.icon;
+            const subActive = item.exact
+              ? pathname === item.href.split('#')[0]
+              : pathname.startsWith(item.href.split('#')[0]);
+            return (
+              <Link
+                key={item.href}
+                href={item.href}
+                onClick={onClick}
+                className={cn(
+                  'flex items-center gap-2 rounded-lg px-3 py-2 text-sm font-medium transition',
+                  subActive
+                    ? 'bg-[var(--sidebar-accent)] font-semibold text-[var(--primary)] shadow-sm'
+                    : 'text-[var(--afc-text-soft)] hover:bg-[rgba(var(--afc-hl),0.05)] hover:text-[var(--afc-text)]',
+                )}
+              >
+                {SubIcon && (
+                  <SubIcon
+                    className={cn('shrink-0', !subActive && 'text-[var(--muted-foreground)]')}
+                    size={16}
+                    strokeWidth={1.7}
+                  />
+                )}
+                {item.label}
+              </Link>
+            );
+          })}
         </div>
       )}
     </div>
@@ -199,7 +226,7 @@ function NavLink({
         className,
       )}
     >
-      <Icon className="shrink-0" size={19} strokeWidth={1.6} />
+      <Icon className={cn('shrink-0', !isActive && 'text-[var(--muted-foreground)]')} size={19} strokeWidth={1.7} />
       {!collapsed && <span className="flex-1 min-w-0 truncate">{label}</span>}
       {badge > 0 && !collapsed && (
         <span
@@ -415,7 +442,7 @@ export default function DashboardLayout({
           <p className="px-3 pb-2 pt-5 afc-eyebrow">Cotisations</p>
           <NavGroupClient
             label="Cotisations"
-            icon={PiggyBank}
+            icon={Calendar}
             pathname={pathname}
             items={COTISATIONS_SUB}
             adminItems={COTISATIONS_ADMIN_SUB}
@@ -451,8 +478,8 @@ export default function DashboardLayout({
             <div className="grid h-9 w-9 shrink-0 place-items-center rounded-full bg-[var(--afc-avatar-bg)] text-xs font-bold text-[var(--afc-avatar-text)]">{user?.firstName?.[0]}{user?.lastName?.[0]}</div>
             {!sidebarCollapsed && <div className="min-w-0 flex-1"><p className="truncate text-sm font-semibold text-[var(--afc-text)]">{user?.firstName} {user?.lastName}</p><p className="truncate text-[11px] text-[var(--afc-muted)]">{user?.email || roleLabelFr(user?.role || '')}</p></div>}
             {!sidebarCollapsed && <Link href={user?.id ? `/dashboard/membres/${user.id}` : '/dashboard/parametres'} title="Gérer mon compte" aria-label="Gérer mon compte" className="grid h-8 w-8 shrink-0 place-items-center rounded-lg border border-[var(--afc-border)] bg-[rgba(var(--afc-hl),0.03)] text-[var(--afc-muted-4)] hover:bg-[rgba(var(--afc-hl),0.08)] hover:text-[var(--afc-text)]"><KeyRound size={16} /></Link>}
-            <button type="button" onClick={toggleTheme} title={theme === 'dark' ? 'Passer au thème clair' : 'Passer au thème sombre'} aria-label={theme === 'dark' ? 'Passer au thème clair' : 'Passer au thème sombre'} className="grid h-8 w-8 shrink-0 place-items-center rounded-lg border border-[var(--afc-border)] bg-[rgba(var(--afc-hl),0.03)] text-[var(--afc-muted-4)] hover:bg-[rgba(var(--afc-hl),0.08)] hover:text-[var(--primary)]">{theme === 'dark' ? <Sun size={16} strokeWidth={1.6} /> : <Moon size={16} strokeWidth={1.6} />}</button>
-            <button type="button" onClick={() => setLogoutOpen(true)} title="Déconnexion" aria-label="Déconnexion" className="grid h-8 w-8 shrink-0 place-items-center rounded-lg border border-[var(--afc-border)] bg-[rgba(var(--afc-hl),0.03)] text-[var(--afc-muted-4)] hover:bg-[var(--afc-badge-red-bg)] hover:text-[var(--destructive)]"><LogOut size={16} strokeWidth={1.6} /></button>
+            <button type="button" onClick={toggleTheme} title={theme === 'dark' ? 'Passer au thème clair' : 'Passer au thème sombre'} aria-label={theme === 'dark' ? 'Passer au thème clair' : 'Passer au thème sombre'} className="grid h-8 w-8 shrink-0 place-items-center rounded-lg border border-[var(--afc-border)] bg-[rgba(var(--afc-hl),0.03)] text-[var(--afc-muted-4)] hover:bg-[rgba(var(--afc-hl),0.08)] hover:text-[var(--primary)]">{theme === 'dark' ? <Sun size={16} strokeWidth={1.7} /> : <Moon size={16} strokeWidth={1.7} />}</button>
+            <button type="button" onClick={() => setLogoutOpen(true)} title="Déconnexion" aria-label="Déconnexion" className="grid h-8 w-8 shrink-0 place-items-center rounded-lg border border-[var(--afc-border)] bg-[rgba(var(--afc-hl),0.03)] text-[var(--afc-muted-4)] hover:bg-[var(--afc-badge-red-bg)] hover:text-[var(--destructive)]"><LogOut size={16} strokeWidth={1.7} /></button>
           </div>
         </div>
       </aside>
@@ -481,14 +508,14 @@ export default function DashboardLayout({
             className="p-2 rounded-lg text-[var(--afc-text-soft)] hover:bg-[rgba(var(--afc-hl),0.06)] transition"
             aria-label={theme === 'dark' ? 'Passer au thème clair' : 'Passer au thème sombre'}
           >
-            {theme === 'dark' ? <Sun size={20} strokeWidth={1.6} /> : <Moon size={20} strokeWidth={1.6} />}
+            {theme === 'dark' ? <Sun size={20} strokeWidth={1.7} /> : <Moon size={20} strokeWidth={1.7} />}
           </button>
           <Link
             href="/dashboard/notifications"
             className="relative p-2 rounded-lg text-[var(--afc-text-soft)] hover:bg-[rgba(var(--afc-hl),0.06)] transition"
             aria-label="Notifications"
           >
-            <Bell size={21} strokeWidth={1.6} />
+            <Bell size={21} strokeWidth={1.7} />
             {inAppUnreadCount > 0 && (
               <span className="absolute -top-0.5 -right-0.5 flex h-5 min-w-[1.25rem] items-center justify-center rounded-full bg-[var(--destructive)] px-1.5 text-[10px] font-bold text-white">
                 {inAppUnreadCount > 99 ? '99+' : inAppUnreadCount}
@@ -527,7 +554,7 @@ export default function DashboardLayout({
           ))}
           <NavGroupClient
             label="Cotisations"
-            icon={PiggyBank}
+            icon={Calendar}
             pathname={pathname}
             items={COTISATIONS_SUB}
             adminItems={COTISATIONS_ADMIN_SUB}
@@ -567,7 +594,7 @@ export default function DashboardLayout({
             onClick={() => { setMobileMenuOpen(false); setLogoutOpen(true); }}
             className="flex w-full items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-medium text-[var(--afc-text-soft)] hover:bg-[var(--afc-badge-red-bg)] hover:text-[var(--destructive)]"
           >
-            <LogOut size={19} strokeWidth={1.6} />
+            <LogOut size={19} strokeWidth={1.7} />
             Déconnexion
           </button>
         </div>
@@ -595,7 +622,7 @@ export default function DashboardLayout({
             className="fixed top-4 z-30 hidden h-9 w-9 place-items-center rounded-lg border border-[var(--afc-border)] bg-[var(--afc-card)] text-[var(--afc-muted-4)] shadow-sm transition hover:border-[var(--primary)] hover:text-[var(--primary)] lg:grid"
             style={{ left: sidebarCollapsed ? '92px' : '304px' }}
           >
-            {sidebarCollapsed ? <PanelLeftOpen size={16} strokeWidth={1.6} /> : <PanelLeftClose size={16} strokeWidth={1.6} />}
+            {sidebarCollapsed ? <PanelLeftOpen size={16} strokeWidth={1.7} /> : <PanelLeftClose size={16} strokeWidth={1.7} />}
           </button>
         ) : (
           <div className="sticky top-0 z-20 hidden h-16 items-center gap-3 border-b border-[var(--afc-border)] bg-[var(--afc-bg)] px-6 lg:flex">
@@ -606,7 +633,7 @@ export default function DashboardLayout({
               aria-label={sidebarCollapsed ? 'Afficher la barre latérale' : 'Réduire la barre latérale'}
               className="grid h-8 w-8 shrink-0 place-items-center rounded-lg text-[var(--afc-muted)] transition hover:bg-[rgba(var(--afc-hl),0.06)] hover:text-[var(--primary)]"
             >
-              {sidebarCollapsed ? <PanelLeftOpen size={18} strokeWidth={1.6} /> : <PanelLeftClose size={18} strokeWidth={1.6} />}
+              {sidebarCollapsed ? <PanelLeftOpen size={18} strokeWidth={1.7} /> : <PanelLeftClose size={18} strokeWidth={1.7} />}
             </button>
             <span className="text-[15px] text-[var(--afc-muted)]">Amicale FC</span>
             <span className="select-none text-[15px] text-[var(--afc-muted-3)]">/</span>
@@ -638,7 +665,7 @@ export default function DashboardLayout({
                 active ? 'bg-[var(--sidebar-accent)] font-medium text-[var(--primary)] shadow-sm' : 'text-[var(--afc-muted)] hover:text-[var(--afc-text)]',
               )}
             >
-              <Icon size={21} strokeWidth={1.6} />
+              <Icon size={21} strokeWidth={1.7} />
               <span className="text-[10px] font-medium truncate max-w-[80px]">{item.label}</span>
             </Link>
           );
@@ -654,7 +681,7 @@ export default function DashboardLayout({
           )}
           aria-label="Plus de menus"
         >
-          <Menu size={21} strokeWidth={1.6} />
+          <Menu size={21} strokeWidth={1.7} />
           <span className="text-[10px] font-medium">Plus</span>
         </button>
       </nav>
