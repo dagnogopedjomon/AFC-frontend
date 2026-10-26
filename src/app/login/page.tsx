@@ -2,7 +2,10 @@
 
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
+import { ArrowRight, Lock, Moon, Phone, Sun } from 'lucide-react';
 import { useAuth } from '@/lib/auth-context';
+
+const dateLongue = new Intl.DateTimeFormat('fr-FR', { day: 'numeric', month: 'long', year: 'numeric' });
 
 export default function LoginPage() {
   const { login, token, user, loading } = useAuth();
@@ -13,13 +16,24 @@ export default function LoginPage() {
   const [showPassword, setShowPassword] = useState(false);
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  // La charte propose le thème sombre sur l'écran de connexion ; on respecte le choix enregistré.
+  // La charte propose les deux thèmes sur l'écran de connexion.
   const [theme, setTheme] = useState<'light' | 'dark'>('light');
+  // Rendu côté client uniquement : la date dépend de l'horloge du visiteur.
+  const [aujourdhui, setAujourdhui] = useState('');
 
   useEffect(() => {
-    const storedTheme = window.localStorage.getItem('afc_theme');
-    if (storedTheme === 'dark' || storedTheme === 'light') setTheme(storedTheme);
+    const stored = window.localStorage.getItem('afc_theme');
+    if (stored === 'dark' || stored === 'light') setTheme(stored);
+    setAujourdhui(dateLongue.format(new Date()));
   }, []);
+
+  const toggleTheme = () => {
+    setTheme((current) => {
+      const next = current === 'dark' ? 'light' : 'dark';
+      window.localStorage.setItem('afc_theme', next);
+      return next;
+    });
+  };
 
   useEffect(() => {
     if (loading || !token || !user) return;
@@ -45,7 +59,7 @@ export default function LoginPage() {
   if (loading) {
     return (
       <div data-theme={theme} className="grid min-h-screen place-items-center bg-[var(--background)]">
-        <div className="h-9 w-9 animate-spin rounded-full border-4 border-[var(--afc-border)] border-t-[var(--primary)]" />
+        <div className="h-9 w-9 animate-spin rounded-full border-4 border-[var(--border-color)] border-t-[var(--primary)]" />
       </div>
     );
   }
@@ -54,38 +68,93 @@ export default function LoginPage() {
     <div
       data-theme={theme}
       data-login-dark
-      className="brand-grid relative flex min-h-[100dvh] items-center justify-center overflow-hidden bg-[var(--secondary)] px-4 py-6 text-[var(--foreground)]"
+      className="min-h-[100dvh] bg-[var(--background)] text-[var(--foreground)] lg:grid lg:grid-cols-2"
     >
-      <div className="fade-in relative z-10 w-full max-w-[440px]">
-        {/* Bloc-marque : écusson, nom en Fraunces, mention en mono capitales. */}
-        <div className="mb-5 flex items-center justify-center gap-3">
-          <img src="/images/logo-afc.png" alt="Amicale Football Club" className="h-[44px] w-auto shrink-0 object-contain" />
-          <div className="text-left">
-            <div className="font-serif text-[22px] font-medium tracking-[-0.01em] text-[var(--foreground)]">Amicale FC</div>
-            <div className="afc-eyebrow">Abidjan · Cocody</div>
+      {/* Panneau de marque : fond discret + quadrillé de 56 px (bureau uniquement). */}
+      <aside className="brand-grid relative hidden flex-col justify-between border-r border-[var(--border-color)] bg-[var(--secondary)] px-12 py-10 lg:flex">
+        <div className="relative z-[1] flex items-start justify-between gap-6">
+          <div className="flex items-center gap-3">
+            <img src="/images/logo-afc.png" alt="Amicale Football Club" className="h-11 w-auto shrink-0 object-contain" />
+            <div>
+              <div className="font-serif text-[21px] font-medium tracking-[-0.01em] text-[var(--foreground)]">Amicale FC</div>
+              <div className="afc-eyebrow">Trésorerie du club</div>
+            </div>
+          </div>
+          <div className="text-right">
+            <p className="afc-mono flex items-center justify-end gap-1.5 text-[11px] text-[var(--muted-foreground)]">
+              <span className="inline-block h-2 w-2 rounded-full bg-[var(--primary)]" aria-hidden="true" />
+              Service en ligne
+            </p>
+            <p className="afc-mono mt-0.5 text-[11px] text-[var(--muted-foreground)]">{aujourdhui}</p>
           </div>
         </div>
 
-        <div className="rounded-[14px] border border-[var(--border-color)] bg-[var(--card)] px-6 py-7 sm:px-9 sm:py-9">
+        <div className="relative z-[1] max-w-[560px]">
+          <h2 className="font-serif text-[clamp(44px,4.4vw,64px)] font-light leading-[1.04] tracking-[-0.02em] text-[var(--foreground)]">
+            Les cotisations du club,
+            <br />
+            <span className="afc-accent-word">au millimètre.</span>
+          </h2>
+          <p className="mt-7 max-w-[460px] text-[15px] leading-relaxed text-[var(--muted-foreground)]">
+            L&apos;outil du trésorier de l&apos;<strong className="font-semibold text-[var(--foreground)]">Amicale Football Club</strong> pour
+            enregistrer les cotisations mensuelles et exceptionnelles, repérer les joueurs en retard et garder une vue
+            d&apos;ensemble nette du compte du club.
+          </p>
+        </div>
+
+        <div className="relative z-[1] flex items-end justify-between gap-6">
+          <p className="max-w-[320px] font-serif text-sm italic text-[var(--muted-foreground)]">
+            « Un club bien géré, c&apos;est un club qui gagne hors du terrain aussi. »
+          </p>
+          <p className="afc-mono shrink-0 text-[11px] text-[var(--muted-foreground)]">Saison 2026-27</p>
+        </div>
+      </aside>
+
+      {/* Volet de connexion */}
+      <main className="relative flex min-h-[100dvh] flex-col px-5 py-6 sm:px-10 lg:min-h-0 lg:py-10">
+        <div className="flex justify-end">
+          <button
+            type="button"
+            onClick={toggleTheme}
+            className="afc-button-secondary !min-h-9 rounded-full px-3.5 py-1.5 text-[13px]"
+            aria-label={theme === 'dark' ? 'Passer au thème clair' : 'Passer au thème sombre'}
+          >
+            {theme === 'dark' ? <Sun size={15} strokeWidth={1.7} /> : <Moon size={15} strokeWidth={1.7} />}
+            {theme === 'dark' ? 'Clair' : 'Sombre'}
+          </button>
+        </div>
+
+        <div className="fade-in mx-auto flex w-full max-w-[420px] flex-1 flex-col justify-center py-6">
+          {/* Bloc-marque réduit : seul écran visible sur mobile. */}
+          <div className="mb-7 flex items-center gap-3 lg:hidden">
+            <img src="/images/logo-afc.png" alt="Amicale Football Club" className="h-10 w-auto shrink-0 object-contain" />
+            <div>
+              <div className="font-serif text-[19px] font-medium tracking-[-0.01em]">Amicale FC</div>
+              <div className="afc-eyebrow">Abidjan · Cocody</div>
+            </div>
+          </div>
+
           <p className="afc-eyebrow">— Connexion sécurisée</p>
-          <h1 className="mt-2 font-serif text-[26px] leading-tight text-[var(--foreground)]">
-            Content de vous <span className="afc-accent-word">revoir</span>.
-          </h1>
-          <p className="mt-1.5 text-sm text-[var(--muted-foreground)]">
+          <h1 className="mt-2 font-serif text-[40px] leading-none tracking-[-0.02em] text-[var(--foreground)]">Bonjour.</h1>
+          <p className="mt-3 text-[15px] leading-relaxed text-[var(--muted-foreground)]">
             Connectez-vous pour accéder aux cotisations de l&apos;Amicale Football Club.
           </p>
 
-          <form onSubmit={onSubmit} className="mt-6">
+          <form onSubmit={onSubmit} className="mt-7">
             {error && (
-              <div className="afc-badge-red mb-4 rounded-[10px] border px-4 py-3 text-sm">
-                {error}
-              </div>
+              <div className="afc-badge-red mb-4 rounded-[10px] border px-4 py-3 text-sm">{error}</div>
             )}
 
-            <div>
-              <label htmlFor="phone" className="mb-1.5 block text-[11px] font-medium uppercase tracking-[0.12em] text-[var(--muted-foreground)]">
-                Téléphone ou adresse e-mail
-              </label>
+            <label htmlFor="phone" className="block text-[13px] font-medium text-[var(--muted-foreground)]">
+              Téléphone ou adresse e-mail
+            </label>
+            <div className="relative mt-1.5">
+              <Phone
+                size={16}
+                strokeWidth={1.7}
+                className="pointer-events-none absolute left-3.5 top-1/2 -translate-y-1/2 text-[var(--muted-foreground)]"
+                aria-hidden="true"
+              />
               <input
                 id="phone"
                 value={identifier}
@@ -94,54 +163,47 @@ export default function LoginPage() {
                 autoComplete="username"
                 placeholder="07 00 00 00 00"
                 required
-                className="afc-login-input login-dark-input"
+                className="afc-login-input login-dark-input !pl-10"
               />
             </div>
 
-            <div className="mt-4">
-              <label htmlFor="password" className="mb-1.5 block text-[11px] font-medium uppercase tracking-[0.12em] text-[var(--muted-foreground)]">
-                Mot de passe
-              </label>
-              <div className="relative">
-                <input
-                  id="password"
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
-                  type={showPassword ? 'text' : 'password'}
-                  autoComplete="current-password"
-                  placeholder="••••••••"
-                  minLength={6}
-                  required
-                  className="afc-login-input login-dark-input pr-11"
-                />
-                <button
-                  type="button"
-                  onClick={() => setShowPassword((v) => !v)}
-                  aria-label={showPassword ? 'Masquer le mot de passe' : 'Afficher le mot de passe'}
-                  className="absolute right-2.5 top-1/2 flex -translate-y-1/2 items-center border-none bg-transparent p-1 text-[var(--muted-foreground)] transition hover:text-[var(--primary)]"
-                >
-                  {showPassword ? (
-                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round">
-                      <path d="M2 12 C4.5 7 8 4.5 12 4.5 C16 4.5 19.5 7 22 12 C19.5 17 16 19.5 12 19.5 C8 19.5 4.5 17 2 12 Z" />
-                      <circle cx="12" cy="12" r="3" />
-                      <path d="M3 3 L21 21" />
-                    </svg>
-                  ) : (
-                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round">
-                      <path d="M2 12 C4.5 7 8 4.5 12 4.5 C16 4.5 19.5 7 22 12 C19.5 17 16 19.5 12 19.5 C8 19.5 4.5 17 2 12 Z" />
-                      <circle cx="12" cy="12" r="3" />
-                    </svg>
-                  )}
-                </button>
-              </div>
+            <label htmlFor="password" className="mt-4 block text-[13px] font-medium text-[var(--muted-foreground)]">
+              Mot de passe
+            </label>
+            <div className="relative mt-1.5">
+              <Lock
+                size={16}
+                strokeWidth={1.7}
+                className="pointer-events-none absolute left-3.5 top-1/2 -translate-y-1/2 text-[var(--muted-foreground)]"
+                aria-hidden="true"
+              />
+              <input
+                id="password"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                type={showPassword ? 'text' : 'password'}
+                autoComplete="current-password"
+                placeholder="••••••••"
+                minLength={6}
+                required
+                className="afc-login-input login-dark-input !pl-10 !pr-24"
+              />
+              <button
+                type="button"
+                onClick={() => setShowPassword((v) => !v)}
+                className="afc-mono absolute right-3.5 top-1/2 -translate-y-1/2 text-[11px] uppercase tracking-[0.12em] text-[var(--muted-foreground)] transition hover:text-[var(--primary)]"
+              >
+                {showPassword ? 'Masquer' : 'Afficher'}
+              </button>
             </div>
 
-            <div className="mt-4 flex items-center justify-between text-[13px]">
+            <div className="mt-4 flex items-center justify-between gap-4 text-[13px]">
               <label className="flex items-center gap-2 text-[var(--muted-foreground)]">
                 <input
                   type="checkbox"
                   checked={remember}
                   onChange={(e) => setRemember(e.target.checked)}
+                  className="h-4 w-4"
                   style={{ accentColor: 'var(--primary)' }}
                 />
                 Rester connecté
@@ -151,16 +213,23 @@ export default function LoginPage() {
               </a>
             </div>
 
-            <button type="submit" disabled={submitting} className="afc-login-button mt-5 w-full">
+            <button type="submit" disabled={submitting} className="afc-login-button mt-6 w-full">
               {submitting ? 'Connexion…' : 'Se connecter'}
+              {!submitting && <ArrowRight size={16} strokeWidth={1.8} aria-hidden="true" />}
             </button>
+
+            <p className="mt-4 text-center text-xs leading-relaxed text-[var(--muted-foreground)]">
+              Première connexion ? Utilisez le lien d&apos;activation reçu par SMS. En cas d&apos;oubli du mot de passe,
+              contactez le bureau : il n&apos;y a pas de réinitialisation en libre-service.
+            </p>
           </form>
         </div>
 
-        <p className="mt-4 text-center text-xs text-[var(--muted-foreground)]">
-          Besoin d&apos;aide ? Contactez le bureau.
-        </p>
-      </div>
+        <div className="afc-mono flex items-center justify-between gap-4 text-[11px] text-[var(--muted-foreground)]">
+          <span>© {new Date().getFullYear()} — Amicale FC</span>
+          <span>Abidjan · Cocody</span>
+        </div>
+      </main>
     </div>
   );
 }
