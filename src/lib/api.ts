@@ -668,6 +668,9 @@ export const administrationApi = {
 
 // ========== Activités ==========
 
+/** Brouillon, publié ou archivé — statut repris par le site public. */
+export type PublicationStatus = 'DRAFT' | 'PUBLISHED' | 'ARCHIVED';
+
 export type Activity = {
   id: string;
   type: string;
@@ -676,6 +679,12 @@ export type Activity = {
   date: string;
   endDate: string | null;
   result: string | null;
+  location: string | null;
+  slug: string | null;
+  publicationStatus: PublicationStatus;
+  publishedAt: string | null;
+  albumVisible: boolean;
+  coverPhotoId: string | null;
   createdAt: string;
   updatedAt: string;
   _count?: { photos: number };
@@ -694,6 +703,9 @@ export type Photo = {
   url: string;
   caption: string | null;
   activityId: string | null;
+  /** Une photo masquée reste dans l'album interne mais n'est pas publiée. */
+  visible: boolean;
+  position: number;
   createdAt: string;
 };
 
@@ -702,10 +714,26 @@ export const activitiesApi = {
   recentCount: () => api<{ count: number }>('/activities/recent-count'),
   markSeen: () => api<{ ok: boolean }>('/activities/seen', { method: 'POST' }),
   one: (id: string) => api<Activity & { photos: Photo[] }>(`/activities/${id}`),
-  create: (data: { type: string; title: string; description?: string; date: string; endDate?: string; result?: string }) =>
+  create: (data: { type: string; title: string; description?: string; date: string; endDate?: string; result?: string; location?: string }) =>
     api<Activity>('/activities', { method: 'POST', body: JSON.stringify(data) }),
-  update: (id: string, data: { type?: string; title?: string; description?: string; date?: string; endDate?: string; result?: string }) =>
+  update: (id: string, data: { type?: string; title?: string; description?: string; date?: string; endDate?: string; result?: string; location?: string }) =>
     api<Activity & { photos: Photo[] }>(`/activities/${id}`, { method: 'PATCH', body: JSON.stringify(data) }),
+  /** Publier, retirer ou archiver un événement sur le site public. */
+  setPublication: (id: string, data: { status: PublicationStatus; location?: string }) =>
+    api<Activity & { photos: Photo[] }>(`/activities/${id}/publication`, {
+      method: 'PATCH',
+      body: JSON.stringify(data),
+    }),
+  /** Visibilité de l'album sur le site et photo de couverture. */
+  updateAlbum: (id: string, data: { albumVisible?: boolean; coverPhotoId?: string | null }) =>
+    api<Activity & { photos: Photo[] }>(`/activities/${id}/album`, {
+      method: 'PATCH',
+      body: JSON.stringify(data),
+    }),
+  reorderPhotos: (id: string, photoIds: string[]) =>
+    api<Photo[]>(`/activities/${id}/album/order`, { method: 'PATCH', body: JSON.stringify({ photoIds }) }),
+  updatePhoto: (id: string, data: { caption?: string; visible?: boolean; position?: number }) =>
+    api<Photo>(`/activities/photos/${id}`, { method: 'PATCH', body: JSON.stringify(data) }),
   delete: (id: string) => api<{ success: boolean }>(`/activities/${id}`, { method: 'DELETE' }),
   announcements: () => api<Announcement[]>('/activities/announcements'),
   createAnnouncement: (data: { title: string; content: string }) =>

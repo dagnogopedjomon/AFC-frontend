@@ -25,6 +25,7 @@ const schema = z.object({
   date: z.string().min(1, 'Date requise'),
   endDate: z.string().optional(),
   result: z.string().optional(),
+  location: z.string().optional(),
 });
 
 type FormData = z.infer<typeof schema>;
@@ -51,6 +52,7 @@ export default function NouvelleActivitePage() {
         date: data.date,
         endDate: data.endDate,
         result: data.result,
+        location: data.location,
       });
       window.dispatchEvent(new Event('activities-updated'));
       router.push('/dashboard/activites?created=1');
@@ -88,6 +90,13 @@ export default function NouvelleActivitePage() {
           <div>
             <label className="block text-sm font-medium text-[var(--afc-text)] mb-1.5">Description</label>
             <textarea rows={3} className="input-field" {...register('description')} />
+          </div>
+
+          <div>
+            <label className="mb-1 block text-sm font-medium text-[var(--afc-text)]">
+              Lieu <span className="text-[var(--afc-muted)]">(affiché sur le site public)</span>
+            </label>
+            <input className="input-field" placeholder="Terrain de five, Cocody" {...register('location')} />
           </div>
           <div className="grid grid-cols-2 gap-4">
             <div>

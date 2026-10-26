@@ -3,7 +3,7 @@
 import { useEffect, useState } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
-import { Plus } from 'lucide-react';
+import { Plus, Globe } from 'lucide-react';
 import { useAuth } from '@/lib/auth-context';
 import { activitiesApi, type Activity, type Announcement } from '@/lib/api';
 
@@ -101,11 +101,25 @@ export default function ActivitesPage() {
                     onClick={() => router.push(`/dashboard/activites/voir?id=${a.id}`)}
                     className="rounded-xl border border-[var(--afc-border)] bg-[rgba(var(--afc-hl),0.02)] p-4 text-left transition hover:border-[var(--primary)]/30 hover:bg-[var(--primary)]/[0.06] focus:outline-none focus:ring-2 focus:ring-[var(--primary)]/40"
                   >
-                    <span className="afc-badge-blue inline-flex rounded-full border px-2 py-0.5 text-xs font-medium">
-                      {activityTypeLabel(a.type)}
+                    <span className="flex flex-wrap items-center gap-1.5">
+                      <span className="afc-badge-blue afc-badge-type inline-flex rounded-full border px-2 py-0.5">
+                        {activityTypeLabel(a.type)}
+                      </span>
+                      {a.publicationStatus === 'PUBLISHED' && (
+                        <span className="afc-badge-blue inline-flex items-center gap-1 rounded-full border px-2 py-0.5 text-[11px] font-medium">
+                          <Globe size={11} strokeWidth={1.8} aria-hidden="true" /> Sur le site
+                        </span>
+                      )}
+                      {a.publicationStatus === 'ARCHIVED' && (
+                        <span className="afc-badge-amber inline-flex rounded-full border px-2 py-0.5 text-[11px] font-medium">
+                          Archivé
+                        </span>
+                      )}
                     </span>
                     <p className="mt-2 line-clamp-2 font-medium text-[var(--afc-text)]">{a.title}</p>
-                    <p className="mt-1 text-sm text-[var(--afc-muted-2)]">{new Date(a.date).toLocaleDateString('fr-FR')}</p>
+                    <p className="afc-mono mt-1 text-xs text-[var(--afc-muted)]">
+                      {new Date(a.date).toLocaleDateString('fr-FR')}{a.location ? ` · ${a.location}` : ''}
+                    </p>
                     {a.result && <p className="mt-1 text-sm text-[var(--afc-muted-2)]">Résultat : {a.result}</p>}
                     {a._count && a._count.photos > 0 && (
                       <p className="mt-2 text-xs text-[var(--afc-muted)]">{a._count.photos} photo{a._count.photos > 1 ? 's' : ''}</p>
