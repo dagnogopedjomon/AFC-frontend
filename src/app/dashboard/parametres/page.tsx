@@ -45,8 +45,6 @@ export default function ParametresPage() {
   return (
     <div className="space-y-5">
       <header className="border-b border-[var(--afc-border)] pb-5 pt-1">
-        <h1 className="font-serif text-[22px] text-[var(--afc-text)]">Paramètres</h1>
-        <p className="mt-0.5 text-sm text-[var(--afc-muted)]">Configuration du club et de l&apos;application</p>
       </header>
 
       <div className="max-w-2xl rounded-xl border border-[var(--afc-border)] bg-[var(--afc-card)] p-5">

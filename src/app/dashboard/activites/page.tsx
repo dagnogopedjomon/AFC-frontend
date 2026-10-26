@@ -46,11 +46,7 @@ export default function ActivitesPage() {
 
   return (
     <div className="space-y-5">
-      <header className="flex flex-col gap-4 pt-1 sm:flex-row sm:items-center sm:justify-between">
-        <div>
-          <h1 className="font-serif text-[22px] text-[var(--afc-text)]">Activités &amp; vie du club</h1>
-          <p className="mt-0.5 text-sm text-[var(--afc-muted)]">Matchs, entraînements, anniversaires, annonces.</p>
-        </div>
+      <header className="flex flex-col gap-4 pt-1 sm:flex-row sm:items-center sm:justify-end">
         {canCreate && (
           <div className="flex gap-2">
             <Link href="/dashboard/activites/nouvelle" className="afc-button-primary text-sm">

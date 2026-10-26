@@ -4,33 +4,35 @@ import { useEffect, useRef, useState } from 'react';
 import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
 import {
-  LayoutDashboard,
-  UsersRound,
-  Wallet,
-  Receipt,
-  Landmark,
-  Calendar,
-  CalendarDays,
-  Sparkles,
-  History,
-  Activity,
-  FileSpreadsheet,
-  HandCoins,
-  CalendarOff,
-  BookOpen,
+  ArrowLeftRight,
+  Banknote,
+  BarChart3,
   Bell,
-  LogOut,
-  Menu,
-  X,
-  ChevronDown,
-  ChevronRight,
-  Settings,
+  BookOpen,
+  Calendar,
+  CalendarCheck,
+  CalendarOff,
+  FileSpreadsheet,
   Gavel,
+  HandCoins,
+  History,
   KeyRound,
+  Landmark,
+  LayoutDashboard,
+  LogOut,
+  Megaphone,
+  Menu,
+  Moon,
   PanelLeftClose,
   PanelLeftOpen,
+  Plus,
+  Receipt,
+  Settings,
+  Sparkles,
   Sun,
-  Moon,
+  UserRound,
+  UsersRound,
+  X,
 } from 'lucide-react';
 import { useAuth } from '@/lib/auth-context';
 import { toast } from 'sonner';
@@ -44,154 +46,109 @@ const FINES_ROLES = ['ADMIN', 'TREASURER'];
 
 // Redirection « Régulariser » désactivée pour l’instant (comptes actuels). Réactiver avec des comptes de test adaptés.
 
-const baseNav = [
-  { href: '/dashboard', label: 'Tableau de bord', icon: LayoutDashboard },
-  { href: '/dashboard/membres', label: 'Membres', icon: UsersRound, roles: BUREAU_OR_ADMIN },
-  { href: '/dashboard/caisse/depenses', label: 'Dépenses', icon: Receipt, roles: CAISSE_ROLES },
-  { href: '/dashboard/amendes', label: 'Amendes', icon: Gavel, roles: FINES_ROLES },
-];
+const COTISATIONS_ADMIN = ['ADMIN', 'TREASURER', 'COMMISSIONER'];
 
-const systemNav = [
-  { href: '/dashboard/parametres', label: 'Paramètres', icon: Settings },
-];
-
-const COTISATIONS_SUB = [
-  { href: '/dashboard/cotisations/mensuelle', label: 'Cotisations mensuelles', icon: CalendarDays },
-  { href: '/dashboard/cotisations/exceptionnelles', label: 'Cotisations exceptionnelles', icon: Sparkles },
-];
-
-const COTISATIONS_ADMIN_SUB = [
-  { href: '/dashboard/cotisations/historique', label: 'Historique', icon: History },
-  { href: '/dashboard/cotisations/gerer', label: 'Gérer', icon: FileSpreadsheet },
-  { href: '/dashboard/regularisations', label: 'Régularisations', icon: Activity },
-  { href: '/dashboard/cotisations/paiement', label: 'Paiement déjà reçu', icon: HandCoins },
-  { href: '/dashboard/exonerations', label: 'Mois exonérés', icon: CalendarOff },
-];
-
-const CAISSE_SUB = [
-  { href: '/dashboard/caisse', label: 'Vue d’ensemble', exact: true, icon: Landmark },
-  { href: '/dashboard/caisse/livre', label: 'Livre de caisse', exact: false, icon: BookOpen },
-];
-
-const memberNav = [
-  { href: '/dashboard/mes-cotisations', label: 'Mes cotisations', icon: Calendar },
-  { href: '/dashboard/mes-amendes', label: 'Mes amendes', icon: Gavel },
-  { href: '/dashboard/caisse/livre', label: 'La caisse du club', icon: Landmark },
-];
-
-const BREADCRUMB_LABELS: { href: string; label: string }[] = [
-  ...baseNav,
-  ...systemNav,
-  ...COTISATIONS_SUB,
-  ...COTISATIONS_ADMIN_SUB,
-  ...CAISSE_SUB,
-  ...memberNav,
-  { href: '/dashboard/membres/new', label: 'Nouveau membre' },
-  { href: '/dashboard/notifications', label: 'Notifications' },
-  { href: '/dashboard/regulariser', label: 'Régulariser' },
-  { href: '/dashboard/activites', label: 'Activités' },
-  { href: '/dashboard/regularisations', label: 'Régularisations' },
-].sort((a, b) => b.href.length - a.href.length);
-
-function breadcrumbLabel(pathname: string): string {
-  const match = BREADCRUMB_LABELS.find((item) => pathname === item.href || pathname.startsWith(item.href + '/'));
-  return match?.label ?? 'Détail';
-}
-
-type NavSubItem = {
+type NavEntry = {
   href: string;
   label: string;
+  icon: React.ComponentType<{ className?: string; size?: number; strokeWidth?: number }>;
+  roles?: string[];
   exact?: boolean;
-  icon?: React.ComponentType<{ className?: string; size?: number; strokeWidth?: number }>;
+  badge?: 'activites' | 'notifications' | 'caisse';
 };
 
-function NavGroupClient({
-  label,
-  icon: Icon,
-  pathname,
-  items,
-  adminItems,
-  isAdmin,
-  onClick,
-  collapsed = false,
-}: {
-  label: string;
-  icon: React.ComponentType<{ className?: string; size?: number; strokeWidth?: number }>;
-  pathname: string;
-  items: NavSubItem[];
-  adminItems?: NavSubItem[];
-  isAdmin?: boolean;
-  onClick?: () => void;
-  collapsed?: boolean;
-}) {
-  const allItems: NavSubItem[] = [...items, ...(isAdmin && adminItems ? adminItems : [])];
-  const isParentActive = allItems.some((item) =>
-    item.exact ? pathname === item.href.split('#')[0] : pathname.startsWith(item.href.split('#')[0]),
-  );
-  const [open, setOpen] = useState(isParentActive);
-  const ref = useRef<HTMLDivElement>(null);
+type NavGroup = { label: string; entries: NavEntry[] };
 
-  useEffect(() => {
-    const handler = (e: MouseEvent) => {
-      if (ref.current && !ref.current.contains(e.target as Node)) {
-        setOpen(false);
-      }
-    };
-    document.addEventListener('mousedown', handler);
-    return () => document.removeEventListener('mousedown', handler);
-  }, []);
+/** Menu de gestion — groupes, libellés et icônes du dossier d'intégration (5.1 et 5.4). */
+const GESTION_NAV: NavGroup[] = [
+  {
+    label: 'Pilotage',
+    entries: [
+      { href: '/dashboard', label: 'Tableau de bord', icon: LayoutDashboard, exact: true },
+      { href: '/dashboard/membres', label: 'Membres', icon: UsersRound, roles: BUREAU_OR_ADMIN },
+      { href: '/dashboard/activites', label: 'Activités', icon: Megaphone, badge: 'activites' },
+      { href: '/dashboard/amendes', label: 'Amendes', icon: Gavel, roles: FINES_ROLES },
+    ],
+  },
+  {
+    label: 'Caisse',
+    entries: [
+      { href: '/dashboard/caisse', label: 'Vue d’ensemble', icon: Landmark, exact: true, roles: CAISSE_ROLES },
+      { href: '/dashboard/caisse/depenses', label: 'Dépenses', icon: Receipt, roles: CAISSE_ROLES, badge: 'caisse' },
+      { href: '/dashboard/caisse/livre', label: 'Livre de caisse', icon: BookOpen },
+    ],
+  },
+  {
+    label: 'Cotisations',
+    entries: [
+      { href: '/dashboard/cotisations/mensuelle', label: 'Cotisations mensuelles', icon: Calendar },
+      { href: '/dashboard/cotisations/exceptionnelles', label: 'Cotisations exceptionnelles', icon: Sparkles },
+      { href: '/dashboard/cotisations/historique', label: 'Historique', icon: History, roles: COTISATIONS_ADMIN },
+      { href: '/dashboard/regularisations', label: 'Régularisations', icon: HandCoins, roles: COTISATIONS_ADMIN },
+      { href: '/dashboard/exonerations', label: 'Mois exonérés', icon: CalendarOff, roles: COTISATIONS_ADMIN },
+      { href: '/dashboard/cotisations/gerer', label: 'Gérer les cotisations', icon: FileSpreadsheet, roles: COTISATIONS_ADMIN },
+      { href: '/dashboard/cotisations/paiement', label: 'Paiement déjà reçu', icon: Banknote, roles: COTISATIONS_ADMIN },
+    ],
+  },
+  {
+    label: 'Système',
+    entries: [
+      { href: '/dashboard/notifications', label: 'Notifications', icon: Bell, badge: 'notifications' },
+      { href: '/dashboard/rapports', label: 'Rapports', icon: BarChart3, roles: COTISATIONS_ADMIN },
+      { href: '/dashboard/parametres', label: 'Paramètres', icon: Settings },
+    ],
+  },
+];
 
-  return (
-    <div ref={ref}>
-      <button
-        type="button"
-        onClick={() => setOpen((v) => !v)}
-        className={cn(
-          'flex w-full items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium transition',
-          collapsed && 'justify-center px-2',
-          isParentActive
-            ? 'border border-[var(--afc-border)] bg-[var(--sidebar-accent)] text-[var(--primary)]'
-            : 'border border-transparent text-[var(--afc-text-soft)] hover:bg-[rgba(var(--afc-hl),0.05)] hover:text-[var(--afc-text)]',
-        )}
-      >
-        <Icon className={cn('shrink-0', !isParentActive && 'text-[var(--muted-foreground)]')} size={19} strokeWidth={1.7} />
-        {!collapsed && <span className="flex-1 min-w-0 truncate text-left">{label}</span>}
-        {!collapsed && <ChevronDown size={15} strokeWidth={1.8} className={cn('shrink-0 transition-transform', open && 'rotate-180')} />}
-      </button>
-      {open && !collapsed && (
-        <div className="mt-0.5 ml-8 space-y-0.5">
-          {allItems.map((item) => {
-            const SubIcon = item.icon;
-            const subActive = item.exact
-              ? pathname === item.href.split('#')[0]
-              : pathname.startsWith(item.href.split('#')[0]);
-            return (
-              <Link
-                key={item.href}
-                href={item.href}
-                onClick={onClick}
-                className={cn(
-                  'flex items-center gap-2 rounded-lg px-3 py-2 text-sm font-medium transition',
-                  subActive
-                    ? 'bg-[var(--sidebar-accent)] font-semibold text-[var(--primary)] shadow-sm'
-                    : 'text-[var(--afc-text-soft)] hover:bg-[rgba(var(--afc-hl),0.05)] hover:text-[var(--afc-text)]',
-                )}
-              >
-                {SubIcon && (
-                  <SubIcon
-                    className={cn('shrink-0', !subActive && 'text-[var(--muted-foreground)]')}
-                    size={16}
-                    strokeWidth={1.7}
-                  />
-                )}
-                {item.label}
-              </Link>
-            );
-          })}
-        </div>
-      )}
-    </div>
+/** Espace membre — un seul groupe (5.2). */
+const MEMBRE_NAV: NavGroup[] = [
+  {
+    label: 'Mon espace',
+    entries: [
+      { href: '/dashboard', label: 'Mon profil', icon: UserRound, exact: true },
+      { href: '/dashboard/mes-cotisations', label: 'Mes cotisations', icon: CalendarCheck },
+      { href: '/dashboard/mes-amendes', label: 'Mes amendes', icon: Gavel },
+      { href: '/dashboard/caisse/livre', label: 'La caisse du club', icon: ArrowLeftRight },
+      { href: '/dashboard/activites', label: 'Activités', icon: Megaphone, badge: 'activites' },
+      { href: '/dashboard/notifications', label: 'Notifications', icon: Bell, badge: 'notifications' },
+      { href: '/dashboard/parametres', label: 'Paramètres', icon: Settings },
+    ],
+  },
+];
+
+/** Titres et sous-titres de page (5.3). */
+const PAGE_TITLES: { href: string; title: string; subtitle: string; exact?: boolean }[] = [
+  { href: '/dashboard', title: 'Tableau de bord', subtitle: 'Vue d’ensemble', exact: true },
+  { href: '/dashboard/membres/new', title: 'Nouveau membre', subtitle: 'Créer un compte de joueur' },
+  { href: '/dashboard/membres/voir', title: 'Fiche membre', subtitle: 'Profil, cotisations et historique' },
+  { href: '/dashboard/membres', title: 'Membres', subtitle: 'Liste & suivi des joueurs du club' },
+  { href: '/dashboard/caisse/depenses', title: 'Dépenses', subtitle: 'Sorties de caisse' },
+  { href: '/dashboard/caisse/nouvelle-depense', title: 'Nouvelle dépense', subtitle: 'Demande de sortie de caisse' },
+  { href: '/dashboard/caisse/livre', title: 'La caisse du club', subtitle: 'Entrées et sorties de l’association' },
+  { href: '/dashboard/caisse', title: 'Caisse', subtitle: 'Soldes, dépenses et validations', exact: true },
+  { href: '/dashboard/amendes', title: 'Amendes', subtitle: 'Obligations de paiement des membres' },
+  { href: '/dashboard/mes-amendes', title: 'Mes amendes', subtitle: 'Réglées et en cours' },
+  { href: '/dashboard/mes-cotisations', title: 'Mes cotisations', subtitle: 'Mensuelles et exceptionnelles' },
+  { href: '/dashboard/cotisations/mensuelle', title: 'Cotisations mensuelles', subtitle: 'Suivi mois par mois' },
+  { href: '/dashboard/cotisations/exceptionnelles', title: 'Cotisations exceptionnelles', subtitle: 'Événements, projets, urgences' },
+  { href: '/dashboard/cotisations/historique', title: 'Historique', subtitle: 'Tous les paiements enregistrés' },
+  { href: '/dashboard/cotisations/gerer', title: 'Gérer les cotisations', subtitle: 'Montants et cotisations ouvertes' },
+  { href: '/dashboard/cotisations/paiement', title: 'Paiement déjà reçu', subtitle: 'Enregistrer un versement hors application' },
+  { href: '/dashboard/regularisations', title: 'Régularisations', subtitle: 'Accords avec les membres en retard' },
+  { href: '/dashboard/regulariser', title: 'Régulariser', subtitle: 'Solder votre retard de cotisation' },
+  { href: '/dashboard/exonerations', title: 'Mois exonérés', subtitle: 'Mois sans cotisation due' },
+  { href: '/dashboard/notifications', title: 'Notifications', subtitle: 'Messages du bureau et historique' },
+  { href: '/dashboard/rapports', title: 'Rapports', subtitle: 'Synthèses annuelles du club' },
+  { href: '/dashboard/parametres', title: 'Paramètres', subtitle: 'Configuration du club et de l’application' },
+  { href: '/dashboard/activites', title: 'Activités', subtitle: 'Vie du club, matchs et annonces' },
+  { href: '/dashboard/payment/success', title: 'Paiement', subtitle: 'Retour du paiement mobile' },
+].sort((a, b) => b.href.length - a.href.length);
+
+function pageTitle(pathname: string): { title: string; subtitle: string } {
+  const match = PAGE_TITLES.find((item) =>
+    item.exact ? pathname === item.href : pathname === item.href || pathname.startsWith(item.href + '/'),
   );
+  return match ? { title: match.title, subtitle: match.subtitle } : { title: 'Amicale FC', subtitle: '' };
 }
 
 function NavLink({
@@ -218,15 +175,19 @@ function NavLink({
       href={href}
       onClick={onClick}
       className={cn(
-        'flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium transition',
-        collapsed && 'justify-center px-2',
+        'flex h-10 items-center gap-2 rounded-lg px-2 text-sm font-medium transition',
+        collapsed && 'justify-center',
         isActive
-          ? 'bg-[var(--sidebar-accent)] text-[var(--primary)] shadow-sm'
-          : 'text-[var(--afc-text-soft)] hover:bg-[rgba(var(--afc-hl),0.05)] hover:text-[var(--afc-text)]',
+          ? 'bg-[var(--sidebar-accent)] text-[var(--afc-text)] shadow-sm'
+          : 'text-[var(--afc-text)] hover:bg-[var(--sidebar-accent)]',
         className,
       )}
     >
-      <Icon className={cn('shrink-0', !isActive && 'text-[var(--muted-foreground)]')} size={19} strokeWidth={1.7} />
+      <Icon
+        className={cn('shrink-0', isActive ? 'text-[var(--primary)]' : 'text-[var(--muted-foreground)]')}
+        size={16}
+        strokeWidth={1.7}
+      />
       {!collapsed && <span className="flex-1 min-w-0 truncate">{label}</span>}
       {badge > 0 && !collapsed && (
         <span
@@ -263,13 +224,30 @@ export default function DashboardLayout({
 
   useEffect(() => {
     setSidebarCollapsed(window.localStorage.getItem('afc_sidebar_collapsed') === '1');
-    const storedTheme = window.localStorage.getItem('afc_theme');
+    const storedTheme = window.localStorage.getItem('afc-theme') ?? window.localStorage.getItem('afc_theme');
     if (storedTheme === 'light' || storedTheme === 'dark') setTheme(storedTheme);
+  }, []);
+
+  // Ctrl/Cmd + B replie ou ouvre le menu (4.1).
+  useEffect(() => {
+    const handler = (event: KeyboardEvent) => {
+      if ((event.metaKey || event.ctrlKey) && event.key.toLowerCase() === 'b') {
+        event.preventDefault();
+        setSidebarCollapsed((collapsed) => {
+          const next = !collapsed;
+          window.localStorage.setItem('afc_sidebar_collapsed', next ? '1' : '0');
+          return next;
+        });
+      }
+    };
+    window.addEventListener('keydown', handler);
+    return () => window.removeEventListener('keydown', handler);
   }, []);
 
   const toggleTheme = () => {
     setTheme((current) => {
       const next = current === 'dark' ? 'light' : 'dark';
+      window.localStorage.setItem('afc-theme', next);
       window.localStorage.setItem('afc_theme', next);
       return next;
     });
@@ -284,11 +262,15 @@ export default function DashboardLayout({
   };
 
   const isBureauOrAdmin = !!user && BUREAU_OR_ADMIN.includes(user.role);
-  const nav = [
-    ...baseNav.filter((item) => !item.roles || (user && item.roles.includes(user.role))),
-    ...(user && !isBureauOrAdmin ? memberNav : []),
-  ];
-  const canViewCaisse = !!user && CAISSE_ROLES.includes(user.role);
+  // Les deux univers sont étanches (4.4) : gestion d'un côté, espace membre de l'autre.
+  const navGroups: NavGroup[] = (isBureauOrAdmin ? GESTION_NAV : MEMBRE_NAV)
+    .map((group) => ({
+      ...group,
+      entries: group.entries.filter((entry) => !entry.roles || (user && entry.roles.includes(user.role))),
+    }))
+    .filter((group) => group.entries.length > 0);
+  const flatNav = navGroups.flatMap((group) => group.entries);
+  const { title: pageTitleText, subtitle: pageSubtitle } = pageTitle(pathname);
 
   const caisseBadge =
     user && CAISSE_ROLES.includes(user.role)
@@ -382,9 +364,16 @@ export default function DashboardLayout({
     return () => window.removeEventListener('caisse-expenses-updated', handler);
   }, []);
 
-  const isActive = (href: string) => {
-    if (href === '/dashboard') return pathname === '/dashboard';
-    return pathname.startsWith(href);
+  const isActive = (href: string, exact?: boolean) => {
+    if (exact || href === '/dashboard') return pathname === href;
+    return pathname === href || pathname.startsWith(href + '/');
+  };
+
+  const badgeFor = (entry: NavEntry) => {
+    if (entry.badge === 'activites') return activitiesRecentCount;
+    if (entry.badge === 'notifications') return inAppUnreadCount;
+    if (entry.badge === 'caisse') return caisseBadge;
+    return 0;
   };
 
   useEffect(() => {
@@ -410,76 +399,88 @@ export default function DashboardLayout({
 
   return (
     <div data-theme={theme} className="min-h-screen flex flex-col lg:flex-row">
-      {/* Menu latéral — desktop (suit le thème clair/sombre de la charte) */}
+      {/* Menu latéral — mesures relevées sur la V1 (255 px, en-tête 56 px, entrées 40 px) */}
       <aside
         className={cn(
           'hidden lg:flex lg:flex-col lg:fixed lg:inset-y-0 transition-[width] duration-200 overflow-hidden',
-          sidebarCollapsed ? 'lg:w-[76px] [&_p]:hidden [&_span]:hidden [&_button]:justify-center [&_button]:px-2 [&_button>svg:last-child]:hidden [&_a]:justify-center [&_a]:px-2' : 'lg:w-72',
+          sidebarCollapsed ? 'lg:w-12' : 'lg:w-[255px]',
         )}
         style={{ background: 'var(--afc-sidebar)', borderRight: '1px solid var(--afc-border)' }}
       >
-        <Link href="/dashboard" className="flex h-20 items-center gap-3 px-5">
-          <img src="/images/logo-afc.png" alt="Amicale Football Club" className="h-[68px] w-[58px] shrink-0 object-contain" />
+        <Link
+          href="/dashboard"
+          className="flex h-14 shrink-0 items-center gap-2 border-b border-[var(--afc-border)] px-4"
+        >
+          <img src="/images/logo-afc.png" alt="Amicale Football Club" className="h-9 w-9 shrink-0 object-contain" />
           {!sidebarCollapsed && (
-            <div>
-              <span className="block font-serif text-[17px] font-medium tracking-[-0.01em] text-[var(--afc-text)]">Amicale FC</span>
-              <span className="afc-eyebrow">Abidjan · Cocody</span>
-            </div>
+            <span className="truncate font-serif text-base font-medium tracking-[-0.01em] text-[var(--afc-text)]">
+              Amicale FC
+            </span>
           )}
         </Link>
-        <nav className="flex-1 overflow-y-auto p-3 space-y-0.5">
-          <p className="px-3 pb-2 pt-2 afc-eyebrow">Pilotage</p>
-          {nav.map((item) => (
-            <NavLink
-              key={item.href}
-              href={item.href}
-              label={item.label}
-              icon={item.icon}
-              isActive={isActive(item.href)}
-              badge={item.href === '/dashboard/activites' ? activitiesRecentCount : 0}
-            />
+        <nav className="flex-1 overflow-y-auto p-2">
+          {navGroups.map((group) => (
+            <div key={group.label} className="mb-1">
+              {!sidebarCollapsed && (
+                <p className="flex h-8 items-center px-2 text-[10px] font-semibold uppercase tracking-[0.14em] text-[var(--muted-foreground)]">
+                  {group.label}
+                </p>
+              )}
+              <div className="space-y-0.5">
+                {group.entries.map((entry) => (
+                  <NavLink
+                    key={entry.href}
+                    href={entry.href}
+                    label={entry.label}
+                    icon={entry.icon}
+                    isActive={isActive(entry.href, entry.exact)}
+                    collapsed={sidebarCollapsed}
+                    badge={badgeFor(entry)}
+                  />
+                ))}
+              </div>
+            </div>
           ))}
-          <p className="px-3 pb-2 pt-5 afc-eyebrow">Cotisations</p>
-          <NavGroupClient
-            label="Cotisations"
-            icon={Calendar}
-            pathname={pathname}
-            items={COTISATIONS_SUB}
-            adminItems={COTISATIONS_ADMIN_SUB}
-            isAdmin={user?.role === 'ADMIN' || user?.role === 'TREASURER' || user?.role === 'COMMISSIONER'}
-          />
-          {canViewCaisse && (
-            <>
-              <p className="px-3 pb-2 pt-5 afc-eyebrow">Trésorerie</p>
-              <NavGroupClient
-                label="Caisse"
-                icon={Wallet}
-                pathname={pathname}
-                items={CAISSE_SUB}
-                adminItems={[]}
-                isAdmin={false}
-              />
-            </>
-          )}
-          <p className="px-3 pb-2 pt-5 afc-eyebrow">Système</p>
-          {systemNav.map((item) => (
-            <NavLink key={item.href} href={item.href} label={item.label} icon={item.icon} isActive={isActive(item.href)} />
-          ))}
-          <NavLink
-            href="/dashboard/notifications"
-            label="Notifications"
-            icon={Bell}
-            isActive={isActive('/dashboard/notifications')}
-            badge={inAppUnreadCount}
-          />
         </nav>
-        <div className="border-t border-[var(--afc-border)] p-3">
-          <div className="flex items-center gap-2 rounded-lg bg-[rgba(var(--afc-hl),0.04)] p-2">
-            <div className="grid h-9 w-9 shrink-0 place-items-center rounded-full bg-[var(--afc-avatar-bg)] text-xs font-bold text-[var(--afc-avatar-text)]">{user?.firstName?.[0]}{user?.lastName?.[0]}</div>
-            {!sidebarCollapsed && <div className="min-w-0 flex-1"><p className="truncate text-sm font-semibold text-[var(--afc-text)]">{user?.firstName} {user?.lastName}</p><p className="truncate text-[11px] text-[var(--afc-muted)]">{user?.email || roleLabelFr(user?.role || '')}</p></div>}
-            {!sidebarCollapsed && <Link href={user?.id ? `/dashboard/membres/${user.id}` : '/dashboard/parametres'} title="Gérer mon compte" aria-label="Gérer mon compte" className="grid h-8 w-8 shrink-0 place-items-center rounded-lg border border-[var(--afc-border)] bg-[rgba(var(--afc-hl),0.03)] text-[var(--afc-muted-4)] hover:bg-[rgba(var(--afc-hl),0.08)] hover:text-[var(--afc-text)]"><KeyRound size={16} /></Link>}
-            <button type="button" onClick={toggleTheme} title={theme === 'dark' ? 'Passer au thème clair' : 'Passer au thème sombre'} aria-label={theme === 'dark' ? 'Passer au thème clair' : 'Passer au thème sombre'} className="grid h-8 w-8 shrink-0 place-items-center rounded-lg border border-[var(--afc-border)] bg-[rgba(var(--afc-hl),0.03)] text-[var(--afc-muted-4)] hover:bg-[rgba(var(--afc-hl),0.08)] hover:text-[var(--primary)]">{theme === 'dark' ? <Sun size={16} strokeWidth={1.7} /> : <Moon size={16} strokeWidth={1.7} />}</button>
-            <button type="button" onClick={() => setLogoutOpen(true)} title="Déconnexion" aria-label="Déconnexion" className="grid h-8 w-8 shrink-0 place-items-center rounded-lg border border-[var(--afc-border)] bg-[rgba(var(--afc-hl),0.03)] text-[var(--afc-muted-4)] hover:bg-[var(--afc-badge-red-bg)] hover:text-[var(--destructive)]"><LogOut size={16} strokeWidth={1.7} /></button>
+        <div className="shrink-0 border-t border-[var(--afc-border)] p-3">
+          <div className="flex items-center gap-2">
+            <div className="grid h-9 w-9 shrink-0 place-items-center rounded-full border border-[var(--afc-border)] bg-[var(--afc-avatar-bg)] text-xs font-semibold text-[var(--afc-avatar-text)]">
+              {user?.firstName?.[0]}{user?.lastName?.[0]}
+            </div>
+            {!sidebarCollapsed && (
+              <div className="min-w-0 flex-1">
+                <p className="truncate text-[13px] font-semibold text-[var(--afc-text)]">{user?.firstName} {user?.lastName}</p>
+                <p className="truncate text-[11px] text-[var(--afc-muted)]">{isBureauOrAdmin ? (user?.email || roleLabelFr(user?.role || '')) : 'Membre'}</p>
+              </div>
+            )}
+            {!sidebarCollapsed && (
+              <Link
+                href="/dashboard/parametres"
+                title="Changer mon mot de passe"
+                aria-label="Changer mon mot de passe"
+                className="grid h-7 w-7 shrink-0 place-items-center rounded-md border border-[var(--afc-border)] text-[var(--afc-muted)] transition hover:bg-[var(--sidebar-accent)] hover:text-[var(--afc-text)]"
+              >
+                <KeyRound size={14} strokeWidth={1.7} />
+              </Link>
+            )}
+            <button
+              type="button"
+              onClick={toggleTheme}
+              title={theme === 'dark' ? 'Passer au thème clair' : 'Passer au thème sombre'}
+              aria-label={theme === 'dark' ? 'Passer au thème clair' : 'Passer au thème sombre'}
+              className="grid h-7 w-7 shrink-0 place-items-center rounded-md border border-[var(--afc-border)] text-[var(--afc-muted)] transition hover:bg-[var(--sidebar-accent)] hover:text-[var(--primary)]"
+            >
+              {theme === 'dark' ? <Sun size={14} strokeWidth={1.7} /> : <Moon size={14} strokeWidth={1.7} />}
+            </button>
+            <button
+              type="button"
+              onClick={() => setLogoutOpen(true)}
+              title="Se déconnecter"
+              aria-label="Se déconnecter"
+              className="grid h-7 w-7 shrink-0 place-items-center rounded-md border border-[var(--afc-border)] text-[var(--afc-muted)] transition hover:bg-[var(--afc-badge-red-bg)] hover:text-[var(--destructive)]"
+            >
+              <LogOut size={14} strokeWidth={1.7} />
+            </button>
           </div>
         </div>
       </aside>
@@ -497,11 +498,18 @@ export default function DashboardLayout({
         >
           {mobileMenuOpen ? <X size={22} strokeWidth={1.7} /> : <Menu size={22} strokeWidth={1.7} />}
         </button>
-        <Link href="/dashboard" className="flex items-center justify-center gap-2 min-w-0 flex-1">
-          <img src="/images/logo-afc.png" alt="Amicale Football Club" className="h-11 w-9 shrink-0 object-contain" />
-          <span className="truncate font-serif text-[17px] font-medium text-[var(--afc-text)]">Amicale FC</span>
-        </Link>
+        <h2 className="min-w-0 flex-1 truncate font-serif text-[20px] text-[var(--afc-text)]">{pageTitleText}</h2>
         <div className="flex items-center gap-1">
+          {isBureauOrAdmin && (
+            <Link
+              href="/dashboard/cotisations/paiement"
+              className="btn-primary !min-h-9 px-2.5"
+              aria-label="Nouveau paiement"
+              title="Nouveau paiement"
+            >
+              <Plus size={16} strokeWidth={1.8} aria-hidden="true" />
+            </Link>
+          )}
           <button
             type="button"
             onClick={toggleTheme}
@@ -540,53 +548,27 @@ export default function DashboardLayout({
         )}
         style={{ background: 'var(--afc-sidebar)', borderRight: '1px solid var(--afc-border)' }}
       >
-        <nav className="p-4 space-y-0.5">
-          {nav.map((item) => (
-            <NavLink
-              key={item.href}
-              href={item.href}
-              label={item.label}
-              icon={item.icon}
-              isActive={isActive(item.href)}
-              onClick={() => setMobileMenuOpen(false)}
-              badge={item.href === '/dashboard/activites' ? activitiesRecentCount : 0}
-            />
+        <nav className="p-3">
+          {navGroups.map((group) => (
+            <div key={group.label} className="mb-2">
+              <p className="flex h-8 items-center px-2 text-[10px] font-semibold uppercase tracking-[0.14em] text-[var(--muted-foreground)]">
+                {group.label}
+              </p>
+              <div className="space-y-0.5">
+                {group.entries.map((entry) => (
+                  <NavLink
+                    key={entry.href}
+                    href={entry.href}
+                    label={entry.label}
+                    icon={entry.icon}
+                    isActive={isActive(entry.href, entry.exact)}
+                    onClick={() => setMobileMenuOpen(false)}
+                    badge={badgeFor(entry)}
+                  />
+                ))}
+              </div>
+            </div>
           ))}
-          <NavGroupClient
-            label="Cotisations"
-            icon={Calendar}
-            pathname={pathname}
-            items={COTISATIONS_SUB}
-            adminItems={COTISATIONS_ADMIN_SUB}
-            isAdmin={user?.role === 'ADMIN' || user?.role === 'TREASURER' || user?.role === 'COMMISSIONER'}
-            onClick={() => setMobileMenuOpen(false)}
-          />
-          {canViewCaisse && (
-            <NavGroupClient
-              label="Caisse"
-              icon={Wallet}
-              pathname={pathname}
-              items={CAISSE_SUB}
-              adminItems={[]}
-              isAdmin={false}
-              onClick={() => setMobileMenuOpen(false)}
-            />
-          )}
-          <NavLink
-            href="/dashboard/parametres"
-            label="Paramètres"
-            icon={Settings}
-            isActive={isActive('/dashboard/parametres')}
-            onClick={() => setMobileMenuOpen(false)}
-          />
-          <NavLink
-            href="/dashboard/notifications"
-            label="Notifications"
-            icon={Bell}
-            isActive={isActive('/dashboard/notifications')}
-            onClick={() => setMobileMenuOpen(false)}
-            badge={inAppUnreadCount}
-          />
         </nav>
         <div className="p-4 border-t border-[var(--afc-border)]">
           <button
@@ -611,51 +593,49 @@ export default function DashboardLayout({
         onConfirm={() => { setLogoutOpen(false); logout(); }}
       />
 
-      {/* Main content */}
-      <main className={cn('flex-1 min-w-0 flex flex-col min-h-screen bg-[var(--afc-bg)] text-[var(--afc-text)] transition-[padding] duration-200', sidebarCollapsed ? 'lg:pl-[76px]' : 'lg:pl-72')}>
-        {pathname === '/dashboard' ? (
+      {/* Contenu — barre du haut de 56 px (titre Fraunces 22 px + sous-titre), marges 24/32/48 */}
+      <main
+        className={cn(
+          'flex-1 min-w-0 flex flex-col min-h-screen bg-[var(--afc-bg)] text-[var(--afc-text)] transition-[padding] duration-200',
+          sidebarCollapsed ? 'lg:pl-12' : 'lg:pl-[255px]',
+        )}
+      >
+        <div className="sticky top-0 z-20 hidden h-14 items-center gap-4 border-b border-[var(--afc-border)] bg-[var(--afc-bg)] px-8 lg:flex">
           <button
             type="button"
             onClick={toggleSidebar}
-            title={sidebarCollapsed ? 'Afficher la barre latérale' : 'Réduire la barre latérale'}
+            title={(sidebarCollapsed ? 'Afficher la barre latérale' : 'Réduire la barre latérale') + ' (Ctrl/Cmd + B)'}
             aria-label={sidebarCollapsed ? 'Afficher la barre latérale' : 'Réduire la barre latérale'}
-            className="fixed top-4 z-30 hidden h-9 w-9 place-items-center rounded-lg border border-[var(--afc-border)] bg-[var(--afc-card)] text-[var(--afc-muted-4)] shadow-sm transition hover:border-[var(--primary)] hover:text-[var(--primary)] lg:grid"
-            style={{ left: sidebarCollapsed ? '92px' : '304px' }}
+            className="grid h-7 w-7 shrink-0 place-items-center rounded-md text-[var(--afc-muted)] transition hover:bg-[var(--sidebar-accent)] hover:text-[var(--primary)]"
           >
             {sidebarCollapsed ? <PanelLeftOpen size={16} strokeWidth={1.7} /> : <PanelLeftClose size={16} strokeWidth={1.7} />}
           </button>
-        ) : (
-          <div className="sticky top-0 z-20 hidden h-16 items-center gap-3 border-b border-[var(--afc-border)] bg-[var(--afc-bg)] px-6 lg:flex">
-            <button
-              type="button"
-              onClick={toggleSidebar}
-              title={sidebarCollapsed ? 'Afficher la barre latérale' : 'Réduire la barre latérale'}
-              aria-label={sidebarCollapsed ? 'Afficher la barre latérale' : 'Réduire la barre latérale'}
-              className="grid h-8 w-8 shrink-0 place-items-center rounded-lg text-[var(--afc-muted)] transition hover:bg-[rgba(var(--afc-hl),0.06)] hover:text-[var(--primary)]"
-            >
-              {sidebarCollapsed ? <PanelLeftOpen size={18} strokeWidth={1.7} /> : <PanelLeftClose size={18} strokeWidth={1.7} />}
-            </button>
-            <span className="text-[15px] text-[var(--afc-muted)]">Amicale FC</span>
-            <span className="select-none text-[15px] text-[var(--afc-muted-3)]">/</span>
-            <span className="text-[15px] font-medium text-[var(--afc-text)]">{breadcrumbLabel(pathname)}</span>
-          </div>
-        )}
+          <span className="h-6 w-px shrink-0 bg-[var(--afc-border)]" aria-hidden="true" />
+          <h2 className="shrink-0 font-serif text-[22px] leading-none tracking-[-0.01em] text-[var(--afc-text)]">{pageTitleText}</h2>
+          {pageSubtitle && <p className="truncate text-[12.5px] text-[var(--afc-muted)]">{pageSubtitle}</p>}
+          {isBureauOrAdmin && (
+            <Link href="/dashboard/cotisations/paiement" className="btn-primary ml-auto shrink-0">
+              <Plus size={16} strokeWidth={1.8} aria-hidden="true" />
+              Nouveau paiement
+            </Link>
+          )}
+        </div>
         {user && !user.isSuspended && user.reactivatedAt && user.role !== 'ADMIN' && (
           <div className="afc-badge-amber border-b px-4 py-3 text-center text-sm font-medium">
             Vous avez été réactivé temporairement. Vous avez <strong>24 h</strong> pour régulariser votre cotisation, sinon votre compte sera désactivé à nouveau.{' '}
             <Link href="/dashboard/regulariser" className="underline font-semibold">Payer maintenant</Link>
           </div>
         )}
-        <div className={cn('dashboard-content-offset flex-1 w-full px-4 py-6 pb-24 sm:px-6 lg:pb-10 xl:px-10', sidebarCollapsed ? 'lg:pl-20' : 'lg:px-8')}>
+        <div className="flex-1 w-full px-4 pb-24 pt-6 sm:px-6 lg:px-8 lg:pb-12">
           {children}
         </div>
       </main>
 
       {/* Bottom navigation — mobile (4 principaux + Plus) */}
       <nav className="lg:hidden fixed bottom-0 left-0 right-0 z-10 flex items-center justify-around border-t border-[var(--afc-border)] bg-[var(--afc-sidebar)]/95 backdrop-blur py-2 safe-area-pb">
-        {nav.slice(0, 4).map((item) => {
+        {flatNav.slice(0, 4).map((item) => {
           const Icon = item.icon;
-          const active = isActive(item.href);
+          const active = isActive(item.href, item.exact);
           return (
             <Link
               key={item.href}
@@ -675,7 +655,7 @@ export default function DashboardLayout({
           onClick={() => setMobileMenuOpen(true)}
           className={cn(
             'flex flex-col items-center gap-0.5 rounded-xl px-3 py-2 min-w-[72px] transition touch-manipulation',
-            pathname !== '/dashboard' && nav.slice(4).some((item) => isActive(item.href))
+            flatNav.slice(4).some((item) => isActive(item.href, item.exact))
               ? 'bg-[var(--sidebar-accent)] font-medium text-[var(--primary)] shadow-sm'
               : 'text-[var(--afc-muted)] hover:text-[var(--afc-text)]',
           )}

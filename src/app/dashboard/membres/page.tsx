@@ -76,8 +76,6 @@ export default function MembresPage() {
 
   if (!canList) return (
     <div className="rounded-xl border border-[var(--afc-border)] bg-[var(--afc-card)] p-6">
-      <h1 className="font-serif text-[22px] text-[var(--afc-text)]">Membres</h1>
-      <p className="mt-2 text-sm text-[var(--afc-muted)]">Accès réservé au bureau du club.</p>
     </div>
   );
 
@@ -89,15 +87,8 @@ export default function MembresPage() {
   return (
     <div className="space-y-5">
       {/* Header */}
-      <header className="flex flex-wrap items-end justify-between gap-4 pt-1">
-        <div>
-          <h1 className="font-serif text-[22px] text-[var(--afc-text)]">Membres</h1>
-          <p className="mt-0.5 text-sm text-[var(--afc-muted)]">Liste &amp; suivi des joueurs du club</p>
-        </div>
+      <header className="flex flex-wrap items-center justify-end gap-3">
         <div className="flex flex-wrap gap-3">
-          <Link href="/dashboard/cotisations/paiement" className="afc-button-secondary">
-            <Plus size={15} strokeWidth={2} aria-hidden="true" /> Nouveau paiement
-          </Link>
           {user?.role === 'ADMIN' && (
             <Link href="/dashboard/membres/new" className="btn-primary">
               <Plus size={15} strokeWidth={2} aria-hidden="true" /> Nouveau membre

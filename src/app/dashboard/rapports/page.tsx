@@ -33,8 +33,6 @@ export default function RapportsPage() {
   if (!canAccess) {
     return (
       <div className="card">
-        <h1 className="font-serif text-[22px] text-[var(--foreground)] mb-2">Rapports</h1>
-        <p className="text-[var(--afc-muted)]">Réservé à l’Admin, au Trésorier et au Commissaire.</p>
         <Link href="/dashboard" className="mt-4 inline-block text-[var(--sky-blue-dark)] hover:underline">
           ← Tableau de bord
         </Link>
@@ -44,11 +42,7 @@ export default function RapportsPage() {
 
   return (
     <div className="space-y-8">
-      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
-        <div>
-          <h1 className="font-serif text-[22px] text-[var(--foreground)]">Rapports</h1>
-          <p className="text-[var(--afc-muted)] mt-1">Rapport mensuel, annuel et export des transactions.</p>
-        </div>
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-end gap-4">
         <div className="flex gap-2 items-center">
           <select
             className="input-field w-auto"

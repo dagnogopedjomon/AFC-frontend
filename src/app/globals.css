@@ -221,10 +221,6 @@ body {
 ::selection { background: var(--primary); color: var(--primary-foreground); }
 :focus-visible { outline: 2px solid var(--primary); outline-offset: 2px; }
 
-@media (min-width: 1024px) {
-  .dashboard-content-offset { padding-left: 64px !important; }
-}
-
 /* ============================================================
  * Hiérarchie des textes (tailles de la charte)
  * ============================================================ */

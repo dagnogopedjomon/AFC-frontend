@@ -71,10 +71,6 @@ export default function MesCotisationsPage() {
 
   return (
     <div className="space-y-5">
-      <header className="pt-1">
-        <h1 className="font-serif text-[22px] text-[var(--afc-text)]">Mes cotisations</h1>
-        <p className="mt-0.5 text-sm text-[var(--afc-muted)]">Mensuelles et exceptionnelles.</p>
-      </header>
 
       <section className="rounded-xl border border-[var(--afc-border)] bg-[var(--afc-card)] p-5">
         <div className="flex flex-wrap items-center justify-between gap-3">

@@ -57,13 +57,7 @@ function LivreBureau() {
 
   return (
     <div className="space-y-5">
-      <header className="flex flex-col gap-3 pt-1 sm:flex-row sm:items-end sm:justify-between">
-        <div>
-          <h1 className="font-serif text-[22px] text-[var(--afc-text)]">Livre de caisse</h1>
-          <p className="mt-0.5 text-sm text-[var(--afc-muted)]">
-            Historique unifié : cotisations, allocations vers sous-caisses, dépenses et retraits.
-          </p>
-        </div>
+      <header className="flex flex-col gap-3 pt-1 sm:flex-row sm:items-center sm:justify-end">
         <p className="text-xs font-semibold uppercase tracking-[.16em] text-[var(--afc-muted-3)]">Journal des mouvements</p>
       </header>
 

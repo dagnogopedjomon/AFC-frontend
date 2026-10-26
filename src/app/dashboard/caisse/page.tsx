@@ -295,17 +295,8 @@ export default function CaissePage() {
 
   return (
     <div className="space-y-5">
-      <header className="flex flex-col gap-4 pt-1 sm:flex-row sm:items-end sm:justify-between">
-        <div>
-          <h1 className="font-serif text-[22px] text-[var(--afc-text)]">Caisse</h1>
-          <p className="mt-0.5 text-sm text-[var(--afc-muted)]">
-            {canAct
-              ? 'Solde et dépenses. Validation en 2 niveaux : Trésorier puis Commissaire aux comptes.'
-              : 'Consultation en lecture seule — transparence totale sur les entrées, sorties et soldes.'}
-          </p>
-        </div>
+      <header className="flex flex-col gap-4 pt-1 sm:flex-row sm:items-center sm:justify-end">
         <div className="flex shrink-0 items-center gap-3">
-          <Link href="/dashboard/cotisations/paiement" className="afc-button-secondary"><Plus size={15} strokeWidth={2} aria-hidden="true" /> Nouveau paiement</Link>
           {canCreate && <Link href="/dashboard/caisse/nouvelle-depense" className="afc-button-primary"><Plus size={15} strokeWidth={2} aria-hidden="true" /> Ajouter une dépense</Link>}
         </div>
       </header>

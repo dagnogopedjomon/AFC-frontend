@@ -111,10 +111,6 @@ export default function CotisationMensuellePage() {
     };
     return (
       <div className="space-y-5">
-        <header className="pt-1">
-          <h1 className="font-serif text-[22px] text-[var(--afc-text)]">Cotisation mensuelle</h1>
-          <p className="mt-0.5 text-sm text-[var(--afc-muted)]">Suivi annuel des mensualités par membre.</p>
-        </header>
 
         <div className="space-y-4 rounded-xl border border-[var(--afc-border)] bg-[var(--afc-card)] p-4">
           <div className="flex flex-col gap-4 xl:flex-row xl:items-center xl:justify-between">

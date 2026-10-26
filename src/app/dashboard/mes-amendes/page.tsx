@@ -37,10 +37,6 @@ export default function MesAmendesPage() {
 
   return (
     <div className="space-y-5">
-      <header className="pt-1">
-        <h1 className="font-serif text-[22px] text-[var(--afc-text)]">Mes amendes</h1>
-        <p className="mt-0.5 text-sm text-[var(--afc-muted)]">Suivi de vos pénalités et de leurs règlements.</p>
-      </header>
 
       <section className="overflow-hidden rounded-xl border border-[var(--afc-border)] bg-[var(--afc-card)]">
         <div className="flex flex-wrap gap-2 p-4">

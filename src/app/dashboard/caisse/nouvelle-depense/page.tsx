@@ -76,10 +76,6 @@ export default function NouvelleDepensePage() {
   if (!canCreate) {
     return (
       <div className="card">
-        <h1 className="font-serif text-[22px] text-[var(--foreground)] mb-2">Nouvelle dépense</h1>
-        <p className="text-[var(--afc-muted)] mb-4">
-          Seuls l’Admin et le Trésorier peuvent créer une dépense. La validation se fait en 2 niveaux (Trésorier puis Commissaire).
-        </p>
         <Link href="/dashboard/caisse" className="text-[var(--sky-blue-dark)] hover:underline">
           ← Retour à la caisse
         </Link>
@@ -96,12 +92,6 @@ export default function NouvelleDepensePage() {
         >
           ← Caisse
         </Link>
-      </div>
-      <div>
-        <h1 className="font-serif text-[22px] text-[var(--foreground)]">Nouvelle dépense</h1>
-        <p className="text-[var(--afc-muted)] mt-1">
-          La dépense devra être validée par le Trésorier puis par le Commissaire aux comptes.
-        </p>
       </div>
 
       <div className="card max-w-xl">

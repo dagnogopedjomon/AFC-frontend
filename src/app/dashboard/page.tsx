@@ -3,7 +3,7 @@
 import { useEffect, useMemo, useState } from 'react';
 import Link from 'next/link';
 import { ResponsiveContainer, BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend } from 'recharts';
-import { ArrowUpRight, Wallet, Users, CalendarDays, Plus } from 'lucide-react';
+import { ArrowUpRight, Wallet, Users, CalendarDays } from 'lucide-react';
 import { useAuth } from '@/lib/auth-context';
 import { DashboardMembre } from '@/components/DashboardMembre';
 import { EcheanceBanner } from '@/components/EcheanceBanner';
@@ -31,7 +31,7 @@ function Metric({
   footer?: React.ReactNode;
 }) {
   return (
-    <div className="rounded-xl border border-[var(--afc-border)] bg-[var(--afc-card)] p-4 shadow-sm">
+    <div className="rounded-[14px] border border-[var(--afc-border)] bg-[var(--afc-card)] p-5 shadow-sm">
       <div className="flex items-center gap-2">
         <div className="grid h-[26px] w-[26px] shrink-0 place-items-center rounded-md" style={{ background: iconBg }}>
           {icon}
@@ -54,16 +54,8 @@ export default function DashboardPage() {
 
 function MemberHome() {
   const { user } = useAuth();
-  const hour = new Date().getHours();
-  const greeting = hour < 18 ? 'Bonjour' : 'Bonsoir';
   return (
     <div className="space-y-6">
-      <header>
-        <h1 className="font-serif text-[22px] text-[var(--afc-text)]">
-          {greeting}, <span className="afc-accent-word">{user?.firstName ?? ''}</span>.
-        </h1>
-        <p className="mt-1 text-[13px] text-[var(--afc-muted)]">Votre situation et la trésorerie du club.</p>
-      </header>
       <EcheanceBanner audience="member" />
       <DashboardMembre />
     </div>
@@ -108,24 +100,9 @@ function BureauDashboard() {
   const currentBox = caisse?.boxes.find((b) => b.isDefault) ?? caisse?.boxes[0];
   const exceptional = caisse?.boxes.find((b) => b.id !== currentBox?.id);
   const chart = annual?.months.map((m) => ({ month: shortMonth.format(new Date(m.year, m.month - 1, 1)), Encaissé: m.totalEntries, Dépensé: m.totalExits })) ?? [];
-  const hour = now.getHours();
-  const greeting = hour >= 18 || hour < 5 ? 'Bonsoir' : 'Bonjour';
 
   return (
     <div className="space-y-6">
-      <header className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-        <div>
-          <h1 className="font-serif text-[22px] text-[var(--afc-text)]">
-            {greeting}, <span className="afc-accent-word">{user?.firstName ?? ''}</span>.
-          </h1>
-          <p className="mt-1 text-[13px] text-[var(--afc-muted)]">Votre trésorerie du club et l&apos;activité des 30 derniers jours.</p>
-        </div>
-        <Link href="/dashboard/cotisations/paiement" className="btn-primary shrink-0">
-          <Plus size={16} strokeWidth={1.8} aria-hidden="true" />
-          Nouveau paiement
-        </Link>
-      </header>
-
       <EcheanceBanner audience="bureau" />
 
       {loading ? (
@@ -137,7 +114,7 @@ function BureauDashboard() {
           <div className="grid gap-4 grid-cols-2 lg:grid-cols-4">
             <Link href="/dashboard/caisse" className="block">
               <Metric title="Caisse de départ" iconBg="rgba(47,104,177,0.12)" icon={<Wallet size={14} color={CHARTE.primary} />} footer="Fonds avant l'application">
-                <span className="afc-figure text-[28px] text-[var(--afc-text)]">{money(Number(currentBox?.openingBalance ?? 0))}</span>
+                <span className="afc-figure text-[36px] leading-none text-[var(--afc-text)]">{money(Number(currentBox?.openingBalance ?? 0))}</span>
                 <span className="font-sans text-xs text-[var(--afc-muted)]">F CFA</span>
               </Metric>
             </Link>
@@ -148,7 +125,7 @@ function BureauDashboard() {
                 icon={<ArrowUpRight size={14} color={CHARTE.primary} />}
                 footer={<span className="font-medium text-[var(--primary)]">↗ Solde net</span>}
               >
-                <span className="afc-figure text-[28px] text-[var(--afc-text)]">{money(Number(caisse?.global.solde ?? 0))}</span>
+                <span className="afc-figure text-[36px] leading-none text-[var(--afc-text)]">{money(Number(caisse?.global.solde ?? 0))}</span>
                 <span className="font-sans text-xs text-[var(--afc-muted)]">F CFA</span>
               </Metric>
             </Link>
@@ -158,15 +135,15 @@ function BureauDashboard() {
               icon={<Wallet size={14} color={CHARTE.primary} />}
               footer={<span className="font-medium text-[var(--primary)]">↗ Solde net</span>}
             >
-              <span className="afc-figure text-[28px] text-[var(--afc-text)]">{money(Number(currentBox?.solde ?? 0))}</span>
+              <span className="afc-figure text-[36px] leading-none text-[var(--afc-text)]">{money(Number(currentBox?.solde ?? 0))}</span>
               <span className="font-sans text-xs text-[var(--afc-muted)]">F</span>
             </Metric>
             <Metric title="Caisse · exceptionnelle" iconBg="rgba(127,100,180,0.14)" icon={<Wallet size={14} color={CHARTE.chart5} />} footer="Solde net">
-              <span className="afc-figure text-[28px] text-[var(--afc-text)]">{money(Number(exceptional?.solde ?? 0))}</span>
+              <span className="afc-figure text-[36px] leading-none text-[var(--afc-text)]">{money(Number(exceptional?.solde ?? 0))}</span>
               <span className="font-sans text-xs text-[var(--afc-muted)]">F</span>
             </Metric>
             <Metric title="Membres actifs" iconBg="rgba(var(--afc-hl),0.06)" icon={<Users size={14} color={CHARTE.muted} />} footer={`${inactive} inactif${inactive !== 1 ? 's' : ''}`}>
-              <span className="afc-figure text-[28px] text-[var(--afc-text)]">{active.length}</span>
+              <span className="afc-figure text-[36px] leading-none text-[var(--afc-text)]">{active.length}</span>
               <span className="font-sans text-xs text-[var(--afc-muted)]">/ {members.length}</span>
             </Metric>
             <Metric
@@ -175,11 +152,11 @@ function BureauDashboard() {
               icon={<ArrowUpRight size={14} color={CHARTE.primary} />}
               footer={<span className="font-medium text-[var(--primary)]">↗ {rate}% du club concerné</span>}
             >
-              <span className="afc-figure text-[28px] text-[var(--afc-text)]">{paid}</span>
+              <span className="afc-figure text-[36px] leading-none text-[var(--afc-text)]">{paid}</span>
               <span className="font-sans text-xs text-[var(--afc-muted)]">/ {rows.length}</span>
             </Metric>
             <Metric title="Dépenses · total" iconBg="rgba(var(--afc-hl),0.06)" icon={<CalendarDays size={14} color={CHARTE.muted} />} footer={`${approvedExpenses.length} dépense${approvedExpenses.length !== 1 ? 's' : ''}`}>
-              <span className="afc-figure text-[28px] text-[var(--afc-text)]">{money(expenseTotal)}</span>
+              <span className="afc-figure text-[36px] leading-none text-[var(--afc-text)]">{money(expenseTotal)}</span>
               <span className="font-sans text-xs text-[var(--afc-muted)]">F CFA</span>
             </Metric>
             <Metric
@@ -188,7 +165,7 @@ function BureauDashboard() {
               icon={<Users size={14} color={CHARTE.destructive} />}
               footer={<span className="font-medium text-[var(--destructive)]">{money(late.reduce((s, m) => s + m.debt, 0))} F à recouvrer</span>}
             >
-              <span className="afc-figure text-[28px] text-[var(--destructive)]">{late.length}</span>
+              <span className="afc-figure text-[36px] leading-none text-[var(--destructive)]">{late.length}</span>
             </Metric>
           </div>
 

@@ -41,8 +41,6 @@ export default function NouvelleAnnoncePage() {
   if (!canCreate) {
     return (
       <div className="card">
-        <h1 className="font-serif text-[22px] mb-2">Nouvelle annonce</h1>
-        <p className="text-[var(--afc-muted)]">Réservé au bureau.</p>
         <Link href="/dashboard/activites" className="mt-4 inline-block text-[var(--sky-blue-dark)] hover:underline">← Activités</Link>
       </div>
     );

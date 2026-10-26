@@ -96,11 +96,7 @@ export default function DepensesPage() {
 
   return (
     <div className="min-w-0 space-y-5 overflow-x-hidden">
-      <div className="flex flex-wrap items-end justify-between gap-4 pt-1">
-        <div>
-          <h1 className="font-serif text-[22px] text-[var(--afc-text)]">Dépenses</h1>
-          <p className="mt-0.5 text-sm text-[var(--afc-muted)]">Sorties de caisse</p>
-        </div>
+      <div className="flex flex-wrap items-center justify-end gap-3">
         <div className="flex max-w-full flex-wrap items-center justify-end gap-3">
           {canCreate && (
             <Link href="/dashboard/caisse/nouvelle-depense" className="afc-button-primary w-full sm:w-auto">

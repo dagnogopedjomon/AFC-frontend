@@ -116,10 +116,6 @@ export default function RegularisationsAdminPage() {
 
   return (
     <div className="space-y-5">
-      <header className="pt-1">
-        <h1 className="font-serif text-[22px] text-[var(--afc-text)]">Régularisations</h1>
-        <p className="mt-0.5 text-sm text-[var(--afc-muted)]">Consultez les dettes de chaque membre et créez un accord à partir de quatre mois impayés.</p>
-      </header>
 
       {error && <div className="afc-badge-red rounded-xl border px-4 py-3">{error}</div>}
       {message && <div className="afc-badge-emerald rounded-xl border px-4 py-3">{message}</div>}

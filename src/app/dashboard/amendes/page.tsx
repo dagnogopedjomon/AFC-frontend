@@ -42,11 +42,7 @@ export default function AmendesPage() {
 
   return (
     <div className="space-y-5">
-      <header className="flex flex-wrap items-end justify-between gap-4 pt-1">
-        <div>
-          <h1 className="font-serif text-[22px] text-[var(--afc-text)]">Amendes</h1>
-          <p className="mt-0.5 text-sm text-[var(--afc-muted)]">Suivi des pénalités et des règlements.</p>
-        </div>
+      <header className="flex flex-wrap items-center justify-end gap-3">
         <button className="afc-button-primary w-full sm:w-auto" onClick={openWizard}>
           <Plus size={15} strokeWidth={2} aria-hidden="true" /> Nouvelle amende
         </button>

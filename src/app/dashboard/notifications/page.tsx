@@ -111,16 +111,6 @@ export default function NotificationsPage() {
 
   return (
     <div className="space-y-5">
-      <header className="pt-1">
-        <h1 className="font-serif text-[22px] text-[var(--afc-text)]">
-          {canAccess ? 'Notifications' : 'Mes notifications'}
-        </h1>
-        <p className="mt-0.5 text-sm text-[var(--afc-muted)]">
-          {canAccess
-            ? 'Envoi de messages aux membres en retard et historique.'
-            : 'Les messages du bureau vous concernant.'}
-        </p>
-      </header>
 
       {error && (
         <div className="afc-badge-red rounded-xl border px-4 py-3">{error}</div>

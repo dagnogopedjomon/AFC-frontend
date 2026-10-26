@@ -60,12 +60,6 @@ export default function NewMemberPage() {
   if (!canCreate) {
     return (
       <div className="card">
-        <h1 className="font-serif text-[22px] text-[var(--foreground)] mb-2">
-          Inviter un membre
-        </h1>
-        <p className="text-[var(--afc-muted)] mb-4">
-          Seul l’Admin peut inviter des membres (Admin ≠ Président).
-        </p>
         <Link href="/dashboard/membres" className="text-[var(--sky-blue-dark)] hover:underline">
           ← Retour à la liste des membres
         </Link>
@@ -82,14 +76,6 @@ export default function NewMemberPage() {
         >
           ← Membres
         </Link>
-      </div>
-      <div>
-        <h1 className="font-serif text-[22px] text-[var(--foreground)]">
-          Inviter un membre
-        </h1>
-        <p className="text-[var(--afc-muted)] mt-1">
-          Saisissez le téléphone. La personne sera créée comme membre ; le rôle (Président, Trésorier, etc.) pourra être attribué après élections depuis sa fiche.
-        </p>
       </div>
 
       {activationLink && (

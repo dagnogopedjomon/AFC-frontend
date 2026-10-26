@@ -107,10 +107,6 @@ export default function PaiementPage() {
 
   return (
     <div className="mx-auto max-w-3xl space-y-5">
-      <header className="pt-1">
-        <h1 className="font-serif text-[22px] text-[var(--afc-text)]">Paiement déjà reçu</h1>
-        <p className="mt-1 text-sm text-[var(--afc-muted)]">Enregistrez rapidement un paiement encaissé hors de l&rsquo;application.</p>
-      </header>
 
       {error && <div className="afc-badge-red rounded-xl border px-4 py-3">{error}</div>}
       {success && <div className="afc-badge-emerald flex items-center gap-2 rounded-xl border px-4 py-3"><CheckCircle2 size={19} />{success}</div>}

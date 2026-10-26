@@ -25,10 +25,6 @@ export default function ExonerationsPage(){
   }
   return (
     <div className="space-y-5">
-      <header className="pt-1">
-        <h1 className="font-serif text-[22px] text-[var(--afc-text)]">Mois exonérés</h1>
-        <p className="mt-0.5 text-sm text-[var(--afc-muted)]">Les mois exonérés ne génèrent ni retard, ni suspension.</p>
-      </header>
       <form onSubmit={submit} className="grid gap-4 rounded-xl border border-[var(--afc-border)] bg-[var(--afc-card)] p-5 md:grid-cols-4">
         <label className="text-sm font-medium text-[var(--afc-text-soft)] md:col-span-2">
           Membre
