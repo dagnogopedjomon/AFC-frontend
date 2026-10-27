@@ -1,0 +1,91 @@
+# Dépôt automatique du site sur l'hébergement Hostinger du club.
+#
+# Fabrique le site (page d'accueil publique + application) et le téléverse
+# dans public_html par FTP. L'envoi est incrémental : seuls les fichiers
+# modifiés partent, grâce à l'état de synchronisation laissé sur le serveur.
+#
+# Se déclenche :
+#   - à chaque mise à jour du code sur main ;
+#   - à la main, depuis l'onglet Actions (bouton « Run workflow ») ;
+#   - à la demande de l'application, quand un contenu est publié ou retiré
+#     (événement repository_dispatch de type « publication »).
+#
+# Secrets à créer dans Settings → Secrets and variables → Actions :
+#   FTP_SERVER     l'adresse FTP de Hostinger
+#   FTP_USERNAME   l'identifiant FTP
+#   FTP_PASSWORD   le mot de passe FTP
+#
+# Variables (même écran, onglet « Variables ») — facultatives, des valeurs
+# par défaut sont prévues :
+#   API_URL        adresse de l'API du club (défaut : https://agbolo.ci/afc-api)
+#   FTP_PROTOCOL   ftps si l'hébergement l'accepte, sinon ftp (défaut : ftps)
+#   FTP_PORT       port FTP (défaut : 21)
+
+name: Déploiement Hostinger
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+  repository_dispatch:
+    types: [publication]
+
+# Un seul déploiement à la fois : si deux publications se suivent, la plus
+# récente remplace la précédente plutôt que de téléverser deux fois.
+concurrency:
+  group: hostinger
+  cancel-in-progress: true
+
+jobs:
+  deployer:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Récupérer le code
+        uses: actions/checkout@v4
+
+      - name: Installer Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: npm
+
+      - name: Installer Python (générateur du site public)
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Installer les dépendances
+        run: npm ci
+
+      - name: Fabriquer le site
+        env:
+          # Lue par l'application dans le navigateur.
+          NEXT_PUBLIC_API_URL: ${{ vars.API_URL || 'https://agbolo.ci/afc-api' }}
+          # Lue par le générateur pour récupérer les contenus publiés.
+          AFC_API_URL: ${{ vars.API_URL || 'https://agbolo.ci/afc-api' }}
+        run: npm run build
+
+      - name: Vérifier que le site a bien été fabriqué
+        run: |
+          test -f out/index.html || { echo "Le site n'a pas été fabriqué."; exit 1; }
+          test -d out/dashboard || { echo "L'application est absente."; exit 1; }
+          echo "$(find out -type f | wc -l) fichiers prêts à être envoyés."
+
+      - name: Téléverser dans public_html
+        uses: SamKirkland/FTP-Deploy-Action@v4.3.5
+        with:
+          server: ${{ secrets.FTP_SERVER }}
+          username: ${{ secrets.FTP_USERNAME }}
+          password: ${{ secrets.FTP_PASSWORD }}
+          protocol: ${{ vars.FTP_PROTOCOL || 'ftps' }}
+          port: ${{ vars.FTP_PORT || 21 }}
+          local-dir: ./out/
+          server-dir: public_html/
+          # Fichiers de l'hébergeur à ne jamais écraser ni supprimer.
+          exclude: |
+            **/.git*
+            **/.git*/**
+            **/node_modules/**
+            **/.htaccess
+            **/cgi-bin/**
+            **/default.php
