@@ -40,3 +40,8 @@ yarn-error.log*
 *.tsbuildinfo
 next-env.d.ts
 out/
+
+# Sorties du générateur du site public (refabriquées à chaque build)
+site-public/deploy_netlify/
+site-public/build_artifacts/
+afc-hostinger-export.zip

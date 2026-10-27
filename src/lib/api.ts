@@ -751,6 +751,68 @@ export const activitiesApi = {
   deletePhoto: (id: string) => api<{ success: boolean }>(`/activities/photos/${id}`, { method: 'DELETE' }),
 };
 
+export type DocumentCategory = 'STATUTS' | 'REGLEMENT' | 'COMPTES_RENDUS' | 'AUTRES';
+
+/** Document téléchargeable depuis le site du club (lot 2 du module Publications). */
+export type ClubDocument = {
+  id: string;
+  title: string;
+  description: string | null;
+  category: DocumentCategory;
+  date: string;
+  fileUrl: string;
+  fileName: string;
+  fileType: string;
+  fileSize: number;
+  publicationStatus: PublicationStatus;
+  publishedAt: string | null;
+  createdAt: string;
+  updatedAt: string;
+  uploadedBy?: { id: string; firstName: string; lastName: string };
+};
+
+export const documentsApi = {
+  list: (params: { q?: string; statut?: PublicationStatus; categorie?: DocumentCategory } = {}) => {
+    const query = new URLSearchParams();
+    if (params.q) query.set('q', params.q);
+    if (params.statut) query.set('statut', params.statut);
+    if (params.categorie) query.set('categorie', params.categorie);
+    const suffixe = query.toString();
+    return api<ClubDocument[]>(`/documents${suffixe ? `?${suffixe}` : ''}`);
+  },
+  one: (id: string) => api<ClubDocument>(`/documents/${id}`),
+  /** Dépôt : le fichier et les champs partent ensemble. */
+  create: (
+    file: File,
+    data: { title: string; description?: string; category?: DocumentCategory; date?: string },
+  ) => {
+    const form = new FormData();
+    form.append('file', file);
+    form.append('title', data.title);
+    if (data.description) form.append('description', data.description);
+    if (data.category) form.append('category', data.category);
+    if (data.date) form.append('date', data.date);
+    return api<ClubDocument>('/documents', { method: 'POST', body: form });
+  },
+  /** Remplacer le fichier sans toucher aux autres champs. */
+  replaceFile: (id: string, file: File) => {
+    const form = new FormData();
+    form.append('file', file);
+    return api<ClubDocument>(`/documents/${id}/fichier`, { method: 'POST', body: form });
+  },
+  update: (
+    id: string,
+    data: { title?: string; description?: string; category?: DocumentCategory; date?: string },
+  ) => api<ClubDocument>(`/documents/${id}`, { method: 'PATCH', body: JSON.stringify(data) }),
+  /** Publier, retirer ou archiver sur le site public. */
+  setPublication: (id: string, status: PublicationStatus) =>
+    api<ClubDocument>(`/documents/${id}/publication`, {
+      method: 'PATCH',
+      body: JSON.stringify({ status }),
+    }),
+  delete: (id: string) => api<{ deleted: boolean }>(`/documents/${id}`, { method: 'DELETE' }),
+};
+
 export const caisseApi = {
   summary: () => api<CaisseSummary>('/caisse'),
   livre: (limit?: number) =>
