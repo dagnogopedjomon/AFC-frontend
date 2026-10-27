@@ -1,0 +1,45 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" media="(prefers-color-scheme: light)" content="#F9FAFB">
+<meta name="theme-color" media="(prefers-color-scheme: dark)" content="#14171A">
+<link rel="icon" type="image/png" href="/logo.png">
+<link rel="apple-touch-icon" href="/logo.png">
+<style>:root{padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}[hidden]{display:none!important}body{margin:0}img{max-width:100%}</style>
+<title>Page introuvable · Amicale FC</title>
+<meta name="robots" content="noindex">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght,SOFT,WONK@0,9..144,300..600,0..100,0..1;1,9..144,300..600,0..100,0..1&family=Inter:wght@400;500&family=JetBrains+Mono:wght@500&display=swap">
+<style>
+/* Couleurs et polices de l'appli AFC (Zorkot). */
+:root { --background: hsl(210 20% 98%); --foreground: hsl(214 15% 15%); --secondary: hsl(210 20% 94%); --muted: hsl(214 8% 45%); --primary: hsl(214 58% 44%); --on-primary: #fff; --border: hsl(210 15% 85%); --grid: rgba(0, 0, 0, .035); }
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) { --background: hsl(214 12% 9%); --foreground: hsl(210 8% 95%); --secondary: hsl(214 8% 16%); --muted: hsl(210 6% 60%); --primary: hsl(214 65% 68%); --on-primary: hsl(214 30% 12%); --border: hsl(214 8% 22%); --grid: rgba(255, 255, 255, .04); color-scheme: dark; } }
+:root[data-theme="dark"] { --background: hsl(214 12% 9%); --foreground: hsl(210 8% 95%); --secondary: hsl(214 8% 16%); --muted: hsl(210 6% 60%); --primary: hsl(214 65% 68%); --on-primary: hsl(214 30% 12%); --border: hsl(214 8% 22%); --grid: rgba(255, 255, 255, .04); color-scheme: dark; }
+html, body { height: 100%; }
+body { background: var(--secondary); color: var(--foreground); font: 400 16px/1.6 "Inter", system-ui, sans-serif; display: grid; place-items: center; padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px)); background-image: linear-gradient(to right, var(--grid) 1px, transparent 1px), linear-gradient(to bottom, var(--grid) 1px, transparent 1px); background-size: 56px 56px; }
+main { max-width: 520px; display: grid; gap: 18px; justify-items: start; padding-block: 48px; }
+img { width: 48px; height: auto; }
+p.k { margin: 0; font: 500 10.5px/1.4 "JetBrains Mono", ui-monospace, monospace; text-transform: uppercase; letter-spacing: .18em; color: var(--muted); }
+h1 { margin: 0; font: 300 clamp(40px, 8vw, 64px)/1 "Fraunces", Georgia, serif; letter-spacing: -.03em; font-variation-settings: "SOFT" 50, "WONK" 0; }
+h1 em { font-style: italic; font-weight: 400; color: var(--primary); font-variation-settings: "SOFT" 100, "WONK" 1; }
+p { margin: 0; color: var(--muted); }
+a.btn { display: inline-flex; align-items: center; min-height: 44px; padding: 0 1.15em; border-radius: .625rem; background: var(--primary); color: var(--on-primary); text-decoration: none; font-weight: 500; }
+a.btn:focus-visible { outline: 2px solid var(--primary); outline-offset: 3px; }
+</style>
+</head>
+<body>
+<main>
+  <img src="/logo.png" alt="" width="48" height="55">
+  <p class="k">— Erreur 404</p>
+  <h1>Hors-jeu, <em>page introuvable.</em></h1>
+  <p>L'adresse demandée n'existe pas, ou plus. Revenez à l'accueil du club.</p>
+  <a class="btn" href="/">Retour à l'accueil</a>
+</main>
+<script>
+try { var s = localStorage.getItem("afc-theme"); if (s === "light" || s === "dark") document.documentElement.setAttribute("data-theme", s); } catch (e) {}
+</script>
+</body>
+</html>

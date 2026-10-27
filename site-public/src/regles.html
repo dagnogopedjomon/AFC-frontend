@@ -1,0 +1,652 @@
+<title>Règles de jeu AFC</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght,SOFT,WONK@0,9..144,300..600,0..100,0..1;1,9..144,300..600,0..100,0..1&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap">
+<style>
+/* Couleurs et polices de l'appli AFC (Zorkot), comme la page d'accueil : page claire ou sombre au choix,
+   lecteur toujours sombre (fond sombre de l'appli), terrain vert. Sommaire en barre latérale. */
+:root {
+  --bg: hsl(210 20% 98%);
+  --ink: hsl(214 15% 15%);
+  --body: hsl(214 12% 26%);
+  --muted: hsl(214 8% 42%);
+  --rule: hsl(210 15% 85%);
+  --card: hsl(0 0% 100%);
+  --wash: hsl(210 20% 94%);
+  --accent: hsl(214 58% 44%);
+  --on-accent: hsl(0 0% 100%);
+  --grid: rgba(0, 0, 0, .04);
+  --gold: #DDAC3C;
+  --ok: hsl(150 45% 32%);
+  --no: hsl(12 60% 50%);
+  --warn: hsl(36 75% 38%);
+  --stage: hsl(214 12% 9%);
+  --stage-line: hsl(214 8% 20%);
+  --screen-accent: hsl(214 65% 68%);
+  --team-b: hsl(214 62% 52%);
+  --team-r: hsl(12 62% 52%);
+  --team-g: hsl(42 75% 50%);
+  --f-display: "Fraunces", Georgia, "Times New Roman", serif;
+  --f-body: "Inter", system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  --f-mono: "JetBrains Mono", ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+  --radius: .625rem;
+  --ease-out: cubic-bezier(0.23, 1, 0.32, 1);
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: hsl(214 12% 9%); --ink: hsl(210 8% 95%); --body: hsl(210 6% 80%); --muted: hsl(210 6% 62%); --rule: hsl(214 8% 22%);
+    --card: hsl(214 10% 13%); --wash: hsl(214 8% 16%); --accent: hsl(214 65% 68%); --on-accent: hsl(214 30% 12%); --grid: rgba(255, 255, 255, .045);
+    --ok: hsl(150 40% 52%); --no: hsl(12 60% 62%); --warn: hsl(42 70% 62%);
+    --stage: hsl(214 12% 7%); --stage-line: hsl(214 8% 18%);
+    color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: hsl(214 12% 9%); --ink: hsl(210 8% 95%); --body: hsl(210 6% 80%); --muted: hsl(210 6% 62%); --rule: hsl(214 8% 22%);
+  --card: hsl(214 10% 13%); --wash: hsl(214 8% 16%); --accent: hsl(214 65% 68%); --on-accent: hsl(214 30% 12%); --grid: rgba(255, 255, 255, .045);
+  --ok: hsl(150 40% 52%); --no: hsl(12 60% 62%); --warn: hsl(42 70% 62%);
+  --stage: hsl(214 12% 7%); --stage-line: hsl(214 8% 18%);
+  color-scheme: dark;
+}
+* { box-sizing: border-box; }
+html { scrollbar-color: var(--rule) var(--bg); }
+body { background: var(--bg); color: var(--body); font: 400 16px/1.55 var(--f-body); -webkit-font-smoothing: antialiased; transition: background-color .35s ease, color .35s ease; caret-color: var(--accent); }
+::selection { background: var(--accent); color: var(--on-accent); }
+:focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; }
+
+/* Barre du club */
+.bar { position: relative; border-bottom: 1px solid var(--rule); background: var(--wash); isolation: isolate; overflow: hidden; }
+.bar::before { content: ""; position: absolute; inset: 0; z-index: -1; pointer-events: none; background-image: linear-gradient(to right, var(--grid) 1px, transparent 1px), linear-gradient(to bottom, var(--grid) 1px, transparent 1px); background-size: 56px 56px; -webkit-mask-image: radial-gradient(ellipse 80% 90% at 25% 30%, #000 30%, transparent 85%); mask-image: radial-gradient(ellipse 80% 90% at 25% 30%, #000 30%, transparent 85%); }
+.bar-in { max-width: 1240px; margin: 0 auto; padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px)); padding-block: 14px 40px; }
+.bar-top { display: flex; align-items: center; gap: 12px; min-height: 48px; }
+.brand { display: flex; align-items: center; gap: 12px; margin-right: auto; text-decoration: none; color: var(--ink); min-width: 0; }
+.brand img { width: 32px; height: auto; flex: none; }
+.brand b { display: block; font: 500 17px/1.1 var(--f-display); }
+.brand span { display: block; font: 500 10px/1.3 var(--f-mono); text-transform: uppercase; letter-spacing: .14em; color: var(--muted); margin-top: 2px; }
+.icon-btn { width: 40px; height: 40px; border-radius: var(--radius); border: 1px solid var(--rule); background: var(--card); color: var(--ink); display: grid; place-items: center; cursor: pointer; flex: none; transition: transform 140ms var(--ease-out), border-color .2s ease; }
+.icon-btn:active { transform: scale(.94); }
+.icon-btn svg { width: 18px; height: 18px; }
+@media (hover: hover) and (pointer: fine) { .icon-btn:hover { border-color: var(--accent); } }
+.theme-dark-icon { display: none; }
+:root[data-theme="dark"] .theme-dark-icon { display: block; } :root[data-theme="dark"] .theme-light-icon { display: none; }
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) .theme-dark-icon { display: block; } :root:not([data-theme="light"]) .theme-light-icon { display: none; } }
+h1 { font-family: var(--f-display); font-weight: 300; font-size: clamp(40px, 6.4vw, 76px); line-height: 1; letter-spacing: -.035em; color: var(--ink); margin: 34px 0 0; text-wrap: balance; font-variation-settings: "SOFT" 50, "WONK" 0; }
+h1 em { font-style: italic; font-weight: 400; color: var(--accent); font-variation-settings: "SOFT" 100, "WONK" 1; }
+.lede { margin: 16px 0 0; color: var(--body); max-width: 60ch; font-size: 17px; }
+.kicker { margin: 30px 0 0; font: 500 10.5px/1.4 var(--f-mono); text-transform: uppercase; letter-spacing: .18em; color: var(--muted); }
+.kicker + h1 { margin-top: 12px; }
+.bar-in { padding-bottom: 72px !important; }
+
+.wrap { max-width: 1240px; margin: 0 auto; padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px)); padding-block: 28px 56px; display: grid; grid-template-columns: minmax(0, 1fr); gap: 40px; }
+@media (min-width: 960px) {
+  .wrap { grid-template-columns: 252px minmax(0, 1fr); column-gap: 32px; }
+  .wrap > .player { grid-column: 2; grid-row: 1; }
+  .wrap > .ref { grid-column: 2; grid-row: 2; }
+  .wrap > footer.note { grid-column: 2; grid-row: 3; }
+  .wrap > .toc { grid-column: 1; grid-row: 1 / 4; align-self: start; position: sticky; top: 16px; margin-top: -64px; z-index: 1; background: var(--card); border: 1px solid var(--rule); border-radius: calc(var(--radius) * 1.8); padding: 18px 12px 12px; max-height: calc(100vh - 32px); overflow-y: auto; box-shadow: 0 1px 2px rgba(16, 32, 64, .08), 0 24px 48px -28px rgba(16, 32, 64, .35); }
+  .toc h2 { font-size: 22px !important; padding: 0 8px; margin-bottom: 12px !important; }
+  .toc .kick { padding: 0 8px; }
+  .toc ol { display: grid !important; grid-template-columns: minmax(0, 1fr) !important; gap: 2px !important; }
+  .toc button { border-color: transparent !important; background: transparent; padding: 10px 10px !important; }
+  .toc button[aria-current="true"] { background: color-mix(in srgb, var(--accent) 12%, var(--card)) !important; }
+  @media (hover: hover) and (pointer: fine) { .toc button:hover { background: var(--wash); } }
+}
+@media (max-width: 959px) {
+  .toc ol { display: flex !important; overflow-x: auto; scrollbar-width: none; padding-bottom: 4px; }
+  .toc ol::-webkit-scrollbar { display: none; }
+  .toc li { flex: none; }
+  .toc .steps { display: none; }
+  .toc button { white-space: nowrap; }
+}
+.toc .kick { margin: 0 0 6px; font: 500 10.5px/1.4 var(--f-mono); text-transform: uppercase; letter-spacing: .18em; color: var(--muted); }
+.toc .steps { margin-left: auto; font: 400 11px var(--f-mono); color: var(--muted); padding-left: 8px; }
+.wrap > *, .player > * { min-width: 0; }
+.player { grid-template-columns: minmax(0, 1fr); margin-top: -64px; position: relative; z-index: 1; }
+
+/* Lecteur : un écran sombre dans les deux thèmes */
+.player { background: var(--stage); border: 1px solid var(--stage-line); border-radius: calc(var(--radius) * 1.8); overflow: hidden; display: grid; box-shadow: 0 1px 2px rgba(16, 32, 64, .08), 0 24px 48px -24px rgba(16, 32, 64, .45); }
+.stage { position: relative; }
+.stage svg { display: block; width: 100%; height: auto; }
+.chip { position: absolute; top: 12px; font: 500 clamp(10.5px, 1.5vw, 12.5px)/1 var(--f-mono); letter-spacing: .1em; text-transform: uppercase; padding: 7px 11px; border-radius: 999px; }
+.chip.chapter { left: 12px; background: rgba(12, 14, 17, .82); color: hsl(210 8% 95%); -webkit-backdrop-filter: blur(6px); backdrop-filter: blur(6px); }
+.chip.chapter b { color: var(--screen-accent); margin-right: 8px; font: 600 1em var(--f-body); }
+.chip.timer { right: 12px; background: var(--gold); color: hsl(214 15% 12%); font-variant-numeric: tabular-nums; min-width: 64px; text-align: center; }
+.caption { min-height: 4.6em; padding: 16px 20px; color: hsl(210 8% 95%); font: 400 clamp(16px, 2.1vw, 20px)/1.45 var(--f-display); letter-spacing: -.005em; border-top: 1px solid var(--stage-line); }
+.controls { display: flex; flex-wrap: wrap; align-items: center; gap: 10px 12px; padding: 10px 14px 14px; }
+.btn { appearance: none; border: 1px solid hsl(214 8% 24%); background: hsl(214 10% 14%); color: hsl(210 8% 95%); border-radius: var(--radius); height: 42px; min-width: 42px; padding: 0 12px; font: 500 14px var(--f-body); cursor: pointer; display: inline-flex; align-items: center; justify-content: center; gap: 7px; transition: transform 140ms var(--ease-out), background-color .2s ease, border-color .2s ease; }
+.btn:active { transform: scale(.96); }
+@media (hover: hover) and (pointer: fine) { .btn:hover { background: hsl(214 10% 19%); } }
+.btn:focus-visible { outline: 2px solid var(--screen-accent); outline-offset: 2px; }
+.btn.play { background: var(--screen-accent); color: hsl(214 30% 12%); border-color: var(--screen-accent); min-width: 104px; font-weight: 600; }
+@media (hover: hover) and (pointer: fine) { .btn.play:hover { background: hsl(214 65% 74%); } }
+.btn[aria-pressed="true"] { background: hsl(214 40% 22%); border-color: var(--screen-accent); }
+.btn svg { width: 18px; height: 18px; }
+.progress { flex: 1 1 200px; display: flex; gap: 4px; min-width: 0; }
+@media (max-width: 560px) { .progress { flex-basis: 100%; order: 5; } }
+.seg { flex: 1; height: 6px; border-radius: 3px; background: hsl(214 8% 22%); border: 0; padding: 0; cursor: pointer; position: relative; overflow: hidden; }
+.seg span { position: absolute; inset: 0 auto 0 0; width: 0; background: var(--screen-accent); }
+.seg:focus-visible { outline: 2px solid var(--screen-accent); outline-offset: 2px; }
+.stepinfo { color: hsl(210 6% 62%); font: 400 12px var(--f-mono); font-variant-numeric: tabular-nums; white-space: nowrap; }
+.voicenote { color: hsl(210 6% 60%); font-size: 12px; flex-basis: 100%; margin: 0; }
+
+/* Sommaire */
+.toc h2, .ref h2.sec { font-family: var(--f-display); font-weight: 300; font-size: clamp(28px, 3.6vw, 40px); letter-spacing: -.02em; color: var(--ink); margin: 0 0 16px; }
+.toc ol { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(auto-fill, minmax(min(200px, 100%), 1fr)); gap: 8px; }
+.toc button { width: 100%; text-align: left; display: flex; gap: 10px; align-items: baseline; background: var(--card); border: 1px solid var(--rule); border-radius: var(--radius); padding: 12px 14px; color: var(--ink); font: 500 14.5px var(--f-body); cursor: pointer; transition: border-color .2s ease, background-color .2s ease, transform 140ms var(--ease-out); }
+.toc button:active { transform: scale(.98); }
+@media (hover: hover) and (pointer: fine) { .toc button:hover { border-color: var(--accent); } }
+.toc button[aria-current="true"] { border-color: var(--accent); background: color-mix(in srgb, var(--accent) 10%, var(--card)); }
+.toc .n { font: 600 12.5px var(--f-body); color: var(--accent); font-variant-numeric: tabular-nums; min-width: 1.8em; }
+
+/* Texte de référence */
+.ref { display: grid; gap: 12px; }
+.rule { background: var(--card); border: 1px solid var(--rule); border-radius: var(--radius); padding: 18px 20px; display: grid; gap: 10px; scroll-margin-top: 16px; }
+.rule header { display: flex; justify-content: space-between; align-items: baseline; gap: 12px; flex-wrap: wrap; }
+.rule h3 { margin: 0; font: 400 23px/1.2 var(--f-display); letter-spacing: -.01em; color: var(--ink); }
+.rule h3 .n { font: 600 13px var(--f-body); font-variant-numeric: tabular-nums; color: var(--accent); margin-right: 10px; vertical-align: 3px; }
+.rule ul { margin: 0; padding-left: 1.15em; display: grid; gap: 5px; max-width: 75ch; }
+.rule li::marker { color: var(--accent); }
+.link { background: none; border: 0; color: var(--accent); font: 500 14px var(--f-body); cursor: pointer; padding: 4px 0; text-underline-offset: .2em; }
+@media (hover: hover) and (pointer: fine) { .link:hover { text-decoration: underline; } }
+footer.note { color: var(--muted); font: 400 12px/1.7 var(--f-mono); border-top: 1px solid var(--rule); padding-top: 16px; }
+@media (max-width: 560px) { .stepinfo { display: none; } .btn.play { min-width: 88px; } .stage { padding-top: 34px; } .chip { top: 6px; } .brand span { display: none; } }
+.player:fullscreen { border-radius: 0; align-content: center; overflow: auto; }
+.player:fullscreen .stage svg { max-height: 78vh; }
+</style>
+
+<header class="bar">
+  <div class="bar-in">
+    <div class="bar-top">
+      <a class="brand" href="__HOME__"__EXT__ aria-label="Amicale Football Club, page d'accueil">
+        <img src="__LOGO__" alt="" width="32" height="37">
+        <div><b>Amicale FC</b><span>Règles de jeu</span></div>
+      </a>
+      <button class="icon-btn" id="theme" type="button" aria-label="Changer de thème">
+        <svg class="theme-light-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 14.5A8 8 0 1 1 9.5 4a6.5 6.5 0 0 0 10.5 10.5z"/></svg>
+        <svg class="theme-dark-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="12" r="4"/><path d="M12 2.5v2M12 19.5v2M4.6 4.6l1.4 1.4M18 18l1.4 1.4M2.5 12h2M19.5 12h2M4.6 19.4L6 18M18 6l1.4-1.4"/></svg>
+      </button>
+    </div>
+    <p class="kicker">— Maracana sur terrain de five</p>
+    <h1>Nos règles de jeu, <em>à la sauce AFC.</em></h1>
+    <p class="lede">Les adaptations que l'AFC applique aux lois du Maracana, en animation et avec une voix off. Pour tout le reste, on suit les lois officielles.</p>
+  </div>
+</header>
+
+<div class="wrap">
+
+  <section class="player" aria-label="Présentation animée des règles">
+    <div class="stage">
+      <svg id="pitch" viewBox="0 0 1000 580" role="img" aria-label="Terrain de five vu de dessus">
+        <defs>
+          <pattern id="hatch" width="14" height="14" patternUnits="userSpaceOnUse" patternTransform="rotate(45)">
+            <rect width="14" height="14" fill="#DDAC3C" opacity=".28"/><line x1="0" y1="0" x2="0" y2="14" stroke="#DDAC3C" stroke-width="5" opacity=".8"/>
+          </pattern>
+          <marker id="mk-w" viewBox="0 0 10 10" refX="7" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#fff"/></marker>
+          <marker id="mk-g" viewBox="0 0 10 10" refX="7" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#DDAC3C"/></marker>
+        </defs>
+        <rect x="0" y="0" width="1000" height="580" style="fill:var(--stage)"/>
+        <g id="base"></g>
+        <g id="zones"></g>
+        <g id="dyn"></g>
+      </svg>
+      <div class="chip chapter" id="chipChapter"><b>01</b>La séance</div>
+      <div class="chip timer" id="chipTimer" hidden>6 s</div>
+    </div>
+    <div class="caption" id="caption" aria-live="polite"></div>
+    <div class="controls">
+      <button class="btn" id="btnPrev" type="button" aria-label="Étape précédente"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M6 5h2v14H6zM20 5v14L9 12z"/></svg></button>
+      <button class="btn play" id="btnPlay" type="button"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M7 4v16l13-8z"/></svg><span>Lecture</span></button>
+      <button class="btn" id="btnNext" type="button" aria-label="Étape suivante"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M16 5h2v14h-2zM4 5v14l11-7z"/></svg></button>
+      <div class="progress" id="progress" role="group" aria-label="Chapitres"></div>
+      <span class="stepinfo" id="stepInfo"></span>
+      <button class="btn" id="btnVoice" type="button" aria-pressed="true"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M4 9v6h4l5 4V5L8 9zm12.5 3a4.5 4.5 0 0 0-2.5-4v8a4.5 4.5 0 0 0 2.5-4z"/></svg><span>Voix off</span></button>
+      <button class="btn" id="btnFull" type="button" aria-label="Plein écran"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M4 4h6v2H6v4H4zm10 0h6v6h-2V6h-4zM4 14h2v4h4v2H4zm14 0h2v6h-6v-2h4z"/></svg></button>
+      <p class="voicenote" id="voiceNote" hidden></p>
+    </div>
+  </section>
+
+  <nav class="toc" aria-label="Sommaire">
+    <p class="kick">— Sommaire</p>
+    <h2>10 chapitres</h2>
+    <ol id="toc"></ol>
+  </nav>
+
+  <section class="ref" aria-label="Texte des règles">
+    <h2 class="sec">Le texte des règles</h2>
+    <div id="ref" class="ref"></div>
+  </section>
+
+  <footer class="note">Version du 14 octobre 2026. Référence : « Les lois du jeu de Maracana », version MAB 0 du 1er avril 2016. Tout ce qui n'est pas précisé ici suit ces lois officielles.</footer>
+</div>
+
+<script>
+(function () {
+  var root = document.documentElement, btn = document.getElementById("theme");
+  try { var s = localStorage.getItem("afc-theme"); if (s === "light" || s === "dark") root.setAttribute("data-theme", s); } catch (e) {}
+  function isDark() { var a = root.getAttribute("data-theme"); return a ? a === "dark" : matchMedia("(prefers-color-scheme: dark)").matches; }
+  function label() { btn.setAttribute("aria-label", isDark() ? "Passer au thème clair" : "Passer au thème sombre"); }
+  label();
+  btn.addEventListener("click", function () { var n = isDark() ? "light" : "dark"; root.setAttribute("data-theme", n); try { localStorage.setItem("afc-theme", n); } catch (e) {} label(); });
+})();
+</script>
+<script>
+__SCENES__
+</script>
+<script>
+(function () {
+  "use strict";
+  // Voix off enregistrée : passer à true quand les fichiers voix/chXX_sYY.mp3 sont publiés avec la page.
+  const VOICE_FILES = true;
+  const VOICE_DIR = "voix/";
+
+  const $ = (id) => document.getElementById(id);
+  const NS = "http://www.w3.org/2000/svg";
+  const reduceMotion = window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+  const pad = (n) => String(n).padStart(2, "0");
+  const esc = (s) => String(s).replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
+
+  // ───── Terrain fixe ─────
+  (function drawBase() {
+    const { X0, X1, Y0, Y1, MX, MY, SD, SH } = G;
+    let s = "";
+    const w = (X1 - X0) / 10;
+    for (let i = 0; i < 10; i++) s += `<rect x="${X0 + i * w}" y="${Y0}" width="${w}" height="${Y1 - Y0}" fill="${i % 2 ? "#468A5A" : "#3F7F52"}"/>`;
+    s += `<rect x="${X0}" y="${Y0}" width="${X1 - X0}" height="${Y1 - Y0}" fill="none" stroke="#fff" stroke-width="4"/>`;
+    s += `<line x1="${MX}" y1="${Y0}" x2="${MX}" y2="${Y1}" stroke="#fff" stroke-width="3"/>`;
+    s += `<circle cx="${MX}" cy="${MY}" r="55" fill="none" stroke="#fff" stroke-width="3"/><circle cx="${MX}" cy="${MY}" r="5" fill="#fff"/>`;
+    [[X0, 1], [X1, -1]].forEach(([xs, d]) => {
+      s += `<rect x="${d > 0 ? xs : xs - SD}" y="${MY - SH / 2}" width="${SD}" height="${SH}" fill="none" stroke="#fff" stroke-width="3"/>`;
+      s += `<circle cx="${xs + d * G.PEN}" cy="${MY}" r="5" fill="#fff"/>`;
+      s += `<rect x="${d > 0 ? xs - 18 : xs}" y="${MY - 34}" width="18" height="68" fill="#E8EEF4" stroke="#C9D3DE" stroke-width="2"/>`;
+    });
+    s += `<rect x="${X0}" y="${Y0 - 14}" width="${X1 - X0}" height="9" rx="3" fill="#8D9AA8"/>`;
+    s += `<rect x="${X0}" y="${Y1 + 5}" width="${X1 - X0}" height="9" rx="3" fill="#8D9AA8"/>`;
+    $("base").innerHTML = s;
+  })();
+
+  // ───── Données ─────
+  const FLAT = [];
+  SCENES.forEach((ch, ci) => ch.steps.forEach((st, si) => {
+    st.id = `ch${pad(ci + 1)}_s${pad(si + 1)}`;
+    FLAT.push({ ci, si });
+  }));
+  function lastEvent(st) {
+    let m = 0;
+    const kf = (k) => (k || []).forEach((f) => { if (typeof f[0] === "number") m = Math.max(m, f[0]); });
+    (st.actors || []).forEach((a) => { kf(a.k); if (Array.isArray(a.c)) kf(a.c); });
+    kf(st.ball);
+    ["arrows", "labels", "marks", "cards", "raw"].forEach((key) => (st[key] || []).forEach((e) => { m = Math.max(m, (e.t || 0) + 0.8); }));
+    if (st.timer) m = Math.max(m, st.timer.t + Math.min(st.timer.from, 8));
+    return m;
+  }
+  function estimate(st) {
+    const words = st.say.split(/\s+/).length;
+    return Math.max(st.minDur || 0, words * 0.4 + 1.4, lastEvent(st) + 1.4, 4);
+  }
+
+  // ───── Interpolation ─────
+  const ease = (p) => (p < 0.5 ? 2 * p * p : 1 - Math.pow(-2 * p + 2, 2) / 2);
+  function pos(k, t) {
+    if (!k || !k.length) return null;
+    if (t <= k[0][0]) return [k[0][1], k[0][2]];
+    for (let i = 1; i < k.length; i++) {
+      if (t <= k[i][0]) {
+        const [t0, x0, y0] = k[i - 1], [t1, x1, y1] = k[i];
+        const p = t1 === t0 ? 1 : ease((t - t0) / (t1 - t0));
+        return [x0 + (x1 - x0) * p, y0 + (y1 - y0) * p];
+      }
+    }
+    const l = k[k.length - 1];
+    return [l[1], l[2]];
+  }
+  function val(v, t) {
+    if (!Array.isArray(v)) return v;
+    let cur = v[0][1];
+    v.forEach(([ti, x]) => { if (t >= ti) cur = x; });
+    return cur;
+  }
+  const fade = (t, t0, d = 0.35) => Math.max(0, Math.min(1, (t - t0) / d));
+
+  // ───── Dessin ─────
+  const TEAM = { b: "var(--team-b)", r: "var(--team-r)", g: "var(--team-g)", n: "#FFFFFF", ref: "#151A21" };
+  const TONE = {
+    def: ["#FFFFFF", "#20262C"], ok: ["#2F7D4A", "#FFFFFF"], no: ["#B8432F", "#FFFFFF"], warn: ["#DDAC3C", "#14171A"],
+    info: ["#20262C", "#FFFFFF"], gold: ["#DDAC3C", "#14171A"],
+  };
+  const CARD_TONE = { ok: "var(--ok)", no: "var(--no)", warn: "var(--warn)", info: "var(--accent)" };
+
+  function zoneSVG(z) {
+    const { X0, X1, Y0, Y1, MX, MY, SD, SH } = G;
+    const top = [Y0, MY - SH / 2], bot = [MY + SH / 2, Y1];
+    switch (z) {
+      case "dim": return `<rect x="${X0 - 20}" y="${Y0 - 20}" width="${X1 - X0 + 40}" height="${Y1 - Y0 + 40}" fill="#0E1013" opacity=".72"/>`;
+      case "walls": return `<rect class="pulse" x="${X0}" y="${Y0 - 16}" width="${X1 - X0}" height="13" rx="4" fill="#DDAC3C"/><rect class="pulse" x="${X0}" y="${Y1 + 3}" width="${X1 - X0}" height="13" rx="4" fill="#DDAC3C"/>`;
+      case "surfL": return `<rect x="${X0}" y="${MY - SH / 2}" width="${SD}" height="${SH}" fill="#FFFFFF" opacity=".2"/>`;
+      case "surfR": return `<rect x="${X1 - SD}" y="${MY - SH / 2}" width="${SD}" height="${SH}" fill="#FFFFFF" opacity=".2"/>`;
+      case "penL": return `<circle class="pulse" cx="${X0 + G.PEN}" cy="${MY}" r="13" fill="#DDAC3C"/>`;
+      case "penR": return `<circle class="pulse" cx="${X1 - G.PEN}" cy="${MY}" r="13" fill="#DDAC3C"/>`;
+      case "corL": return [top, bot].map(([a, b]) => `<rect x="${X0}" y="${a}" width="${SD}" height="${b - a}" fill="url(#hatch)"/>`).join("");
+      case "corR": return [top, bot].map(([a, b]) => `<rect x="${X1 - SD}" y="${a}" width="${SD}" height="${b - a}" fill="url(#hatch)"/>`).join("");
+      case "extL": return `<line x1="${X0 + SD}" y1="${Y0}" x2="${X0 + SD}" y2="${Y1}" stroke="#DDAC3C" stroke-width="3" stroke-dasharray="10 8"/>`;
+      case "extR": return `<line x1="${X1 - SD}" y1="${Y0}" x2="${X1 - SD}" y2="${Y1}" stroke="#DDAC3C" stroke-width="3" stroke-dasharray="10 8"/>`;
+      case "centre": return `<circle class="pulse" cx="${MX}" cy="${MY}" r="16" fill="none" stroke="#DDAC3C" stroke-width="5"/>`;
+      case "halfL": return `<rect x="${X0}" y="${Y0}" width="${MX - X0}" height="${Y1 - Y0}" fill="#3D74BE" opacity=".28"/><line x1="${MX}" y1="${Y0}" x2="${MX}" y2="${Y1}" stroke="#DDAC3C" stroke-width="5"/>`;
+      case "entry": return `<rect class="pulse" x="${MX - 34}" y="${Y1 + 2}" width="68" height="15" rx="4" fill="#DDAC3C"/>`;
+      case "barrage": return `<rect class="pulse" x="${X1 - SD}" y="${MY - SH / 2 - 42}" width="${SD}" height="42" fill="#D9412B" opacity=".55"/>`;
+      case "ring3": return `<circle cx="470" cy="290" r="72" fill="#FFFFFF" fill-opacity=".08" stroke="#FFFFFF" stroke-width="2.5" stroke-dasharray="8 7"/>`;
+    }
+    return "";
+  }
+
+  function actorSVG(a, t) {
+    const p = pos(a.k, t);
+    if (!p) return "";
+    const [x, y] = p;
+    const c = val(a.c, t);
+    const out = val(a.out, t);
+    const fill = TEAM[c] || TEAM.n;
+    const txt = c === "n" ? "#20262C" : c === "ref" ? "#DDAC3C" : "#FFFFFF";
+    let s = `<g opacity="${out ? 0.55 : a.sub ? 0.85 : 1}">`;
+    if (a.cap) s += `<circle cx="${x}" cy="${y}" r="24" fill="none" stroke="#DDAC3C" stroke-width="3"/>`;
+    s += `<circle cx="${x}" cy="${y}" r="18" style="fill:${fill}" stroke="${c === "ref" ? "#DDAC3C" : "#FFFFFF"}" stroke-width="3"${a.sub ? ' stroke-dasharray="5 4"' : ""}/>`;
+    const label = a.l || (c === "ref" ? "Arb" : "");
+    if (label) s += `<text x="${x}" y="${y + 5.5}" text-anchor="middle" font-family="Inter, system-ui, sans-serif" font-weight="700" font-size="${label.length > 2 ? 13 : 17}" fill="${txt}">${esc(label)}</text>`;
+    s += "</g>";
+    if (out) s += `<g><circle cx="${x + 15}" cy="${y - 15}" r="10" fill="#4A5563" stroke="#fff" stroke-width="2"/><path d="M${x + 10},${y - 20} L${x + 20},${y - 10} M${x + 20},${y - 20} L${x + 10},${y - 10}" stroke="#fff" stroke-width="2.5"/></g>`;
+    return s;
+  }
+
+  function ballSVG(st, t) {
+    const p = pos(st.ball, t);
+    if (!p) return "";
+    let [x, y] = p, lift = 0;
+    const arc = st.ballArc;
+    if (arc && t > arc.t0 && t < arc.t1) lift = Math.sin(Math.PI * (t - arc.t0) / (arc.t1 - arc.t0)) * arc.h;
+    let s = "";
+    if (lift > 1) s += `<ellipse cx="${x}" cy="${y + 3}" rx="${9 - lift / 20}" ry="4" fill="#000" opacity=".35"/>`;
+    const r = 9 + lift / 18;
+    s += `<g transform="translate(${x},${y - lift})"><circle r="${r}" fill="#fff" stroke="#14171A" stroke-width="2.5"/><circle r="${r * 0.38}" fill="#14171A"/></g>`;
+    return s;
+  }
+
+  function arrowSVG(ar, t) {
+    const p = fade(t, ar.t, 0.6);
+    if (p <= 0) return "";
+    const [x1, y1] = ar.a, [x2, y2] = ar.b;
+    const ex = x1 + (x2 - x1) * p, ey = y1 + (y2 - y1) * p;
+    const st = ar.s || "pass";
+    const stroke = st === "press" ? "#DDAC3C" : "#FFFFFF";
+    const dash = st === "press" ? ' stroke-dasharray="10 7"' : "";
+    const wdt = st === "shot" ? 5 : 4;
+    return `<line x1="${x1}" y1="${y1}" x2="${ex}" y2="${ey}" stroke="${stroke}" stroke-width="${wdt}" stroke-linecap="round"${dash} marker-end="url(#${st === "press" ? "mk-g" : "mk-w"})" opacity=".95"/>`;
+  }
+
+  function labelSVG(l, t) {
+    const o = fade(t, l.t);
+    if (o <= 0) return "";
+    const size = l.size || 17;
+    const [bg, fg] = TONE[l.tone || "def"];
+    const w = l.text.length * size * 0.5 + 28, h = size + 16;
+    let x = Math.min(Math.max(l.x, w / 2 + 6), 1000 - w / 2 - 6);
+    const y = l.y;
+    return `<g opacity="${o}" transform="translate(0,${(1 - o) * 6})"><rect x="${x - w / 2}" y="${y - h / 2}" width="${w}" height="${h}" rx="${h / 2}" fill="${bg}" stroke="rgba(0,0,0,.12)"/>` +
+      `<text x="${x}" y="${y + size * 0.36}" text-anchor="middle" font-family="Inter, system-ui, sans-serif" font-weight="700" font-size="${size}" fill="${fg}">${esc(l.text)}</text></g>`;
+  }
+
+  function markSVG(m, t) {
+    const o = fade(t, m.t, 0.25);
+    if (o <= 0) return "";
+    const { x, y } = m;
+    if (m.type === "v") return `<g opacity="${o}"><circle cx="${x}" cy="${y}" r="17" fill="#2F7D4A" stroke="#fff" stroke-width="3"/><path d="M${x - 7},${y} l5,6 l10,-12" fill="none" stroke="#fff" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"/></g>`;
+    if (m.type === "x") return `<g opacity="${o}"><circle cx="${x}" cy="${y}" r="17" fill="#B8432F" stroke="#fff" stroke-width="3"/><path d="M${x - 6},${y - 6} L${x + 6},${y + 6} M${x + 6},${y - 6} L${x - 6},${y + 6}" stroke="#fff" stroke-width="3.5" stroke-linecap="round"/></g>`;
+    if (m.type === "bounce") { const r = 8 + 22 * Math.min(1, (t - m.t) / 0.6); return `<circle cx="${x}" cy="${y}" r="${r}" fill="none" stroke="#DDAC3C" stroke-width="3" opacity="${Math.max(0, 1 - (t - m.t) / 1.6)}"/><text x="${x}" y="${y + 34}" text-anchor="middle" font-family="Inter, system-ui, sans-serif" font-weight="700" font-size="15" fill="#DDAC3C" opacity="${o}">rebond</text>`; }
+    if (m.type === "whistle") return `<g opacity="${o}" fill="none" stroke="#DDAC3C" stroke-width="3" stroke-linecap="round"><path d="M${x - 10},${y} a10,10 0 0,1 20,0"/><path d="M${x - 18},${y} a18,18 0 0,1 36,0"/><path d="M${x - 26},${y} a26,26 0 0,1 52,0"/></g>`;
+    return "";
+  }
+
+  function cardSVG(c, t) {
+    const o = fade(t, c.t, 0.4);
+    if (o <= 0) return "";
+    const tone = CARD_TONE[c.tone] || "var(--accent)";
+    const cx = c.x + c.w / 2;
+    let s = `<g opacity="${o}" transform="translate(0,${(1 - o) * 10})">`;
+    s += `<rect x="${c.x}" y="${c.y}" width="${c.w}" height="${c.h}" rx="16" style="fill:var(--card);stroke:var(--rule)" stroke-width="1.5"/>`;
+    s += `<rect x="${c.x}" y="${c.y}" width="${c.w}" height="6" rx="3" style="fill:${tone}"/>`;
+    s += `<text x="${cx}" y="${c.y + (c.compact ? 40 : 52)}" text-anchor="middle" style="fill:${tone};font-family:var(--f-display)" font-weight="700" font-size="17" letter-spacing="1.6">${esc(c.title.toUpperCase())}</text>`;
+    if (c.big) {
+      const len = c.big.length;
+      const size = c.compact ? (len > 16 ? 26 : 34) : (len > 12 ? 36 : len > 7 ? 46 : 60);
+      s += `<text x="${cx}" y="${c.y + (c.compact ? 88 : 122)}" text-anchor="middle" style="fill:var(--ink);font-family:var(--f-display)" font-weight="700" font-size="${size}">${esc(c.big)}</text>`;
+    }
+    (c.lines || []).forEach((ln, i) => {
+      s += `<text x="${cx}" y="${c.y + 168 + i * 26}" text-anchor="middle" style="fill:var(--muted);font-family:var(--f-body)" font-weight="500" font-size="18">${esc(ln)}</text>`;
+    });
+    return s + "</g>";
+  }
+
+  // ───── Lecture ─────
+  let idx = 0;          // étape courante (index dans FLAT)
+  let t = 0;            // temps écoulé dans l'étape
+  let dur = 4;
+  let speed = 1;        // étire ou resserre l'animation pour qu'elle suive la durée réelle de la voix
+  let playing = false;
+  let voiceOn = VOICE_FILES;   // voix off enregistrée : active d'office ; la voix de synthèse reste à activer
+  let voiceDone = true;
+  let audio = null;
+  let lastTs = 0;
+  let lastZones = "";
+  let lastChapter = -1;
+
+  const cur = () => { const f = FLAT[idx]; return { ch: SCENES[f.ci], st: SCENES[f.ci].steps[f.si], ...f }; };
+
+  function renderZones(st) {
+    const key = (st.zones || []).join(",");
+    if (key === lastZones) return;
+    lastZones = key;
+    $("zones").innerHTML = (st.zones || []).map(zoneSVG).join("");
+  }
+
+  function render() {
+    const { st } = cur();
+    renderZones(st);
+    const ta = t / speed;
+    let s = "";
+    (st.raw || []).forEach((r) => { const o = fade(ta, r.t, 0.4); if (o > 0) s += `<g opacity="${o}">${r.svg}</g>`; });
+    (st.arrows || []).forEach((a) => (s += arrowSVG(a, ta)));
+    (st.actors || []).forEach((a) => (s += actorSVG(a, ta)));
+    s += ballSVG(st, ta);
+    (st.marks || []).forEach((m) => (s += markSVG(m, ta)));
+    (st.cards || []).forEach((c) => (s += cardSVG(c, ta)));
+    (st.labels || []).forEach((l) => (s += labelSVG(l, ta)));
+    $("dyn").innerHTML = s;
+    const tm = $("chipTimer");
+    if (st.timer && ta >= st.timer.t) {
+      const left = Math.max(0, Math.ceil(st.timer.from - (ta - st.timer.t)));
+      tm.textContent = st.timer.from >= 60 ? `${Math.floor(left / 60)}:${pad(left % 60)}` : `${left} s`;
+      tm.hidden = false;
+    } else tm.hidden = true;
+    updateProgress();
+  }
+
+  function updateUI() {
+    const { ch, st, ci, si } = cur();
+    $("chipChapter").innerHTML = `<b>${pad(ci + 1)}</b>${esc(ch.title)}`;
+    $("caption").textContent = st.say;
+    $("stepInfo").textContent = `Étape ${si + 1} / ${ch.steps.length}`;
+    document.querySelectorAll("#toc button").forEach((b, i) => b.setAttribute("aria-current", i === ci ? "true" : "false"));
+    const pb = $("btnPlay");
+    pb.querySelector("span").textContent = playing ? "Pause" : "Lecture";
+    pb.querySelector("svg").innerHTML = playing ? '<path d="M6 4h4v16H6zm8 0h4v16h-4z"/>' : '<path d="M7 4v16l13-8z"/>';
+    if (ci !== lastChapter) {
+      lastChapter = ci;
+      const d = $("dyn");
+      if (!reduceMotion && d.animate) d.animate([{ opacity: 0 }, { opacity: 1 }], { duration: 350 });
+    }
+  }
+
+  function updateProgress() {
+    const { ci, si, ch } = cur();
+    document.querySelectorAll(".seg span").forEach((sp, i) => {
+      const n = SCENES[i].steps.length;
+      let w = 0;
+      if (i < ci) w = 1; else if (i === ci) w = (si + Math.min(1, t / dur)) / n;
+      sp.style.width = (w * 100).toFixed(1) + "%";
+    });
+  }
+
+  function stopVoice() {
+    if (audio) { audio.pause(); audio = null; }
+    if ("speechSynthesis" in window) { try { window.speechSynthesis.cancel(); } catch (e) {} }
+  }
+
+  function startVoice() {
+    stopVoice();
+    voiceDone = true;
+    if (!voiceOn || !playing) return;
+    const { st } = cur();
+    if (VOICE_FILES) {
+      voiceDone = false;
+      audio = new Audio(VOICE_DIR + st.id + ".mp3");
+      audio.addEventListener("loadedmetadata", () => {
+        if (!isFinite(audio.duration)) return;
+        // L'étape dure autant que la voix : l'animation est calée sur elle (0,7 à 1,8 fois son rythme d'origine), sans temps mort entre deux étapes.
+        const own = lastEvent(st) + 0.6;
+        speed = Math.min(1.8, Math.max(0.7, audio.duration / own));
+        dur = Math.max(own * speed, audio.duration) + 0.5;
+      });
+      audio.addEventListener("ended", () => { voiceDone = true; });
+      audio.addEventListener("error", () => { voiceDone = true; });
+      audio.play().catch(() => { voiceDone = true; });
+      return;
+    }
+    if ("speechSynthesis" in window) {
+      try {
+        const u = new SpeechSynthesisUtterance(st.say);
+        u.lang = "fr-FR";
+        u.rate = 1;
+        const fr = window.speechSynthesis.getVoices().find((v) => /^fr(-|_)FR/i.test(v.lang)) || window.speechSynthesis.getVoices().find((v) => /^fr/i.test(v.lang));
+        if (fr) u.voice = fr;
+        voiceDone = false;
+        u.onend = () => { voiceDone = true; };
+        u.onerror = () => { voiceDone = true; };
+        window.speechSynthesis.speak(u);
+      } catch (e) { voiceDone = true; }
+    }
+  }
+
+  function enter(i, opts = {}) {
+    idx = Math.max(0, Math.min(FLAT.length - 1, i));
+    const { st } = cur();
+    dur = estimate(st);
+    speed = 1;
+    t = opts.atEnd ? dur : 0;
+    if (reduceMotion && !opts.atEnd) t = Math.max(t, lastEvent(st) + 0.01);
+    updateUI();
+    render();
+    if (playing) startVoice();
+  }
+
+  function play() {
+    if (playing) return;
+    playing = true;
+    if (idx === FLAT.length - 1 && t >= dur) idx = 0;
+    enter(idx);                      // reprend l'étape au début pour rester synchronisé avec la voix
+    lastTs = performance.now();
+    requestAnimationFrame(tick);
+  }
+  function pause() {
+    playing = false;
+    stopVoice();
+    updateUI();
+  }
+  function tick(ts) {
+    if (!playing) return;
+    const dt = Math.min(0.1, (ts - lastTs) / 1000);
+    lastTs = ts;
+    t += dt;
+    const { st } = cur();
+    if (reduceMotion) t = Math.max(t, (lastEvent(st) + 0.01) * speed);
+    render();
+    const done = t >= dur && (voiceDone || t > dur * 3);
+    if (done) {
+      if (idx < FLAT.length - 1) enter(idx + 1);
+      else { t = dur; pause(); render(); return; }
+    }
+    requestAnimationFrame(tick);
+  }
+  function goChapter(ci, autoplay = true) {
+    const i = FLAT.findIndex((f) => f.ci === ci);
+    stopVoice();
+    if (autoplay) { playing = false; idx = i; t = 0; play(); }
+    else enter(i, { atEnd: true });
+  }
+
+  // ───── Interface ─────
+  const prog = $("progress");
+  SCENES.forEach((ch, ci) => {
+    const b = document.createElement("button");
+    b.className = "seg"; b.type = "button";
+    b.setAttribute("aria-label", `Chapitre ${ci + 1} : ${ch.title}`);
+    b.innerHTML = "<span></span>";
+    b.addEventListener("click", () => goChapter(ci, playing));
+    prog.appendChild(b);
+  });
+  const toc = $("toc"), ref = $("ref");
+  SCENES.forEach((ch, ci) => {
+    const li = document.createElement("li");
+    li.innerHTML = `<button type="button"><span class="n">${pad(ci + 1)}</span><span>${esc(ch.title)}</span><span class="steps">${ch.steps.length}</span></button>`;
+    li.querySelector("button").addEventListener("click", () => { goChapter(ci, true); document.querySelector(".player").scrollIntoView({ behavior: reduceMotion ? "auto" : "smooth", block: "start" }); });
+    toc.appendChild(li);
+    const art = document.createElement("article");
+    art.className = "rule"; art.id = ch.id;
+    art.innerHTML = `<header><h3><span class="n">${pad(ci + 1)}</span>${esc(ch.title)}</h3><button class="link" type="button">Voir l'animation</button></header><ul>${ch.text.map((x) => `<li>${esc(x)}</li>`).join("")}</ul>`;
+    art.querySelector(".link").addEventListener("click", () => { goChapter(ci, true); document.querySelector(".player").scrollIntoView({ behavior: reduceMotion ? "auto" : "smooth", block: "start" }); });
+    ref.appendChild(art);
+  });
+
+  $("btnPlay").addEventListener("click", () => (playing ? pause() : play()));
+  $("btnNext").addEventListener("click", () => { stopVoice(); enter(idx + 1, { atEnd: !playing }); });
+  $("btnPrev").addEventListener("click", () => { stopVoice(); enter(idx - 1, { atEnd: !playing }); });
+  const canSpeak = VOICE_FILES || "speechSynthesis" in window;
+  const vb = $("btnVoice"), vn = $("voiceNote");
+  if (!canSpeak) vb.hidden = true;
+  vb.addEventListener("click", () => {
+    voiceOn = !voiceOn;
+    vb.setAttribute("aria-pressed", String(voiceOn));
+    vn.hidden = !voiceOn || VOICE_FILES;
+    vn.textContent = "Voix de synthèse de votre appareil, en attendant la voix off enregistrée. La qualité dépend de l'appareil.";
+    if (playing) { enter(idx); }
+  });
+  const fb = $("btnFull"), playerEl = document.querySelector(".player");
+  if (!playerEl.requestFullscreen) fb.hidden = true;
+  fb.addEventListener("click", () => {
+    if (document.fullscreenElement) document.exitFullscreen().catch(() => {});
+    else playerEl.requestFullscreen().catch(() => { fb.hidden = true; });
+  });
+  document.addEventListener("keydown", (e) => {
+    if (e.target.closest && e.target.closest("button, input, textarea")) return;
+    if (e.code === "Space") { e.preventDefault(); playing ? pause() : play(); }
+    if (e.code === "ArrowRight") { stopVoice(); enter(idx + 1, { atEnd: !playing }); }
+    if (e.code === "ArrowLeft") { stopVoice(); enter(idx - 1, { atEnd: !playing }); }
+  });
+  if ("speechSynthesis" in window) { try { window.speechSynthesis.getVoices(); window.speechSynthesis.onvoiceschanged = () => {}; } catch (e) {} }
+
+  // Lien direct vers un chapitre (#relance, #penalty…)
+  // Lien direct vers un chapitre ou une étape : #relance, #relance-4
+  const m = /^#([a-z]+)(?:-(\d+))?$/.exec(location.hash || "");
+  const startCh = m ? SCENES.findIndex((c) => c.id === m[1]) : -1;
+  let startIdx = 0;
+  if (startCh >= 0) {
+    const first = FLAT.findIndex((f) => f.ci === startCh);
+    const step = m[2] ? Math.min(Number(m[2]), SCENES[startCh].steps.length) - 1 : 0;
+    startIdx = first + Math.max(0, step);
+  }
+  enter(startIdx, { atEnd: true });
+})();
+</script>
+<style>
+.pulse { animation: pulse 1.6s ease-in-out infinite; transform-box: fill-box; transform-origin: center; }
+@keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: .45; } }
+@media (prefers-reduced-motion: reduce) { .pulse { animation: none; } }
+</style>

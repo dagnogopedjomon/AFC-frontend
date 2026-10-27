@@ -1,0 +1,76 @@
+SCRIPT DE LA VOIX OFF EN DUO — Règles de jeu AFC
+Vivienne explique, Rémy annonce les sanctions. Chaque ligne commence avec Vivienne ; [Rémy] et [Vivienne] marquent le changement de voix.
+Voix Microsoft : fr-FR-VivienneMultilingualNeural et fr-FR-RemyMultilingualNeural, vitesse normale.
+
+=== Chapitre 1 — La séance ===
+ch01_s01.mp3	Avant de jouer, il y a la liste de match. Elle est ouverte le matin du match.
+ch01_s02.mp3	Dès que douze joueurs sont inscrits, la séance a lieu. En dessous de douze, elle peut être reportée.
+ch01_s03.mp3	[Rémy] Un inscrit qui ne vient pas paie deux mille francs, [Vivienne] sauf s'il prévient avant dix-neuf heures.
+ch01_s04.mp3	Sur le terrain, c'est l'ordre d'arrivée qui compte. Les douze premiers arrivés jouent. Un invité ou un intermittent ne peut pas être dans les douze premiers s'il y a un membre actif dehors.
+ch01_s05.mp3	Les deux premiers sont les capitaines. Ils choisissent leurs joueurs chacun à leur tour, et le premier arrivé choisit en premier.
+ch01_s06.mp3	Avec trois équipes, les joueurs arrivés du treizième au dix-huitième forment la troisième équipe. Le treizième en est le capitaine.
+ch01_s07.mp3	Les suivants vont chacun leur tour dans une équipe : le dix-neuvième dans l'équipe un, le vingtième dans l'équipe deux, le vingt et unième dans l'équipe trois, et ainsi de suite.
+ch01_s08.mp3	Les remplacements sont libres, par une seule entrée. Un seul arbitre dirige le match. S'il est absent, on désigne un remplaçant.
+
+=== Chapitre 2 — Équipes et durée ===
+ch02_s01.mp3	De douze à dix-sept joueurs, on fait deux équipes. À dix-huit, on décide avant de commencer. Au-delà, trois équipes, et jamais quatre.
+ch02_s02.mp3	Avec deux équipes, on joue un seul match d'une heure trente, avec une pause de dix minutes.
+ch02_s03.mp3	Avec trois équipes, on joue un mini-tournoi aller-retour : six matchs de dix minutes, et chaque équipe en joue quatre.
+ch02_s04.mp3	En cas de match nul après dix minutes : tirs au but. Deux tireurs par équipe, puis un tireur chacun, jusqu'à ce qu'il y ait un vainqueur.
+ch02_s05.mp3	Le barème : trois points pour une victoire dans le temps de jeu, deux points pour une victoire aux tirs au but, un point pour une défaite aux tirs au but, et zéro pour une défaite.
+ch02_s06.mp3	En cas d'égalité de points au classement, on regarde d'abord les confrontations directes, puis la différence de buts, puis le nombre de buts marqués.
+
+=== Chapitre 3 — Le terrain ===
+ch03_s01.mp3	On joue au Maracana sur un terrain de five : six contre six, sans gardien, et personne ne joue le ballon à la main.
+ch03_s02.mp3	Sur les côtés, il y a des murs. Le ballon qui les touche reste en jeu : il n'y a pas de touche.
+ch03_s03.mp3	Si le ballon reste coincé dans le filet, [Rémy] l'équipe adverse de celle qui l'a touché en dernier obtient une relance libre.
+ch03_s04.mp3	La surface rectangulaire est la surface de but. Le point de penalty remplace la ligne des neuf mètres.
+ch03_s05.mp3	En prolongeant la ligne avant de la surface jusqu'aux murs, on obtient deux couloirs de chaque côté. Ils servent pour la relance et pour le corner.
+ch03_s06.mp3	Côté équipement : des lots de chasubles, une tenue de football correcte, et des chaussures synthétiques sans crampons.
+
+=== Chapitre 4 — Le but ===
+ch04_s01.mp3	Un but ne compte que s'il est marqué depuis la surface. Dès qu'il y a contact d'un attaquant avec le ballon, le but est validé. Un défenseur qui met le ballon dans son propre but, sans contact d'un attaquant adverse dans la surface, donne un corner.
+ch04_s02.mp3	Un tir depuis l'extérieur de la surface ne compte pas, même s'il entre dans le but.
+
+=== Chapitre 5 — Le coup d'envoi ===
+ch05_s01.mp3	Au tout début du match, le joueur passe obligatoirement le ballon à l'adversaire le plus proche, qui le lui rend correctement.
+ch05_s02.mp3	S'il rend mal le ballon, [Rémy] c'est deux minutes dehors.
+ch05_s03.mp3	Après un but, et en deuxième période, la passe est libre : on peut jouer directement avec un coéquipier. Après un but, c'est l'équipe qui a encaissé qui engage.
+
+=== Chapitre 6 — La relance depuis la surface ===
+ch06_s01.mp3	La relance depuis la surface, le six mètres. Le joueur qui relance doit être seul dans sa surface.
+ch06_s02.mp3	Un coéquipier peut se placer dans chaque couloir. Le joueur qui relance choisit à qui il passe, mais la passe va obligatoirement vers un couloir.
+ch06_s03.mp3	Il a six secondes pour relancer.
+ch06_s04.mp3	Un adversaire peut se trouver dans un couloir, même celui du receveur. Mais s'il y est au moment de la passe, il est hors de l'action : il ne peut pas presser, même après le contrôle. Il redevient actif quand l'équipe qui relance perd le ballon.
+ch06_s05.mp3	Les adversaires qui sont hors du couloir ne peuvent presser qu'après le contrôle du receveur.
+ch06_s06.mp3	Si un adversaire presse trop tôt, [Rémy] on recommence la relance.
+
+=== Chapitre 7 — La relance libre ===
+ch07_s01.mp3	Si le joueur qui relance n'est pas seul dans sa surface, ou s'il dépasse les six secondes, [Rémy] le ballon passe à l'adversaire.
+ch07_s02.mp3	L'adversaire fait alors une relance libre depuis sa propre surface, comme un coup franc : la passe peut aller n'importe où sur le terrain.
+ch07_s03.mp3	Il y a aussi relance libre quand le ballon touche l'arbitre. Elle revient à l'équipe du dernier joueur qui l'a touché avant lui.
+ch07_s04.mp3	Une relance mal faite [Rémy] n'est jamais sanctionnée de deux minutes.
+
+=== Chapitre 8 — Corner et coups francs ===
+ch08_s01.mp3	Sur un corner, le défenseur qui barre se place sur la ligne de sa surface, face au ballon. Les attaquants peuvent aussi entrer dans la surface.
+ch08_s02.mp3	S'il n'est pas sur la ligne, [Rémy] c'est deux minutes dehors.
+ch08_s03.mp3	Pour un coup franc tiré au point de penalty, l'ancienne ligne des neuf mètres, les défenseurs se placent sur la ligne de leur surface.
+ch08_s04.mp3	Pour les autres coups francs, les adversaires se placent à trois mètres du ballon.
+
+=== Chapitre 9 — Le penalty ===
+ch09_s01.mp3	Le penalty sanctionne une main d'un défenseur dans sa surface.
+ch09_s02.mp3	Il se tire du centre du terrain. Tous les autres joueurs se placent derrière la ligne médiane. Cette règle est souvent oubliée : elle doit désormais être respectée.
+ch09_s03.mp3	Le ballon doit entrer directement dans le but, sans toucher le sol.
+ch09_s04.mp3	S'il rebondit avant la ligne de but, [Rémy] le penalty est annulé.
+ch09_s05.mp3	Après le penalty, le ballon revient à l'équipe qui défendait. S'il y a but, elle fait le coup d'envoi au centre. Sinon, elle relance depuis sa surface.
+
+=== Chapitre 10 — Fautes et sanctions ===
+ch10_s01.mp3	Pas de contact appuyé, et tout contact par derrière est sifflé. [Rémy] Une faute normale donne un simple coup franc.
+ch10_s02.mp3	Dans la surface, [Rémy] une faute donne un coup franc au point de penalty, et une main donne un penalty.
+ch10_s03.mp3	Une faute volontaire, ou un geste anti-fair-play, [Rémy] c'est deux minutes dehors : le carton jaune, annoncé de vive voix.
+ch10_s04.mp3	[Rémy] C'est aussi deux minutes d'office pour : ne pas rendre le ballon, gêner un coup franc, retarder le jeu, ou mal rendre le ballon au premier coup d'envoi.
+ch10_s05.mp3	Une faute très grave, ou des propos désobligeants envers un joueur ou l'arbitre, [Rémy] c'est cinq ou dix minutes, au choix de l'arbitre : le carton rouge.
+ch10_s06.mp3	Pendant l'exclusion, l'équipe joue à cinq, sans remplaçant. Le temps se compte en temps de jeu : sanctionné à la deuxième minute pour cinq minutes, le joueur revient à la septième. Si le match se termine avant, il ne revient pas.
+ch10_s07.mp3	En cas d'injure, [Rémy] le bureau ajoute une sanction disciplinaire de deux mille ou cinq mille francs, selon la gravité.
+ch10_s08.mp3	Enfin, il n'y a ni cartons physiques, ni décompte des fautes, ni couperet.
+ch10_s09.mp3	Pour tout ce qui n'est pas précisé ici, on applique les lois officielles du Maracana. [Rémy] Bon match à tous !
