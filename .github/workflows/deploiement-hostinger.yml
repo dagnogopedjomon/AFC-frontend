@@ -20,9 +20,9 @@
 #   API_URL        adresse de l'API du club (défaut : https://agbolo.ci/afc-api)
 #   FTP_PORT       port FTP (défaut : 21)
 #
-# FTP_SERVER doit contenir le nom d'hôte FTP de Hostinger, pas son adresse
-# IP : le certificat du serveur est émis pour *.hstgr.io, et l'envoi vérifie
-# ce certificat en entier, nom d'hôte compris.
+# FTP_SERVER contient l'adresse que Hostinger affiche dans hPanel, qui est
+# une adresse IP. Voir le commentaire de l'étape de téléversement au sujet
+# de la vérification du certificat.
 
 name: Déploiement Hostinger
 
@@ -87,7 +87,12 @@ jobs:
           FTP_PORT: ${{ vars.FTP_PORT || 21 }}
         run: |
           # Envoi en FTPS explicite (AUTH TLS), canal de données chiffré lui
-          # aussi, certificat du serveur vérifié entièrement.
+          # aussi. La chaîne du certificat, son autorité et sa date de
+          # validité sont vérifiées. Seule la comparaison du nom d'hôte est
+          # désactivée, sur décision explicite du club : Hostinger ne publie
+          # aucun nom pour ce serveur, seulement l'adresse 147.79.103.16,
+          # alors que son certificat est émis pour *.hstgr.io. La
+          # correspondance ne peut donc jamais réussir ici.
           #
           # lftp remplace ici l'action FTP-Deploy : celle-ci est écrite pour
           # Node 20, que GitHub n'exécute plus, et sous Node 24 elle ne
@@ -105,6 +110,7 @@ jobs:
             set ftp:ssl-protect-data true;
             set ftp:ssl-auth TLS;
             set ssl:verify-certificate yes;
+            set ssl:check-hostname no;
             set ftp:passive-mode true;
             set net:timeout 20;
             set net:max-retries 3;
