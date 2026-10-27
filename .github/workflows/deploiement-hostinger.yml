@@ -18,8 +18,11 @@
 # Variables (même écran, onglet « Variables ») — facultatives, des valeurs
 # par défaut sont prévues :
 #   API_URL        adresse de l'API du club (défaut : https://agbolo.ci/afc-api)
-#   FTP_PROTOCOL   ftps si l'hébergement l'accepte, sinon ftp (défaut : ftps)
 #   FTP_PORT       port FTP (défaut : 21)
+#
+# FTP_SERVER doit contenir le nom d'hôte FTP de Hostinger, pas son adresse
+# IP : le certificat du serveur est émis pour *.hstgr.io, et l'envoi vérifie
+# ce certificat en entier, nom d'hôte compris.
 
 name: Déploiement Hostinger
 
@@ -71,21 +74,50 @@ jobs:
           test -d out/dashboard || { echo "L'application est absente."; exit 1; }
           echo "$(find out -type f | wc -l) fichiers prêts à être envoyés."
 
+      - name: Installer lftp
+        run: sudo apt-get update -qq && sudo apt-get install -y -qq lftp
+
       - name: Téléverser dans public_html
-        uses: SamKirkland/FTP-Deploy-Action@v4.3.5
-        with:
-          server: ${{ secrets.FTP_SERVER }}
-          username: ${{ secrets.FTP_USERNAME }}
-          password: ${{ secrets.FTP_PASSWORD }}
-          protocol: ${{ vars.FTP_PROTOCOL || 'ftps' }}
-          port: ${{ vars.FTP_PORT || 21 }}
-          local-dir: ./out/
-          server-dir: public_html/
-          # Fichiers de l'hébergeur à ne jamais écraser ni supprimer.
-          exclude: |
-            **/.git*
-            **/.git*/**
-            **/node_modules/**
-            **/.htaccess
-            **/cgi-bin/**
-            **/default.php
+        env:
+          FTP_HOST: ${{ secrets.FTP_SERVER }}
+          FTP_USER: ${{ secrets.FTP_USERNAME }}
+          # Lu par lftp via --env-password : le mot de passe ne figure jamais
+          # dans une ligne de commande, donc jamais dans le journal.
+          LFTP_PASSWORD: ${{ secrets.FTP_PASSWORD }}
+          FTP_PORT: ${{ vars.FTP_PORT || 21 }}
+        run: |
+          # Envoi en FTPS explicite (AUTH TLS), canal de données chiffré lui
+          # aussi, certificat du serveur vérifié entièrement.
+          #
+          # lftp remplace ici l'action FTP-Deploy : celle-ci est écrite pour
+          # Node 20, que GitHub n'exécute plus, et sous Node 24 elle ne
+          # réutilise plus la session TLS sur le canal de données — ce que le
+          # ProFTPD de Hostinger exige, d'où la coupure « ECONNRESET ».
+          #
+          # « mirror -R » ne transfère que ce qui a changé et « --delete »
+          # retire du serveur ce qui a disparu du site : une page d'événement
+          # retirée disparaît donc aussi en ligne.
+          #
+          # Les fichiers propres à l'hébergeur sont exclus : lftp les ignore
+          # entièrement, donc il ne les écrase ni ne les supprime.
+          lftp -c "
+            set ftp:ssl-force true;
+            set ftp:ssl-protect-data true;
+            set ftp:ssl-auth TLS;
+            set ssl:verify-certificate yes;
+            set ftp:passive-mode true;
+            set net:timeout 20;
+            set net:max-retries 3;
+            set net:reconnect-interval-base 5;
+            set mirror:parallel-transfer-count 3;
+            set cmd:fail-exit true;
+            open -u \"$FTP_USER\" --env-password -p \"$FTP_PORT\" \"$FTP_HOST\";
+            mirror -R --delete --verbose=1 \
+              --exclude-glob .git* \
+              --exclude-glob .htaccess \
+              --exclude-glob default.php \
+              --exclude-glob cgi-bin/ \
+              --exclude-glob node_modules/ \
+              ./out/ /public_html/;
+          "
+          echo "Dépôt terminé."
