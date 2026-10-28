@@ -751,6 +751,21 @@ export const activitiesApi = {
   deletePhoto: (id: string) => api<{ success: boolean }>(`/activities/photos/${id}`, { method: 'DELETE' }),
 };
 
+/** État de la reconstruction du site public (lot 4 du module Publications). */
+export type EtatReconstruction = {
+  configuree: boolean;
+  derniereDemande: string | null;
+  derniereIssue: 'acceptee' | 'refusee' | 'injoignable' | null;
+  derniereRaison: string | null;
+};
+
+export const siteApi = {
+  etatReconstruction: () => api<EtatReconstruction>('/site/reconstruction'),
+  /** « Mettre le site à jour maintenant » : déclenche le dépôt sans attendre. */
+  reconstruire: () =>
+    api<EtatReconstruction>('/site/reconstruction', { method: 'POST' }),
+};
+
 export type ArticleCategory = 'VIE_DU_CLUB' | 'REGLES' | 'COMMUNIQUES' | 'COMPTES_RENDUS';
 
 /** Article du blog du club (lot 3 du module Publications). */

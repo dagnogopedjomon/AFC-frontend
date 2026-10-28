@@ -10,10 +10,15 @@ Le site existe à deux endroits, qui servent le même contenu.
 ## Ce qui déclenche un déploiement
 
 1. **Une mise à jour du code** poussée sur `main`.
-2. **Une publication dans l'application** : lorsqu'un événement est publié,
-   retiré ou modifié, le serveur appelle les adresses de reconstruction
-   configurées dans son `.env`. Les demandes sont regroupées sur 30 secondes.
-3. **À la main**, depuis l'onglet Actions → Déploiement Hostinger →
+2. **Une publication dans l'application** : lorsqu'un événement, un document
+   ou un article est publié, retiré ou modifié, le serveur appelle les
+   adresses de reconstruction configurées dans son `.env`. Les demandes sont
+   regroupées sur 30 secondes.
+3. **La sortie d'un article programmé** : le serveur vérifie toutes les cinq
+   minutes si un article a atteint sa date de parution.
+4. **Le bouton « Mettre le site à jour maintenant »**, sur les écrans
+   Événements, Documents et Articles du tableau de bord.
+5. **À la main**, depuis l'onglet Actions → Déploiement Hostinger →
    « Run workflow ».
 
 ## À configurer une seule fois
@@ -33,7 +38,6 @@ Onglet **Variables** (facultatif, des valeurs par défaut existent) :
 | Nom | Défaut | Quand le changer |
 |---|---|---|
 | `API_URL` | `https://agbolo.ci/afc-api` | si l'API change d'adresse |
-| `FTP_PROTOCOL` | `ftps` | passer à `ftp` si l'hébergement refuse le FTPS |
 | `FTP_PORT` | `21` | si Hostinger impose un autre port |
 
 Le premier envoi copie tout le site. Les suivants ne transfèrent que les
@@ -50,6 +54,26 @@ fichiers modifiés : l'action garde un état de synchronisation sur le serveur.
 Les trois sont facultatives et indépendantes : sans la première, Vercel ne
 sera prévenu que par les mises à jour de code ; sans les deux autres,
 Hostinger ne sera mis à jour qu'au prochain envoi de code ou à la main.
+
+S'y ajoute `PUBLIC_API_URL` (`https://agbolo.ci/afc-api`), sans laquelle les
+liens d'images et de fichiers envoyés au site sont relatifs — donc cassés dès
+qu'un fichier est stocké sur le serveur plutôt que sur Supabase.
+
+#### Créer le jeton GitHub
+
+1. https://github.com/settings/personal-access-tokens → **Generate new token**.
+2. **Repository access** → *Only select repositories* → `AFC-frontend`.
+3. **Permissions** → *Repository permissions* → **Contents : Read and write**.
+   C'est la permission qui autorise `repository_dispatch` ; aucune autre n'est
+   nécessaire.
+4. Donner une date d'expiration et la noter : à l'échéance, les publications
+   cesseront de mettre le site à jour, en silence. L'écran du bureau affiche
+   alors « Demande refusée » après un clic sur le bouton de mise à jour.
+5. Copier le jeton dans `SITE_REBUILD_DISPATCH_TOKEN` sur le serveur, puis
+   redémarrer l'application.
+
+Le jeton n'est affiché qu'une fois. S'il est perdu, il faut en créer un autre
+et révoquer l'ancien.
 
 ## En cas d'échec
 

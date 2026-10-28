@@ -3,7 +3,6 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
 import {
   FileText,
-  Globe,
   Pencil,
   RefreshCw,
   Search,
@@ -18,6 +17,7 @@ import {
   type PublicationStatus,
 } from '@/lib/api';
 import { ConfirmModal } from '@/components/ConfirmModal';
+import { SiteRebuildCard } from '@/components/SiteRebuildCard';
 
 const CAN_EDIT = ['ADMIN', 'PRESIDENT', 'SECRETARY_GENERAL', 'TREASURER', 'COMMISSIONER', 'GENERAL_MEANS_MANAGER'];
 
@@ -254,23 +254,17 @@ export default function DocumentsPage() {
         <div className="afc-badge-red rounded-[10px] border px-4 py-3 text-sm">{error}</div>
       )}
 
-      {/* Rappel de ce que le site montre, comme sur la fiche d'un événement. */}
-      <div className="card">
-        <div className="flex items-start gap-3">
-          <Globe size={18} strokeWidth={1.7} className="mt-0.5 shrink-0 text-[var(--primary)]" />
-          <div className="min-w-0 flex-1">
-            <h2 className="font-serif text-lg text-[var(--afc-text)]">Site public</h2>
-            <p className="mt-0.5 text-sm text-[var(--afc-muted)]">
-              Les documents publiés apparaissent sur la page « Documents » du site du club, et les quatre plus
-              récents sur la page d’accueil. Un brouillon n’y apparaît jamais ; un document retiré disparaît du
-              site à la reconstruction suivante.
-            </p>
-            <p className="afc-mono mt-2 text-xs text-[var(--afc-muted)]">
-              {publies} document{publies > 1 ? 's' : ''} publié{publies > 1 ? 's' : ''} · {documents.length} au total
-            </p>
-          </div>
-        </div>
-      </div>
+      {/* Ce que le site montre, et de quoi le mettre à jour (lot 4). */}
+      <SiteRebuildCard canEdit={canEdit}>
+        <p className="mt-0.5 text-sm text-[var(--afc-muted)]">
+          Les documents publiés apparaissent sur la page « Documents » du site du club, et les quatre plus
+          récents sur la page d’accueil. Un brouillon n’y apparaît jamais ; un document retiré disparaît du
+          site à la reconstruction suivante.
+        </p>
+        <p className="afc-mono mt-2 text-xs text-[var(--afc-muted)]">
+          {publies} document{publies > 1 ? 's' : ''} publié{publies > 1 ? 's' : ''} · {documents.length} au total
+        </p>
+      </SiteRebuildCard>
 
       {/* Dépôt */}
       {canEdit && (

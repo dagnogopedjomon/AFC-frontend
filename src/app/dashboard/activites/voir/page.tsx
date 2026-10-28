@@ -8,7 +8,6 @@ import {
   ArrowRight,
   Eye,
   EyeOff,
-  Globe,
   Pencil,
   Star,
   Trash2,
@@ -17,6 +16,7 @@ import {
 import { useAuth } from '@/lib/auth-context';
 import { activitiesApi, type Activity, type Photo, type PublicationStatus } from '@/lib/api';
 import { ConfirmModal } from '@/components/ConfirmModal';
+import { SiteRebuildCard } from '@/components/SiteRebuildCard';
 
 const CAN_EDIT = ['ADMIN', 'PRESIDENT', 'SECRETARY_GENERAL', 'TREASURER', 'COMMISSIONER', 'GENERAL_MEANS_MANAGER'];
 
@@ -261,13 +261,10 @@ function ActivityDetailPageInner() {
             )}
           </div>
 
-          {/* Publication sur le site public */}
+          {/* Publication sur le site public, et de quoi mettre le site à jour (lot 4). */}
           {canEdit && (
-            <div className="card">
-              <div className="flex items-start gap-3">
-                <Globe size={18} strokeWidth={1.7} className="mt-0.5 shrink-0 text-[var(--primary)]" />
-                <div className="min-w-0 flex-1">
-                  <h2 className="font-serif text-lg text-[var(--afc-text)]">Site public</h2>
+            <SiteRebuildCard canEdit={canEdit}>
+              <>
                   <p className="mt-0.5 text-sm text-[var(--afc-muted)]">
                     Un événement publié apparaît sur la page d’accueil du club à la reconstruction suivante du site.
                     Un brouillon n’y apparaît jamais.
@@ -292,9 +289,8 @@ function ActivityDetailPageInner() {
                       </button>
                     )}
                   </div>
-                </div>
-              </div>
-            </div>
+              </>
+            </SiteRebuildCard>
           )}
         </div>
       ) : (

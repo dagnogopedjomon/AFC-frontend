@@ -2,8 +2,9 @@
 
 import { useEffect, useMemo, useState } from 'react';
 import Link from 'next/link';
-import { Globe, Newspaper, Plus, Search } from 'lucide-react';
+import { Newspaper, Plus, Search } from 'lucide-react';
 import { useAuth } from '@/lib/auth-context';
+import { SiteRebuildCard } from '@/components/SiteRebuildCard';
 import {
   articlesApi,
   type ArticleCategory,
@@ -93,25 +94,19 @@ export default function ArticlesPage() {
     <div className="fade-in space-y-6">
       {error && <div className="afc-badge-red rounded-[10px] border px-4 py-3 text-sm">{error}</div>}
 
-      {/* Rappel de ce que le site montre, comme sur les écrans Événements et Documents. */}
-      <div className="card">
-        <div className="flex items-start gap-3">
-          <Globe size={18} strokeWidth={1.7} className="mt-0.5 shrink-0 text-[var(--primary)]" />
-          <div className="min-w-0 flex-1">
-            <h2 className="font-serif text-lg text-[var(--afc-text)]">Site public</h2>
-            <p className="mt-0.5 text-sm text-[var(--afc-muted)]">
-              Les articles parus alimentent la page « Blog » du site, reçoivent chacun leur page, et les plus
-              récents apparaissent sur l’accueil. Un brouillon n’y apparaît jamais ; un article programmé attend
-              sa date.
-            </p>
-            <p className="afc-mono mt-2 text-xs text-[var(--afc-muted)]">
-              {parus} paru{parus > 1 ? 's' : ''}
-              {programmes > 0 && ` · ${programmes} programmé${programmes > 1 ? 's' : ''}`} · {articles.length} au
-              total
-            </p>
-          </div>
-        </div>
-      </div>
+      {/* Ce que le site montre, et de quoi le mettre à jour (lot 4). */}
+      <SiteRebuildCard canEdit={canEdit}>
+        <p className="mt-0.5 text-sm text-[var(--afc-muted)]">
+          Les articles parus alimentent la page « Blog » du site, reçoivent chacun leur page, et les plus
+          récents apparaissent sur l’accueil. Un brouillon n’y apparaît jamais ; un article programmé attend
+          sa date.
+        </p>
+        <p className="afc-mono mt-2 text-xs text-[var(--afc-muted)]">
+          {parus} paru{parus > 1 ? 's' : ''}
+          {programmes > 0 && ` · ${programmes} programmé${programmes > 1 ? 's' : ''}`} · {articles.length} au
+          total
+        </p>
+      </SiteRebuildCard>
 
       {canEdit && (
         <Link href="/dashboard/articles/editeur" className="btn-primary inline-flex items-center gap-2">
