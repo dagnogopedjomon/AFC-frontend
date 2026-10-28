@@ -44,7 +44,7 @@ L'adresse ne change pas.
 
 ## Réglages du site de test
 
-- `robots.txt` et l'en-tête `X-Robots-Tag` (fichier `_headers`) empêchent l'indexation par Google tant que le site est en test.
+- `robots.txt` ouvre l'indexation sauf `/dashboard/` (l'espace membres n'a rien à faire dans les résultats de recherche).
 - Les fichiers audio sont mis en cache 7 jours.
 
 ## Avant de passer sur le vrai domaine
@@ -52,9 +52,9 @@ L'adresse ne change pas.
 - [ ] Validation du contenu par le bureau.
 - [ ] Remplir les éléments marqués « à compléter » : noms et photos des membres (avec leur accord), liens des réseaux sociaux, contact pour le parrainage, événements.
 - [ ] Confirmer l'horaire des séances (19 h 30 – 21 h 00) et mettre à jour l'article 8 du règlement intérieur (séances du lundi et du jeudi).
-- [ ] Retirer `robots.txt` et la ligne `X-Robots-Tag` dans `build.py`.
+- [x] Retirer le blocage des moteurs (`Disallow: /` et `X-Robots-Tag: noindex`) dans `build.py` — fait le 28/10/2026.
 - [ ] Ajouter une image de partage (`og:image`) avec l'adresse définitive.
-- [ ] Choisir l'adresse avec Zorkot : aujourd'hui `amicalefc.com` ouvre directement la connexion de l'appli (`/login`). Le site peut aller sur `amicalefc.com` (et l'appli sur un sous-domaine) ou sur un sous-domaine du type `club.amicalefc.com`.
+- [x] Adresse choisie le 28/10/2026 : `amicalefc.com` sert tout, vitrine et espace membres, depuis le même dépôt (`public_html` sur Hostinger). Le lien « Accès membres » est donc interne (`/login/`, marqueur `__APP__`) et s'ouvre dans le même onglet. Reste à rattacher le domaine à `public_html` dans hPanel et à arrêter l'ancienne application Node.
 - [ ] Brancher le domaine dans Netlify : *Domain management > Add a domain*.
 
 ## Voix off

@@ -13,6 +13,7 @@ Marqueurs remplacés dans les modèles :
   __SCENES__  scènes animées des règles (src/regles_scenes.js)
   __RULES__   adresse de la page des règles
   __HOME__    adresse de la page d'accueil
+  __APP__     adresse de l'espace membres (connexion à l'application)
   __EXT__     ouverture dans un nouvel onglet (artefacts seulement)
   __CSS_COMMUN__, __CSS_PUBLI__   feuilles de style communes (src/commun.css, src/publications.css)
   __BLOG__, __DOCS__, __EVENTS__  adresses du blog, des documents et des événements
@@ -42,6 +43,8 @@ ART = os.path.join(ICI, "build_artifacts")
 ART_ACCUEIL = "https://claude.ai/artifact/MvX5saHGvu6zk8hfTirFeL"
 ART_REGLES = "https://claude.ai/artifact/TSLE39r9e2c3HVMvajaCd7"
 NEW_TAB = ' target="_blank" rel="noopener"'
+# Dans les artefacts, l'espace membres n'est pas au même endroit que la page : adresse complète.
+ART_APP = "https://amicalefc.com/login"
 
 # Squelette de page pour le site (les artefacts l'ajoutent eux-mêmes à la publication)
 HEAD = """<!doctype html>
@@ -101,13 +104,13 @@ def copier_dossier(source, cible):
         shutil.copytree(source, cible)
 
 
-def valeurs_communes(logo, scenes, liens, contenus, rules, home, ext):
+def valeurs_communes(logo, scenes, liens, contenus, rules, home, app, ext):
     """Marqueurs partagés par l'accueil, les règles et les pages de publications."""
     evts = contenus["evenements"]
     fiches, onglets, note_effectif = pub.effectif_html(contenus["effectif"])
     return {
         "__EFFECTIF_HTML__": fiches, "__EFFECTIF_TABS__": onglets, "__EFFECTIF_NOTE__": note_effectif, "__JS_LIGHTBOX__": lire("lightbox.js"),
-        "__LOGO__": logo, "__SCENES__": scenes, "__RULES__": rules, "__HOME__": home, "__EXT__": ext,
+        "__LOGO__": logo, "__SCENES__": scenes, "__RULES__": rules, "__HOME__": home, "__APP__": app, "__EXT__": ext,
         "__CSS_COMMUN__": lire("commun.css"), "__CSS_PUBLI__": lire("publications.css"), "__JS_EVENTS__": lire("evenements.js"),
         "__BLOG__": liens.blog(), "__DOCS__": liens.documents(), "__EVENTS__": liens.evenements(),
         "__ACTUALITES__": pub.section_actualites(contenus["articles"], contenus["documents"], liens),
@@ -132,7 +135,7 @@ def main():
 
     # 1. Site Netlify : liens relatifs, même onglet
     L = pub.Liens(True)
-    site = valeurs_communes(logo, scenes, L, c, "/regles/", "/", "")
+    site = valeurs_communes(logo, scenes, L, c, "/regles/", "/", "/login/", "")
     if os.path.isdir(SITE):
         shutil.rmtree(SITE)
     ecrire(os.path.join(SITE, "index.html"), page_complete(remplir(accueil, site),
@@ -159,17 +162,20 @@ def main():
     copier_dossier(os.path.join(base, "images"), os.path.join(SITE, "images"))
     copier_dossier(os.path.join(base, "fichiers"), os.path.join(SITE, "fichiers"))
 
-    # Site de test : ni indexation ni référencement tant que le bureau n'a pas validé
-    ecrire(os.path.join(SITE, "robots.txt"), "User-agent: *\nDisallow: /\n")
+    # Site public sur le vrai domaine : l'indexation est ouverte (le bureau a validé le 28/10/2026).
+    ecrire(os.path.join(SITE, "robots.txt"),
+           "User-agent: *\nAllow: /\n"
+           # L'espace membres n'a rien à faire dans les résultats de recherche.
+           "Disallow: /dashboard/\n")
     ecrire(os.path.join(SITE, "_headers"),
-           "/*\n  X-Robots-Tag: noindex, nofollow\n  X-Content-Type-Options: nosniff\n"
+           "/*\n  X-Content-Type-Options: nosniff\n"
            "  Referrer-Policy: strict-origin-when-cross-origin\n\n"
            "/regles/voix/*\n  Cache-Control: public, max-age=604800\n\n"
            "/images/*\n  Cache-Control: public, max-age=86400\n\n"
            "/fichiers/*\n  Cache-Control: public, max-age=3600\n")
 
     # 2. Artefacts Claude : liens vers les autres artefacts, nouvel onglet (publications en aperçu sur l'accueil)
-    art = valeurs_communes(logo, scenes, pub.Liens(False), c, ART_REGLES, ART_ACCUEIL, NEW_TAB)
+    art = valeurs_communes(logo, scenes, pub.Liens(False), c, ART_REGLES, ART_ACCUEIL, ART_APP, NEW_TAB)
     if os.path.isdir(ART):
         shutil.rmtree(ART)
     ecrire(os.path.join(ART, "accueil", "accueil-afc.html"), remplir(accueil, art))
