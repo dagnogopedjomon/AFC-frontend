@@ -599,3 +599,30 @@ main table.afc-table-dark tbody tr:hover { background: rgba(var(--afc-hl), 0.03)
   .afc-marquee-track > :nth-child(2) { display: none; }
   .animate-marquee, .animate-blink-red, .fade-in { animation: none !important; }
 }
+
+/* ─── Texte enrichi des articles : éditeur et aperçu (lot 3 du module Publications) ─── */
+.afc-prose { color: var(--afc-text); line-height: 1.7; }
+.afc-prose > :first-child { margin-top: 0; }
+.afc-prose p { margin: 0 0 .9rem; }
+.afc-prose h2 { font-family: var(--font-serif, serif); font-size: 1.3rem; margin: 1.6rem 0 .6rem; }
+.afc-prose h3 { font-family: var(--font-serif, serif); font-size: 1.1rem; margin: 1.3rem 0 .5rem; }
+.afc-prose h4 { font-size: 1rem; font-weight: 600; margin: 1.1rem 0 .4rem; }
+.afc-prose ul, .afc-prose ol { margin: 0 0 .9rem 1.3rem; }
+.afc-prose li { margin: .2rem 0; }
+.afc-prose a { color: var(--primary); text-decoration: underline; text-underline-offset: 2px; }
+.afc-prose strong { font-weight: 600; }
+.afc-prose blockquote {
+  margin: 1.1rem 0;
+  padding: .2rem 0 .2rem 1rem;
+  border-left: 3px solid var(--primary);
+  color: var(--afc-muted);
+  font-style: italic;
+}
+.afc-prose img { max-width: 100%; height: auto; border-radius: 10px; margin: 1rem 0; }
+.afc-prose hr { border: 0; border-top: 1px solid var(--afc-border); margin: 1.6rem 0; }
+/* Zone de saisie : le texte d'invite ne s'affiche que sur un article vide. */
+.afc-editeur:focus { outline: 2px solid color-mix(in srgb, var(--primary) 45%, transparent); outline-offset: 2px; }
+.afc-editeur:empty::before {
+  content: attr(data-invite);
+  color: var(--afc-muted);
+}

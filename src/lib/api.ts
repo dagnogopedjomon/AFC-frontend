@@ -751,6 +751,74 @@ export const activitiesApi = {
   deletePhoto: (id: string) => api<{ success: boolean }>(`/activities/photos/${id}`, { method: 'DELETE' }),
 };
 
+export type ArticleCategory = 'VIE_DU_CLUB' | 'REGLES' | 'COMMUNIQUES' | 'COMPTES_RENDUS';
+
+/** Article du blog du club (lot 3 du module Publications). */
+export type ClubArticle = {
+  id: string;
+  title: string;
+  slug: string | null;
+  excerpt: string | null;
+  contentHtml: string;
+  category: ArticleCategory;
+  authorName: string | null;
+  coverUrl: string | null;
+  coverAlt: string | null;
+  publishedAt: string | null;
+  publicationStatus: PublicationStatus;
+  createdAt: string;
+  updatedAt: string;
+  createdBy?: { id: string; firstName: string; lastName: string };
+};
+
+type ChampsArticle = {
+  title?: string;
+  excerpt?: string;
+  contentHtml?: string;
+  category?: ArticleCategory;
+  authorName?: string;
+  publishedAt?: string;
+  coverAlt?: string;
+};
+
+export const articlesApi = {
+  list: (params: { q?: string; statut?: PublicationStatus; categorie?: ArticleCategory } = {}) => {
+    const query = new URLSearchParams();
+    if (params.q) query.set('q', params.q);
+    if (params.statut) query.set('statut', params.statut);
+    if (params.categorie) query.set('categorie', params.categorie);
+    const suffixe = query.toString();
+    return api<ClubArticle[]>(`/articles${suffixe ? `?${suffixe}` : ''}`);
+  },
+  one: (id: string) => api<ClubArticle>(`/articles/${id}`),
+  create: (data: ChampsArticle & { title: string }) =>
+    api<ClubArticle>('/articles', { method: 'POST', body: JSON.stringify(data) }),
+  update: (id: string, data: ChampsArticle) =>
+    api<ClubArticle>(`/articles/${id}`, { method: 'PATCH', body: JSON.stringify(data) }),
+  /** Image de couverture. */
+  setCover: (id: string, file: File, alt?: string) => {
+    const form = new FormData();
+    form.append('file', file);
+    if (alt) form.append('alt', alt);
+    return api<ClubArticle>(`/articles/${id}/couverture`, { method: 'POST', body: form });
+  },
+  removeCover: (id: string) =>
+    api<ClubArticle>(`/articles/${id}/couverture`, { method: 'DELETE' }),
+  /** Image déposée depuis l'éditeur, à insérer dans le corps. */
+  uploadImage: (id: string, file: File) => {
+    const form = new FormData();
+    form.append('file', file);
+    return api<{ url: string }>(`/articles/${id}/images`, { method: 'POST', body: form });
+  },
+  /** Publier, programmer, retirer ou archiver sur le site public. */
+  setPublication: (id: string, status: PublicationStatus, publishedAt?: string) =>
+    api<ClubArticle>(`/articles/${id}/publication`, {
+      method: 'PATCH',
+      body: JSON.stringify({ status, ...(publishedAt ? { publishedAt } : {}) }),
+    }),
+  delete: (id: string) => api<{ deleted: boolean }>(`/articles/${id}`, { method: 'DELETE' }),
+};
+
 export type DocumentCategory = 'STATUTS' | 'REGLEMENT' | 'COMPTES_RENDUS' | 'AUTRES';
 
 /** Document téléchargeable depuis le site du club (lot 2 du module Publications). */

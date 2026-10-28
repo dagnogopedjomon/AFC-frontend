@@ -14,6 +14,7 @@ import {
   CalendarOff,
   FileSpreadsheet,
   FileText,
+  Newspaper,
   Gavel,
   HandCoins,
   History,
@@ -69,6 +70,7 @@ const GESTION_NAV: NavGroup[] = [
       { href: '/dashboard/membres', label: 'Membres', icon: UsersRound, roles: BUREAU_OR_ADMIN },
       { href: '/dashboard/activites', label: 'Activités', icon: Megaphone, badge: 'activites' },
       { href: '/dashboard/documents', label: 'Documents', icon: FileText },
+      { href: '/dashboard/articles', label: 'Articles', icon: Newspaper },
       { href: '/dashboard/amendes', label: 'Amendes', icon: Gavel, roles: FINES_ROLES },
     ],
   },
@@ -144,6 +146,8 @@ const PAGE_TITLES: { href: string; title: string; subtitle: string; exact?: bool
   { href: '/dashboard/parametres', title: 'Paramètres', subtitle: 'Configuration du club et de l’application' },
   { href: '/dashboard/activites', title: 'Activités', subtitle: 'Vie du club, matchs et annonces' },
   { href: '/dashboard/documents', title: 'Documents', subtitle: 'Fichiers à télécharger sur le site du club' },
+  { href: '/dashboard/articles/editeur', title: 'Article', subtitle: 'Rédaction, aperçu et parution' },
+  { href: '/dashboard/articles', title: 'Articles', subtitle: 'Le blog du club : communiqués et comptes rendus' },
   { href: '/dashboard/payment/success', title: 'Paiement', subtitle: 'Retour du paiement mobile' },
 ].sort((a, b) => b.href.length - a.href.length);
 
