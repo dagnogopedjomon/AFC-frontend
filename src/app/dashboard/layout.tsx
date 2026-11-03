@@ -147,7 +147,7 @@ const PAGE_TITLES: { href: string; title: string; subtitle: string; exact?: bool
   { href: '/dashboard/activites', title: 'Activités', subtitle: 'Vie du club, matchs et annonces' },
   { href: '/dashboard/documents', title: 'Documents', subtitle: 'Fichiers à télécharger sur le site du club' },
   { href: '/dashboard/articles/editeur', title: 'Article', subtitle: 'Rédaction, aperçu et parution' },
-  { href: '/dashboard/articles', title: 'Articles', subtitle: 'Le blog du club : communiqués et comptes rendus' },
+  { href: '/dashboard/articles', title: 'Articles', subtitle: 'Textes du club — ne paraissent plus sur le site' },
   { href: '/dashboard/payment/success', title: 'Paiement', subtitle: 'Retour du paiement mobile' },
 ].sort((a, b) => b.href.length - a.href.length);
 

@@ -97,9 +97,9 @@ export default function ArticlesPage() {
       {/* Ce que le site montre, et de quoi le mettre à jour (lot 4). */}
       <SiteRebuildCard canEdit={canEdit}>
         <p className="mt-0.5 text-sm text-[var(--afc-muted)]">
-          Les articles parus alimentent la page « Blog » du site, reçoivent chacun leur page, et les plus
-          récents apparaissent sur l’accueil. Un brouillon n’y apparaît jamais ; un article programmé attend
-          sa date.
+          Le bureau a retiré le blog du site public le 2 novembre 2026 : les articles écrits ici ne
+          paraissent plus sur le site. Le compte rendu d’une sortie s’écrit désormais dans l’événement
+          lui-même, et les communiqués officiels passent par les documents.
         </p>
         <p className="afc-mono mt-2 text-xs text-[var(--afc-muted)]">
           {parus} paru{parus > 1 ? 's' : ''}

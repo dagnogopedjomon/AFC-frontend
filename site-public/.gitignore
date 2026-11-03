@@ -1,0 +1,5 @@
+build_artifacts/
+__pycache__/
+.DS_Store
+*.pyc
+apercu_exemple/

@@ -1,0 +1,91 @@
+[
+ {
+  "id": 1,
+  "slug": "exemple-match-amical",
+  "statut": "publié",
+  "titre": "Exemple : match amical contre une corporation",
+  "debut": "2026-11-14T16:00:00+00:00",
+  "fin": "2026-11-14T18:00:00+00:00",
+  "lieu": "Terrain de five, Cocody",
+  "description_md": "**Ceci est un événement d'exemple**, pour voir le rendu du site.\n\nRendez-vous 30 minutes avant le coup d'envoi.\n\n- Chasubles fournies par le club\n- Chaussures synthétiques, sans crampons",
+  "couverture": {
+   "url": "/images/exemple-terrain.svg",
+   "alt": "Terrain de five"
+  },
+  "galerie": [
+   {
+    "url": "/images/albums/exemple-1.svg",
+    "alt": "Avant le coup d'envoi",
+    "legende": "Avant le coup d'envoi (exemple)"
+   },
+   {
+    "url": "/images/albums/exemple-2.svg",
+    "alt": "Les deux équipes",
+    "legende": "Les deux équipes (exemple)"
+   },
+   {
+    "url": "/images/albums/exemple-3.svg",
+    "alt": "Une relance depuis la surface",
+    "legende": "Une relance depuis la surface (exemple)"
+   },
+   {
+    "url": "/images/albums/exemple-4.svg",
+    "alt": "Le but",
+    "legende": "Le but (exemple)"
+   },
+   {
+    "url": "/images/albums/exemple-5.svg",
+    "alt": "La pause",
+    "legende": "La pause (exemple)"
+   },
+   {
+    "url": "/images/albums/exemple-6.svg",
+    "alt": "Photo de groupe",
+    "legende": "Photo de groupe (exemple)"
+   }
+  ],
+  "document": {
+   "titre": "Télécharger les règles de jeu",
+   "url": "/fichiers/exemple-reglement.pdf"
+  },
+  "article_slug": null
+ },
+ {
+  "id": 2,
+  "slug": "exemple-repas-du-club",
+  "statut": "publié",
+  "titre": "Exemple : repas du club",
+  "debut": "2026-09-20",
+  "fin": null,
+  "lieu": "Abidjan",
+  "description_md": "Événement d'exemple **passé**, sans heure ni photo, avec un compte rendu lié.",
+  "couverture": null,
+  "galerie": [
+   {
+    "url": "/images/albums/exemple-2.svg",
+    "alt": "Les deux équipes",
+    "legende": "Repas du club : les deux équipes"
+   },
+   {
+    "url": "/images/albums/exemple-5.svg",
+    "alt": "La pause",
+    "legende": "Repas du club : la pause"
+   },
+   {
+    "url": "/images/albums/exemple-6.svg",
+    "alt": "Photo de groupe",
+    "legende": "Repas du club : photo de groupe"
+   }
+  ],
+  "document": null,
+  "article_slug": "exemple-compte-rendu-repas"
+ },
+ {
+  "id": 3,
+  "slug": "exemple-brouillon",
+  "statut": "brouillon",
+  "titre": "Exemple : brouillon (ne doit pas apparaître)",
+  "debut": "2026-12-01",
+  "description_md": "Non publié."
+ }
+]

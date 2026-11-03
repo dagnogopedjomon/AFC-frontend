@@ -13,13 +13,15 @@ Marqueurs remplacés dans les modèles :
   __SCENES__  scènes animées des règles (src/regles_scenes.js)
   __RULES__   adresse de la page des règles
   __HOME__    adresse de la page d'accueil
-  __APP__     adresse de l'espace membres (connexion à l'application)
   __EXT__     ouverture dans un nouvel onglet (artefacts seulement)
   __CSS_COMMUN__, __CSS_PUBLI__   feuilles de style communes (src/commun.css, src/publications.css)
-  __BLOG__, __DOCS__, __EVENTS__  adresses du blog, des documents et des événements
-  __ACTUALITES__, __EVENTS_HTML__, __EVENTS_DATA__   contenus publiés (contenu/ ou API)
+  __DOCS__, __EVENTS__  adresses des documents et des événements (le blog a été retiré le 01/11/2026 : tout passe par les événements)
+  __EVENTS_HTML__, __EVENTS_DATA__   contenus publiés (contenu/ ou API)
   __JS_EVENTS__, __JS_LIGHTBOX__   scripts des événements et des albums photo (src/evenements.js, src/lightbox.js)
   __EFFECTIF_HTML__, __EFFECTIF_TABS__, __EFFECTIF_NOTE__   fiches de l'effectif (contenu/effectif.json ou API)
+  __APP__     adresse de l'espace membres (connexion à l'application)
+  __PIED__    pied de page commun (src/pied.html)
+  __ENTETE__  en-tête commun (src/entete.html) : logo, menu des pages, thème, accès membres, menu mobile
 
 Contenus : voir contenu/LISEZMOI.md.
 """
@@ -112,14 +114,59 @@ def valeurs_communes(logo, scenes, liens, contenus, rules, home, app, ext):
         "__EFFECTIF_HTML__": fiches, "__EFFECTIF_TABS__": onglets, "__EFFECTIF_NOTE__": note_effectif, "__JS_LIGHTBOX__": lire("lightbox.js"),
         "__LOGO__": logo, "__SCENES__": scenes, "__RULES__": rules, "__HOME__": home, "__APP__": app, "__EXT__": ext,
         "__CSS_COMMUN__": lire("commun.css"), "__CSS_PUBLI__": lire("publications.css"), "__JS_EVENTS__": lire("evenements.js"),
-        "__BLOG__": liens.blog(), "__DOCS__": liens.documents(), "__EVENTS__": liens.evenements(),
-        "__ACTUALITES__": pub.section_actualites(contenus["articles"], contenus["documents"], liens),
+        "__DOCS__": liens.documents(), "__EVENTS__": liens.evenements(),
         "__EVENTS_HTML__": pub.carrousel_evenements(evts, liens), "__EVENTS_DATA__": pub.donnees_evenements(evts, liens),
     }
 
 
-def page_interieure(gabarit, valeurs, main, titre, desc):
-    v = dict(valeurs, __TITRE__=html.escape(titre), __DESC__=html.escape(desc, quote=True), __MAIN__=main)
+# Menu : les pages du site (les sections de l'accueil n'y figurent pas ; Documents est dans le pied de page et sous les événements)
+MENU = (("accueil", "Accueil"), ("evenements", "Événements"), ("regles", "Règles de jeu"))
+
+
+def lien(valeurs, href, actif):
+    """Adresse et ouverture d'un lien selon la page : ancres de l'accueil préfixées hors de l'accueil."""
+    home, ext = valeurs["__HOME__"], valeurs["__EXT__"]
+    if href.startswith("#"):
+        return (href, "") if actif == "accueil" else (home + href, ext)
+    return href, ext
+
+
+def lien_html(valeurs, href, nom, actif, courant=False):
+    h, cible = lien(valeurs, href, actif)
+    marque = ' aria-current="page"' if courant else ""
+    return f'<a href="{html.escape(h)}"{cible}{marque}>{nom}</a>'
+
+
+def entete(valeurs, actif):
+    """En-tête commun, page en cours marquée. Sur les artefacts, les liens repartent vers l'artefact d'accueil."""
+    cibles = {"accueil": "#accueil", "evenements": valeurs["__EVENTS__"], "regles": valeurs["__RULES__"]}
+    liens = [lien_html(valeurs, cibles[cle] if cle != "accueil" or actif == "accueil" else valeurs["__HOME__"], nom, actif, cle == actif)
+             for cle, nom in MENU]
+    haut, ext = lien(valeurs, "#accueil", actif) if actif == "accueil" else (valeurs["__HOME__"], valeurs["__EXT__"])
+    return remplir(lire("entete.html"), {"__LOGO__": valeurs["__LOGO__"], "__MENU__": "\n      ".join(liens),
+                                         "__HOME_TOP__": haut, "__HOME_EXT__": ext,
+                                         "__APP__": valeurs["__APP__"], "__EXT__": valeurs["__EXT__"]})
+
+
+def pied(valeurs, actif):
+    """Pied de page commun, mêmes liens partout."""
+    v = valeurs
+    return remplir(lire("pied.html"), {
+        "__LOGO__": v["__LOGO__"], "__APP__": v["__APP__"], "__EXT__": v["__EXT__"],
+        "__L_CLUB__": lien_html(v, "#club", "Valeurs et organisation", actif) + lien_html(v, "#effectif", "L'effectif", actif) + lien_html(v, "#rejoindre", "Rejoindre l'AFC", actif),
+        "__L_PUBLI__": lien_html(v, v["__EVENTS__"], "Événements", actif, actif == "evenements")
+                       + lien_html(v, v["__DOCS__"], "Documents", actif, actif == "documents"),
+        "__L_JOUER__": lien_html(v, "#calendrier", "Calendrier", actif) + lien_html(v, v["__RULES__"], "Règles de jeu", actif, actif == "regles"),
+        "__L_RESEAUX__": lien_html(v, "#suivre", "Réseaux sociaux", actif),
+    })
+
+
+def habillage(valeurs, actif):
+    return dict(valeurs, __ENTETE__=entete(valeurs, actif), __PIED__=pied(valeurs, actif))
+
+
+def page_interieure(gabarit, valeurs, main, titre, desc, actif=None):
+    v = dict(habillage(valeurs, actif), __TITRE__=html.escape(titre), __DESC__=html.escape(desc, quote=True), __MAIN__=main)
     return page_complete(remplir(gabarit, v), titre, desc)
 
 
@@ -138,27 +185,22 @@ def main():
     site = valeurs_communes(logo, scenes, L, c, "/regles/", "/", "/login/", "")
     if os.path.isdir(SITE):
         shutil.rmtree(SITE)
-    ecrire(os.path.join(SITE, "index.html"), page_complete(remplir(accueil, site),
+    ecrire(os.path.join(SITE, "index.html"), page_complete(remplir(accueil, habillage(site, "accueil")),
            "Amicale Football Club", "Le foot entre amis à Abidjan : séances, règles de jeu et espace membres."))
-    ecrire(os.path.join(SITE, "regles", "index.html"), page_complete(remplir(regles, site),
-           "Règles de jeu · Amicale FC", "Le Maracana à la sauce AFC, en animation et avec une voix off."))
+    ecrire(os.path.join(SITE, "regles", "index.html"), page_complete(remplir(regles, habillage(site, "regles")),
+           "Règles de jeu · Amicale FC", "Le Maracana à la sauce AFC, en dix chapitres animés."))
     ecrire(os.path.join(SITE, "404.html"), page_complete(lire("404.html")))
     shutil.copytree(os.path.join(SRC, "voix"), os.path.join(SITE, "regles", "voix"))
     shutil.copy(os.path.join(SRC, "logo.png"), os.path.join(SITE, "logo.png"))
 
     # Pages de publications
-    main_, titre, desc = pub.page_blog(c["articles"], L)
-    ecrire(os.path.join(SITE, "blog", "index.html"), page_interieure(gabarit, site, main_, titre, desc))
-    for a in c["articles"]:
-        main_, titre, desc = pub.page_article(a, c["articles"], L)
-        ecrire(os.path.join(SITE, "blog", a["slug"], "index.html"), page_interieure(gabarit, site, main_, titre, desc))
     main_, titre, desc = pub.page_evenements(c["evenements"], L)
-    ecrire(os.path.join(SITE, "evenements", "index.html"), page_interieure(gabarit, site, main_, titre, desc))
+    ecrire(os.path.join(SITE, "evenements", "index.html"), page_interieure(gabarit, site, main_, titre, desc, "evenements"))
     for v in c["evenements"]:
-        main_, titre, desc = pub.page_evenement(v, c["articles"], L)
-        ecrire(os.path.join(SITE, "evenements", v["slug"], "index.html"), page_interieure(gabarit, site, main_, titre, desc))
+        main_, titre, desc = pub.page_evenement(v, [], L)
+        ecrire(os.path.join(SITE, "evenements", v["slug"], "index.html"), page_interieure(gabarit, site, main_, titre, desc, "evenements"))
     main_, titre, desc = pub.page_documents(c["documents"])
-    ecrire(os.path.join(SITE, "documents", "index.html"), page_interieure(gabarit, site, main_, titre, desc))
+    ecrire(os.path.join(SITE, "documents", "index.html"), page_interieure(gabarit, site, main_, titre, desc, "documents"))
     copier_dossier(os.path.join(base, "images"), os.path.join(SITE, "images"))
     copier_dossier(os.path.join(base, "fichiers"), os.path.join(SITE, "fichiers"))
 
@@ -178,8 +220,8 @@ def main():
     art = valeurs_communes(logo, scenes, pub.Liens(False), c, ART_REGLES, ART_ACCUEIL, ART_APP, NEW_TAB)
     if os.path.isdir(ART):
         shutil.rmtree(ART)
-    ecrire(os.path.join(ART, "accueil", "accueil-afc.html"), remplir(accueil, art))
-    ecrire(os.path.join(ART, "regles", "regles-afc.html"), remplir(regles, art))
+    ecrire(os.path.join(ART, "accueil", "accueil-afc.html"), remplir(accueil, habillage(art, "accueil")))
+    ecrire(os.path.join(ART, "regles", "regles-afc.html"), remplir(regles, habillage(art, "regles")))
     shutil.copytree(os.path.join(SRC, "voix"), os.path.join(ART, "regles", "voix"))
 
     nb = sum(len(f) for _, _, f in os.walk(SITE))

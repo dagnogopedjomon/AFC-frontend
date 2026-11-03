@@ -1,0 +1,14 @@
+[
+  { "id": 1, "slug": "exemple-compte-rendu-repas", "statut": "publié", "titre": "Exemple : compte rendu du repas du club",
+    "extrait": "Article d'exemple pour voir une carte avec une image de couverture.", "categorie": "Comptes rendus", "auteur": "Le Bureau",
+    "publie_le": "2026-09-22T09:00:00+00:00", "couverture": { "url": "/images/exemple-terrain.svg", "alt": "Illustration" },
+    "corps_fichier": "articles/exemple-compte-rendu-repas.md" },
+  { "id": 2, "slug": "exemple-communique", "statut": "publié", "titre": "Exemple : communiqué du bureau",
+    "extrait": "Article d'exemple sans image : la carte affiche l'illustration du club.", "categorie": "Communiqués", "auteur": "",
+    "publie_le": "2026-10-10T09:00:00+00:00", "corps_md": "## Un communiqué d'exemple\n\nCeci est un **texte d'exemple**. Il montre les titres, les listes et les liens : [le site du club](https://amicalefc.com).\n\n> Une citation d'exemple.\n\n1. Premier point\n2. Deuxième point" },
+  { "id": 3, "slug": "exemple-regles", "statut": "publié", "titre": "Exemple : les règles de jeu en vidéo",
+    "extrait": "Article d'exemple de la catégorie Règles.", "categorie": "Règles", "publie_le": "2026-10-14T09:00:00+00:00",
+    "corps_md": "Article d'exemple. Les règles animées sont sur la [page des règles](/regles/)." },
+  { "id": 4, "slug": "exemple-programme", "statut": "publié", "titre": "Exemple : parution programmée (ne doit pas apparaître)",
+    "categorie": "Vie du club", "publie_le": "2099-01-01T09:00:00+00:00", "corps_md": "Pas encore." }
+]

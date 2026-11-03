@@ -1,0 +1,123 @@
+[
+ {
+  "nom": "Yao",
+  "prenom": "Koffi",
+  "groupe": "bureau",
+  "poste": "Président",
+  "photo": {
+   "url": "/images/membres/exemple-01.svg",
+   "alt": "Portrait de Koffi Yao (exemple)"
+  },
+  "ordre": 1,
+  "statut": "publié"
+ },
+ {
+  "nom": "Traoré",
+  "prenom": "Aïcha",
+  "groupe": "bureau",
+  "poste": "Vice-président",
+  "photo": {
+   "url": "/images/membres/exemple-02.svg",
+   "alt": "Portrait de Aïcha Traoré (exemple)"
+  },
+  "ordre": 2,
+  "statut": "publié"
+ },
+ {
+  "nom": "N'Guessan",
+  "prenom": "Kouadio",
+  "groupe": "bureau",
+  "poste": "Trésorier général",
+  "photo": {
+   "url": "/images/membres/exemple-03.svg",
+   "alt": "Portrait de Kouadio N'Guessan (exemple)"
+  },
+  "ordre": 3,
+  "statut": "publié"
+ },
+ {
+  "nom": "Coulibaly",
+  "prenom": "Fatou",
+  "groupe": "bureau",
+  "poste": "Chargé de l'organisation",
+  "photo": null,
+  "ordre": 4,
+  "statut": "publié"
+ },
+ {
+  "nom": "Konaté",
+  "prenom": "Ibrahim",
+  "groupe": "commissaire",
+  "poste": "Commissaire aux comptes",
+  "photo": {
+   "url": "/images/membres/exemple-05.svg",
+   "alt": "Portrait de Ibrahim Konaté (exemple)"
+  },
+  "ordre": 5,
+  "statut": "publié"
+ },
+ {
+  "nom": "Diabaté",
+  "prenom": "Awa",
+  "groupe": "membre",
+  "poste": "Attaquante",
+  "photo": {
+   "url": "/images/membres/exemple-06.svg",
+   "alt": "Portrait de Awa Diabaté (exemple)"
+  },
+  "ordre": 6,
+  "statut": "publié"
+ },
+ {
+  "nom": "Bamba",
+  "prenom": "Serge",
+  "groupe": "membre",
+  "poste": "Milieu",
+  "photo": {
+   "url": "/images/membres/exemple-07.svg",
+   "alt": "Portrait de Serge Bamba (exemple)"
+  },
+  "ordre": 7,
+  "statut": "publié"
+ },
+ {
+  "nom": "Ouattara",
+  "prenom": "Mariam",
+  "groupe": "membre",
+  "poste": "Défenseuse",
+  "photo": {
+   "url": "/images/membres/exemple-08.svg",
+   "alt": "Portrait de Mariam Ouattara (exemple)"
+  },
+  "ordre": 8,
+  "statut": "publié"
+ },
+ {
+  "nom": "Kouassi",
+  "prenom": "Jean-Marc",
+  "groupe": "membre",
+  "poste": "Milieu",
+  "photo": null,
+  "ordre": 9,
+  "statut": "publié"
+ },
+ {
+  "nom": "Cissé",
+  "prenom": "Salif",
+  "groupe": "membre",
+  "poste": "Attaquant",
+  "photo": {
+   "url": "/images/membres/exemple-10.svg",
+   "alt": "Portrait de Salif Cissé (exemple)"
+  },
+  "ordre": 10,
+  "statut": "publié"
+ },
+ {
+  "nom": "Exemple",
+  "prenom": "Brouillon",
+  "groupe": "membre",
+  "poste": "Milieu",
+  "statut": "brouillon"
+ }
+]

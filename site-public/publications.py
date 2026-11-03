@@ -18,7 +18,9 @@ ICONE_DOC = ('<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-
 
 POSTES_BUREAU = ["Président", "Vice-président", "Secrétaire général", "Trésorier général", "Chargé de l'organisation", "Moyens généraux"]
 POSTES_COMMISSAIRES = ["Commissaire aux comptes", "Commissaire aux comptes"]
-ROLES_POSTE = {"bureau": "Élu par l'AG", "commissaire": "Contrôle des comptes"}
+ROLES_POSTE = {"bureau": "Membre du bureau exécutif", "commissaire": "Élu par l'AG pour un an"}
+# Seul le Président est élu par l'AG ; il forme son bureau (statuts, art. 12)
+ROLE_PRESIDENT = "Élu par l'AG pour deux ans"
 SHIRT = ('<svg class="shirt" viewBox="0 0 48 48" aria-hidden="true"><path d="M17 6l-9 4-5 9 7 4 2-3v22h24V20l2 3 7-4-5-9-9-4c-1 3-4 5-7 5s-6-2-7-5z" fill="currentColor"/>'
          '<path d="M17 6c1 3 4 5 7 5s6-2 7-5" fill="none" stroke="var(--card)" stroke-width="1.4"/></svg>')
 
@@ -84,7 +86,7 @@ class Liens:
         return ("/blog/" + (slug + "/" if slug else "")) if self.reel else "#actualites"
 
     def evenements(self, slug=""):
-        return ("/evenements/" + (slug + "/" if slug else "")) if self.reel else "#actions"
+        return ("/evenements/" + (slug + "/" if slug else "")) if self.reel else "#evenements"
 
     def documents(self):
         return "/documents/" if self.reel else "#actualites"
@@ -166,11 +168,11 @@ def page_evenements(evts, L):
                  '<h2 class="group-title section-gap" id="t-past">Passés</h2><div class="ev-grid" id="ev-past" data-sort>'
                  + "".join(carte_evenement(v, L) for v in evts) + "</div>")
     else:
-        corps = vide("Aucun événement pour le moment", "Matchs, fêtes et actions du club seront publiés ici.")
+        corps = vide("Bientôt ici", "Les prochains matchs, rassemblements et actions du club seront annoncés ici.")
     main = (entete('<a href="/">Accueil</a> — Événements', "La vie <em>du club.</em>",
-                   "Matchs contre d'autres clubs, fêtes et actions caritatives. Les séances du lundi et du jeudi sont dans le calendrier de l'accueil.")
+                   "Matchs contre d'autres clubs, rassemblements et actions caritatives. Les séances du lundi et du jeudi sont dans le calendrier de l'accueil.")
             + f'<section class="pbody"><div class="wrap">{corps}</div></section>')
-    return main, "Événements · Amicale FC", "Les événements de l'Amicale Football Club : matchs, fêtes et actions caritatives."
+    return main, "Événements · Amicale FC", "Les événements de l'Amicale Football Club : matchs, rassemblements et actions caritatives."
 
 
 def page_evenement(ev, articles, L):
@@ -206,40 +208,29 @@ def page_documents(docs):
 
 
 # ───────────────────────── Accueil ─────────────────────────
-def section_actualites(articles, docs, L):
-    """Bloc « Actualités » de l'accueil : trois derniers articles et quatre derniers documents."""
-    if articles:
-        posts = '<div class="post-grid">' + "".join(carte_article(a, L) for a in articles[:3]) + "</div>"
-    else:
-        posts = vide("Aucun article pour le moment", "Les communiqués et les comptes rendus du club seront publiés ici.")
-    if docs:
-        recents = sorted(docs, key=lambda d: d["date"].timestamp() if d["date"] else 0, reverse=True)[:4]
-        bloc_docs = ('<div class="wrap sec-head" style="margin-top:72px"><div><p class="label">— Documents</p><h2 class="title" style="font-size:clamp(26px,3vw,36px)">À <em>télécharger</em></h2></div>'
-                     f'<a class="more" href="{L.documents()}">Tous les documents {FLECHE}</a></div><div class="wrap"><div class="docs">'
-                     + "".join(ligne_document(d) for d in recents) + "</div></div>")
-    else:
-        bloc_docs = ""
-    return ('<section class="block" id="actualites"><div class="wrap sec-head"><div><p class="label">— Actualités</p>'
-            '<h2 class="title">Le blog <em>du club.</em></h2></div>'
-            f'<a class="more" href="{L.blog()}">Tous les articles {FLECHE}</a></div>'
-            f'<div class="wrap">{posts}</div>{bloc_docs}</section>')
-
-
 def _cle(t):
     import unicodedata
     return "".join(c for c in unicodedata.normalize("NFD", str(t).lower()) if unicodedata.category(c) != "Mn").replace("'", "").replace("’", "").strip()
 
 
-def fiche_effectif(num, groupe, poste, nom, photo, sous_titre, attente):
+def fiche_effectif(num, groupe, poste, prenom, nom, photo, sous_titre, attente):
+    """Fiche de l'effectif : écusson (photo ou maillot), numéro en pastille, prénom fin + nom en grand."""
     cls = {"commissaire": " ref", "membre": " mem"}.get(groupe, "")
+    complet = f"{prenom} {nom}".strip()
     if photo:
-        visuel = (f'<img class="ph" src="{e(photo["url"])}" alt="{e(photo["alt"] or nom)}" loading="lazy" decoding="async">')
+        visuel = f'<img class="ph" src="{e(photo["url"])}" alt="{e(photo["alt"] or complet)}" loading="lazy" decoding="async">'
         cls += " has-photo"
     else:
-        visuel = f'<span class="num" aria-hidden="true">{num}</span>{SHIRT}'
+        visuel = SHIRT
     att = ' data-attente="1"' if attente else ""
-    return (f'<article class="player{cls}" data-g="{groupe}"{att}>{visuel}<div class="who"><small>{e(poste)}</small>'
-            f'<b>{e(nom)}</b><span>{e(sous_titre)}</span></div></article>')
+    return (f'<article class="player{cls}" data-g="{groupe}" data-num="{num}"{att}>'
+            f'<div class="pcard">{visuel}<span class="pname" aria-hidden="true">{e(prenom)}<b>{e(nom)}</b></span></div>'
+            f'<span class="pnum" aria-hidden="true">{num}</span>'
+            f'<div class="who"><small>{e(poste)}</small><span class="pf">{e(prenom)}</span><b>{e(nom)}</b><span class="ps">{e(sous_titre)}</span></div></article>')
+
+
+def role(groupe, poste):
+    return ROLE_PRESIDENT if groupe == "bureau" and _cle(poste) == _cle("Président") else ROLES_POSTE.get(groupe, "Membre du club")
 
 
 def effectif_html(effectif):
@@ -259,14 +250,14 @@ def effectif_html(effectif):
             m = prendre(groupe, poste)
             n += 1
             if m:
-                fiches.append(fiche_effectif(n, groupe, poste, f"{m['prenom']} {m['nom']}".strip(), m["photo"], ROLES_POSTE[groupe], False))
+                fiches.append(fiche_effectif(n, groupe, poste, m["prenom"], m["nom"], m["photo"], role(groupe, poste), False))
             else:
-                fiches.append(fiche_effectif(n, groupe, poste, "Nom à compléter", None, ROLES_POSTE[groupe], True))
+                fiches.append(fiche_effectif(n, groupe, poste, "", poste, None, role(groupe, poste), True))
     for m in restants:  # bureau/commissaires hors postes connus, puis membres
         n += 1
         sous = ROLES_POSTE.get(m["groupe"], "Membre du club") if m["groupe"] != "membre" else (m["poste"] or "Membre du club")
         poste = m["poste"] if m["groupe"] != "membre" else "Membre"
-        fiches.append(fiche_effectif(n, m["groupe"], poste or "Membre", f"{m['prenom']} {m['nom']}".strip(), m["photo"], sous, False))
+        fiches.append(fiche_effectif(n, m["groupe"], poste or "Membre", m["prenom"], m["nom"], m["photo"], sous, False))
     nb_mem = sum(1 for m in effectif if m["groupe"] == "membre")
     onglets = ('<div class="tabs" role="group" aria-label="Filtrer l\'effectif"><button type="button" data-f="all" aria-pressed="true">Tous</button>'
                '<button type="button" data-f="be" aria-pressed="false">Bureau<span>6</span></button>'
@@ -275,8 +266,7 @@ def effectif_html(effectif):
     onglets = onglets.replace('data-f="be"', 'data-f="bureau"').replace('data-f="cc"', 'data-f="commissaire"').replace('data-f="mem"', 'data-f="membre"')
     attente = sum(1 for f in fiches if 'data-attente="1"' in f)
     if attente:
-        note = (f'<p class="note"><span class="todo">{attente} fiche{"s" if attente > 1 else ""} à compléter</span>'
-                "La page est publique : seules les personnes qui ont accepté que leur nom et leur photo y figurent sont publiées.</p>")
+        note = ""  # plus de mention provisoire sur le site (décision du 02/11/2026)
     else:
         note = ""
     return "".join(fiches), onglets, note
@@ -292,5 +282,5 @@ def donnees_evenements(evts, L):
 
 def carrousel_evenements(evts, L):
     if not evts:
-        return vide("Aucun événement pour le moment", "Matchs, fêtes et actions du club seront publiés ici.")
+        return vide("Bientôt ici", "Les prochains matchs, rassemblements et actions du club seront annoncés ici.")
     return "".join(carte_evenement(v, L) for v in evts)

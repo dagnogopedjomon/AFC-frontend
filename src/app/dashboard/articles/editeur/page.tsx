@@ -359,7 +359,7 @@ function Editeur() {
                 className="input-field min-h-[76px]"
                 value={extrait}
                 onChange={(e) => setExtrait(e.target.value)}
-                placeholder="Deux phrases, affichées dans la liste du blog. Laissez vide pour les prendre au début de l’article."
+                placeholder="Deux phrases de résumé. Laissez vide pour les prendre au début de l’article."
               />
             </div>
             <div className="grid gap-4 sm:grid-cols-3">
@@ -406,7 +406,7 @@ function Editeur() {
           <div className="card">
             <h2 className="font-serif text-lg text-[var(--afc-text)]">Image de couverture</h2>
             <p className="mt-0.5 text-sm text-[var(--afc-muted)]">
-              JPEG, PNG ou WebP · 5 Mo au plus. Elle illustre l’article dans la liste du blog et sur l’accueil.
+              JPEG, PNG ou WebP · 5 Mo au plus. Elle illustre l’article dans la liste.
             </p>
             {article?.coverUrl ? (
               <div className="mt-4 space-y-3">
@@ -575,11 +575,6 @@ function Editeur() {
                 </button>
               )}
             </div>
-            {article?.slug && (
-              <p className="afc-mono mt-3 text-xs text-[var(--afc-muted)]">
-                Adresse sur le site : /blog/{article.slug}
-              </p>
-            )}
           </div>
         </>
       )}

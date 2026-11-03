@@ -1,0 +1,6 @@
+# Utilisé si le site Netlify est relié à un dépôt Git.
+# Pour un dépôt manuel (glisser-déposer), déposer seulement le dossier deploy_netlify/ :
+# les en-têtes sont alors lus dans deploy_netlify/_headers.
+[build]
+  publish = "deploy_netlify"
+  command = ""

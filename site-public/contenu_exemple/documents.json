@@ -1,0 +1,7 @@
+[
+  { "id": 1, "statut": "publié", "titre": "Exemple : règles de jeu de l'AFC", "description": "Les adaptations AFC du Maracana (document d'exemple).",
+    "categorie": "Règlement", "date": "2026-10-15", "fichier": { "url": "/fichiers/exemple-reglement.pdf", "taille_octets": 568659, "type": "pdf" } },
+  { "id": 2, "statut": "publié", "titre": "Exemple : compte rendu de l'assemblée", "description": "", "categorie": "Comptes rendus", "date": "2026-03-20",
+    "fichier": { "url": "/fichiers/exemple-reglement.pdf", "type": "pdf" } },
+  { "id": 3, "statut": "brouillon", "titre": "Exemple : brouillon", "categorie": "Autres", "fichier": { "url": "/fichiers/x.pdf" } }
+]

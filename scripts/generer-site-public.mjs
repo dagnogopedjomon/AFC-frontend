@@ -13,7 +13,7 @@
  * autant bloquer le déploiement de l'application.
  */
 import { spawnSync } from 'node:child_process';
-import { cpSync, existsSync, readdirSync, rmSync } from 'node:fs';
+import { cpSync, existsSync, readFileSync, readdirSync, rmSync, writeFileSync } from 'node:fs';
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
@@ -21,6 +21,10 @@ const racine = join(dirname(fileURLToPath(import.meta.url)), '..');
 const generateur = join(racine, 'site-public');
 const sortie = join(generateur, 'deploy_netlify');
 const destination = join(racine, 'public');
+// Liste des entrées écrites la dernière fois, pour effacer celles que le
+// générateur ne produit plus (le blog, retiré du site le 02/11/2026, restait
+// en ligne avec ses liens morts).
+const journal = join(generateur, 'entrees-publiees.json');
 
 function python() {
   for (const bin of ['python3', 'python']) {
@@ -67,10 +71,26 @@ if (run.status !== 0 || !existsSync(join(sortie, 'index.html'))) {
 // On remplace chaque entrée au lieu de la fusionner : une page d'événement
 // retiré de la publication doit disparaître à la reconstruction suivante
 // (critère d'acceptation du cahier des charges).
-for (const entree of readdirSync(sortie)) {
+const entrees = readdirSync(sortie);
+for (const entree of entrees) {
   rmSync(join(destination, entree), { recursive: true, force: true });
   cpSync(join(sortie, entree), join(destination, entree), { recursive: true, force: true });
 }
+
+// Une page qui n'est plus produite du tout doit disparaître elle aussi.
+let precedentes = [];
+try {
+  precedentes = JSON.parse(readFileSync(journal, 'utf8'));
+} catch {
+  precedentes = [];
+}
+for (const ancienne of precedentes) {
+  if (!entrees.includes(ancienne)) {
+    rmSync(join(destination, ancienne), { recursive: true, force: true });
+    console.log(`[site public] ${ancienne} retiré : le générateur ne le produit plus.`);
+  }
+}
+writeFileSync(journal, JSON.stringify(entrees.sort(), null, 2) + '\n');
 
 // Variante « artefacts » produite par le générateur : inutile ici.
 rmSync(join(generateur, 'build_artifacts'), { recursive: true, force: true });

@@ -1,6 +1,6 @@
 # Site de l'Amicale Football Club
 
-Site public du club : page d'accueil et règles de jeu animées avec voix off.
+Site public du club : page d'accueil (6 écrans), événements, documents et règles de jeu animées.
 Le site est d'abord mis en ligne sur **Netlify comme site de test**. Toutes les itérations s'y font.
 Il passe sur le vrai domaine seulement après validation par le bureau.
 
@@ -14,7 +14,7 @@ Il passe sur le vrai domaine seulement après validation par le bureau.
 | `src/page.html`, `src/commun.css`, `src/publications.css`, `src/evenements.js` | gabarit des pages intérieures, feuilles de style communes, script des événements |
 | `contenu/` | **ce que le club publie** : événements, articles, documents, images (voir `contenu/LISEZMOI.md`) |
 | `contenu_exemple/` | contenus d'exemple pour voir le rendu : `python3 build.py --exemple` |
-| `contenu.py`, `publications.py` | lecture et contrôle des contenus ; fabrication des pages blog, événements, documents |
+| `contenu.py`, `publications.py` | lecture et contrôle des contenus ; fabrication des pages événements et documents, et des fiches de l'effectif |
 | `src/logo.png` | écusson du club (logo de l'appli AFC) |
 | `src/voix/` | les 53 fichiers audio de la voix off (`chXX_sYY.mp3`) |
 | `src/voix_off/` | script de la voix off en duo et programme qui régénère les fichiers audio |
@@ -44,17 +44,18 @@ L'adresse ne change pas.
 
 ## Réglages du site de test
 
-- `robots.txt` ouvre l'indexation sauf `/dashboard/` (l'espace membres n'a rien à faire dans les résultats de recherche).
+- `robots.txt` et l'en-tête `X-Robots-Tag` (fichier `_headers`) empêchent l'indexation par Google tant que le site est en test.
 - Les fichiers audio sont mis en cache 7 jours.
 
 ## Avant de passer sur le vrai domaine
 
 - [ ] Validation du contenu par le bureau.
-- [ ] Remplir les éléments marqués « à compléter » : noms et photos des membres (avec leur accord), liens des réseaux sociaux, contact pour le parrainage, événements.
-- [ ] Confirmer l'horaire des séances (19 h 30 – 21 h 00) et mettre à jour l'article 8 du règlement intérieur (séances du lundi et du jeudi).
-- [x] Retirer le blocage des moteurs (`Disallow: /` et `X-Robots-Tag: noindex`) dans `build.py` — fait le 28/10/2026.
+- [ ] Remplir les contenus : noms et photos des membres (avec leur accord), événements, documents.
+- [ ] Adresses des réseaux sociaux : transformer les cartes `<div class="soc">` de `src/accueil.html` en liens.
+- [ ] Séances confirmées lundi et jeudi, 19 h 30 – 21 h (02/11/2026) : le club doit mettre à jour l'article 8 du règlement intérieur (qui dit encore lundi, mercredi, vendredi).
+- [ ] Retirer `robots.txt` et la ligne `X-Robots-Tag` dans `build.py`.
 - [ ] Ajouter une image de partage (`og:image`) avec l'adresse définitive.
-- [x] Adresse choisie le 28/10/2026 : `amicalefc.com` sert tout, vitrine et espace membres, depuis le même dépôt (`public_html` sur Hostinger). Le lien « Accès membres » est donc interne (`/login/`, marqueur `__APP__`) et s'ouvre dans le même onglet. Reste à rattacher le domaine à `public_html` dans hPanel et à arrêter l'ancienne application Node.
+- [ ] Choisir l'adresse avec Zorkot : aujourd'hui `amicalefc.com` ouvre directement la connexion de l'appli (`/login`). Le site peut aller sur `amicalefc.com` (et l'appli sur un sous-domaine) ou sur un sous-domaine du type `club.amicalefc.com`.
 - [ ] Brancher le domaine dans Netlify : *Domain management > Add a domain*.
 
 ## Voix off

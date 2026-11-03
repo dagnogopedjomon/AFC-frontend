@@ -1,4 +1,4 @@
-# Contenus du site : événements, articles, documents
+# Contenus du site : événements, documents, effectif
 
 Ce dossier contient ce que le club publie. Le site est reconstruit à partir de ces fichiers (`python3 build.py`).
 Pour voir le rendu avec des contenus d'exemple, sans rien publier : `python3 build.py --exemple`.
@@ -9,7 +9,7 @@ Le jour où l'API existe, `AFC_API_URL=https://… python3 build.py` lit l'API �
 | Fichier ou dossier | Contenu |
 |---|---|
 | `evenements.json` | liste des événements |
-| `articles.json` | liste des articles du blog ; un long texte peut être dans `articles/mon-article.md` |
+| `articles.json` | **plus utilisé** depuis le 2 novembre 2026 (blog supprimé : tout passe par les événements) |
 | `documents.json` | liste des documents à télécharger |
 | `effectif.json` | personnes présentées sur l'accueil (nom, poste, photo) |
 | `images/` | photos et illustrations (adresse dans les contenus : `/images/nom.jpg`) |
@@ -17,7 +17,7 @@ Le jour où l'API existe, `AFC_API_URL=https://… python3 build.py` lit l'API �
 
 ## Règles communes
 - `"statut"` : `"publié"` (par défaut), `"brouillon"` ou `"archivé"`. Seul « publié » apparaît sur le site.
-- `"slug"` : adresse courte (`/blog/mon-article/`). Facultatif : calculé à partir du titre.
+- `"slug"` : adresse courte (`/evenements/mon-evenement/`). Facultatif : calculé à partir du titre.
 - Dates : `2026-11-14` ou `2026-11-14T16:00:00+00:00`. Heure d'Abidjan = UTC.
 - Texte : `"description_md"` / `"corps_md"` (Markdown simple : `##` titre, `**gras**`, `*italique*`, `- liste`, `[lien](https://…)`, `> citation`), ou `"corps_fichier": "articles/nom.md"`.
 - Image : `{ "url": "/images/nom.jpg", "alt": "description de l'image" }`. Poids conseillé : 5 Mo au plus (idéalement moins de 400 Ko).
@@ -31,15 +31,10 @@ Le jour où l'API existe, `AFC_API_URL=https://… python3 build.py` lit l'API �
   "galerie": [], "document": { "titre": "Programme", "url": "/fichiers/programme.pdf" }, "article_slug": null }
 ```
 Les séances du lundi et du jeudi sont calculées par le site : ne pas les saisir.
-`article_slug` relie l'événement à son compte rendu publié dans le blog.
+Le compte rendu d'un événement s'écrit dans sa `description_md`, avec ses photos dans `galerie` (le blog a été supprimé le 2 novembre 2026 ; `article_slug` est ignoré).
 
-## Article
-```json
-{ "titre": "Compte rendu du repas du club", "extrait": "Deux phrases pour la liste.", "categorie": "Comptes rendus",
-  "auteur": "Le Bureau", "publie_le": "2026-09-22T09:00:00+00:00", "couverture": null, "corps_fichier": "articles/repas.md" }
-```
-Catégories : Vie du club, Règles, Communiqués, Comptes rendus.
-Une date `publie_le` dans le futur programme la parution : l'article apparaît à la première reconstruction après cette date.
+## Article (plus utilisé)
+Le blog a été supprimé le 2 novembre 2026. Les fichiers `articles.json` et `articles/` sont encore lus mais n'apparaissent nulle part sur le site.
 
 ## Document
 ```json
@@ -53,7 +48,7 @@ Catégories : Statuts, Règlement, Comptes rendus, Autres.
 { "prenom": "Koffi", "nom": "Yao", "groupe": "bureau", "poste": "Président",
   "photo": { "url": "/images/membres/koffi-yao.jpg", "alt": "Portrait de Koffi Yao" }, "ordre": 1, "statut": "publié" }
 ```
-- `groupe` : `bureau`, `commissaire` ou `membre`. Pour le bureau et les commissaires, `poste` doit être un des postes des statuts (Président, Vice-président, Secrétaire général, Trésorier général, Chargé de l'organisation, Moyens généraux, Commissaire aux comptes) : la fiche prend alors sa place. Les postes non remplis restent « Nom à compléter ». Pour un membre, `poste` est son poste sur le terrain (facultatif).
+- `groupe` : `bureau`, `commissaire` ou `membre`. Pour le bureau et les commissaires, `poste` doit être un des postes des statuts (Président, Vice-président, Secrétaire général, Trésorier général, Chargé de l'organisation, Moyens généraux, Commissaire aux comptes) : la fiche prend alors sa place. Un poste non rempli affiche simplement son intitulé (aucune mention « à compléter » sur le site). Pour un membre, `poste` est son poste sur le terrain (facultatif).
 - **Une fiche n'est publiée que si la personne a donné son accord** : le statut « publié » vaut accord. Retirer l'accord = passer la fiche en « brouillon » (ou la supprimer) et reconstruire.
 - Photo : portrait vertical (3:4), au moins 600 × 800 px, visage au tiers haut, 400 Ko au plus (JPEG ou WebP). Sans photo, un maillot est affiché.
 

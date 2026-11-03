@@ -1,0 +1,38 @@
+<!-- Pied de page commun à toutes les pages (accueil, règles, événements, blog, documents).
+     Source unique : modifier ici, build.py l'insère à la place du marqueur PIED et adapte les liens à la page. -->
+<style>
+.ft { --ft-fg: var(--foreground, var(--ink)); --ft-muted: var(--muted-foreground, var(--muted)); --ft-line: var(--border, var(--rule));
+  --ft-accent: var(--primary, var(--accent)); --ft-display: var(--font-display, var(--f-display)); --ft-body: var(--font-body, var(--f-body)); --ft-mono: var(--font-mono, var(--f-mono));
+  --ft-gut: max(16px, env(safe-area-inset-left, 0px));
+  border-top: 1px solid var(--ft-line); padding-block: 48px max(36px, env(safe-area-inset-bottom, 0px)); color: var(--ft-fg); font-family: var(--ft-body); }
+@media (min-width: 760px) { .ft { --ft-gut: max(40px, env(safe-area-inset-left, 0px)); } }
+.ft-in { max-width: 1240px; margin: 0 auto; padding-left: var(--ft-gut); padding-right: max(var(--ft-gut), env(safe-area-inset-right, 0px)); }
+.ft-grid { display: grid; grid-template-columns: minmax(0, 1.3fr) repeat(4, minmax(0, 1fr)); gap: 32px; }
+@media (max-width: 860px) { .ft-grid { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); } }
+.ft-crest { display: flex; gap: 14px; align-items: center; }
+.ft-crest img { width: 46px; height: auto; }
+.ft-crest b { font: 500 20px/1.1 var(--ft-display); }
+.ft-crest span { display: block; font: 500 10px/1.4 var(--ft-mono); text-transform: uppercase; letter-spacing: .14em; color: var(--ft-muted); margin-top: 4px; }
+.ft-grid h4 { margin: 0 0 12px; font: 500 10.5px/1 var(--ft-mono); text-transform: uppercase; letter-spacing: .16em; color: var(--ft-muted); }
+.ft-grid a { display: block; text-decoration: none; font-size: 14px; padding: 4px 0; color: color-mix(in srgb, var(--ft-fg) 80%, transparent); transition: color .2s ease; }
+@media (hover: hover) and (pointer: fine) { .ft-grid a:hover { color: var(--ft-accent); } }
+.ft-grid a[aria-current="page"] { color: var(--ft-accent); }
+.ft :focus-visible { outline: 2px solid var(--ft-accent); outline-offset: 3px; border-radius: 6px; }
+.ft-legal { margin-top: 40px; padding-top: 18px; border-top: 1px solid var(--ft-line); font: 400 11.5px/1.7 var(--ft-mono); color: var(--ft-muted); display: flex; flex-wrap: wrap; gap: 8px 24px; justify-content: space-between; }
+</style>
+
+<footer class="ft">
+  <div class="ft-in">
+    <div class="ft-grid">
+      <div class="ft-crest"><img src="__LOGO__" alt="" width="46" height="53"><div><b>Amicale Football Club</b><span>Abidjan · Cocody</span></div></div>
+      <div><h4>Le club</h4>__L_CLUB__</div>
+      <div><h4>Publications</h4>__L_PUBLI__</div>
+      <div><h4>Jouer</h4>__L_JOUER__</div>
+      <div><h4>Membres</h4><a href="__APP__"__EXT__>Accès membres</a>__L_RESEAUX__</div>
+    </div>
+    <div class="ft-legal"><span>© <span class="ft-yr">2026</span> — Amicale FC · association loi n° 60-315</span><span>06 BP 614 Abidjan</span></div>
+  </div>
+</footer>
+<script>
+(function () { try { var y = String(new Date().getFullYear()); document.querySelectorAll(".ft-yr").forEach(function (n) { n.textContent = y; }); } catch (e) {} })();
+</script>
