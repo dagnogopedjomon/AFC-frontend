@@ -54,6 +54,11 @@ HEAD = """<!doctype html>
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<!-- Hors des moteurs tant que le site vit sur l'adresse de test : Hostinger
+     sert son propre robots.txt et ignore le fichier _headers (c'est une
+     convention Netlify), donc la consigne doit voyager dans la page.
+     À retirer en même temps que les deux autres, le jour d'amicalefc.com. -->
+<meta name="robots" content="noindex, nofollow">
 <meta name="theme-color" media="(prefers-color-scheme: light)" content="#F9FAFB">
 <meta name="theme-color" media="(prefers-color-scheme: dark)" content="#14171A">
 <link rel="icon" type="image/png" href="/logo.png">
