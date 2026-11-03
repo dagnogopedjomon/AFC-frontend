@@ -204,13 +204,13 @@ def main():
     copier_dossier(os.path.join(base, "images"), os.path.join(SITE, "images"))
     copier_dossier(os.path.join(base, "fichiers"), os.path.join(SITE, "fichiers"))
 
-    # Site public sur le vrai domaine : l'indexation est ouverte (le bureau a validé le 28/10/2026).
-    ecrire(os.path.join(SITE, "robots.txt"),
-           "User-agent: *\nAllow: /\n"
-           # L'espace membres n'a rien à faire dans les résultats de recherche.
-           "Disallow: /dashboard/\n")
+    # Tant que le site vit sur l'adresse de test, il reste hors des moteurs de
+    # recherche : c'est elle qu'ils retiendraient, et elle survivrait au
+    # basculement. Ces deux consignes sont à retirer le jour où amicalefc.com
+    # prend la main.
+    ecrire(os.path.join(SITE, "robots.txt"), "User-agent: *\nDisallow: /\n")
     ecrire(os.path.join(SITE, "_headers"),
-           "/*\n  X-Content-Type-Options: nosniff\n"
+           "/*\n  X-Robots-Tag: noindex, nofollow\n  X-Content-Type-Options: nosniff\n"
            "  Referrer-Policy: strict-origin-when-cross-origin\n\n"
            "/regles/voix/*\n  Cache-Control: public, max-age=604800\n\n"
            "/images/*\n  Cache-Control: public, max-age=86400\n\n"
