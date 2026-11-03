@@ -70,7 +70,7 @@ const GESTION_NAV: NavGroup[] = [
       { href: '/dashboard/membres', label: 'Membres', icon: UsersRound, roles: BUREAU_OR_ADMIN },
       { href: '/dashboard/activites', label: 'Activités', icon: Megaphone, badge: 'activites' },
       { href: '/dashboard/documents', label: 'Documents', icon: FileText },
-  { href: '/dashboard/effectif', label: 'Effectif du site', icon: UserCheck, roles: BUREAU_OR_ADMIN },
+      { href: '/dashboard/effectif', label: 'Effectif du site', icon: UserCheck, roles: BUREAU_OR_ADMIN },
       { href: '/dashboard/amendes', label: 'Amendes', icon: Gavel, roles: FINES_ROLES },
     ],
   },

@@ -9,9 +9,11 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
 import { ArrowLeft } from 'lucide-react';
 import { useAuth } from '@/lib/auth-context';
-import { API_BASE, membersApi, type Member, type MemberAuditLogEntry } from '@/lib/api';
+import { toast } from 'sonner';
+import { membersApi, type Member, type MemberAuditLogEntry } from '@/lib/api';
 import { memberRoleLabel } from '@/lib/utils';
 import { ConfirmModal } from '@/components/ConfirmModal';
+import { PhotoDeProfil } from '@/components/PhotoDeProfil';
 import { confirmAction } from '@/lib/swal';
 
 const BUREAU_OR_ADMIN = ['ADMIN', 'PRESIDENT', 'SECRETARY_GENERAL', 'TREASURER', 'COMMISSIONER', 'GENERAL_MEANS_MANAGER'];
@@ -33,7 +35,6 @@ const editSchema = z.object({
   lastName: z.string().min(1, 'Le nom est requis'),
   role: z.string().min(1, 'Le rôle est requis'),
   membershipStatus: z.enum(['PROSPECT', 'ACTIVE']),
-  profilePhotoUrl: z.string().optional(),
   email: z.string().email('Email invalide').optional().or(z.literal('')),
   neighborhood: z.string().optional(),
   secondaryContact: z.string().optional(),
@@ -89,7 +90,6 @@ function MemberDetailPageInner() {
           lastName: m.lastName,
           role: m.role,
           membershipStatus: m.membershipStatus ?? 'ACTIVE',
-          profilePhotoUrl: m.profilePhotoUrl ?? '',
           email: m.email ?? '',
           neighborhood: m.neighborhood ?? '',
           secondaryContact: m.secondaryContact ?? '',
@@ -119,7 +119,6 @@ function MemberDetailPageInner() {
         lastName: data.lastName.trim(),
         role: data.role,
         membershipStatus: data.membershipStatus,
-        profilePhotoUrl: data.profilePhotoUrl?.trim() || undefined,
         email: data.email?.trim() || undefined,
         neighborhood: data.neighborhood?.trim(),
         secondaryContact: data.secondaryContact?.trim(),
@@ -278,10 +277,6 @@ function MemberDetailPageInner() {
               </div>
             )}
             <div>
-              <label className="mb-1 block text-sm font-medium text-[var(--afc-text-soft)]">Photo (URL)</label>
-              <input {...register('profilePhotoUrl')} className="afc-login-input w-full text-sm" placeholder="https://..." />
-            </div>
-            <div>
               <label className="mb-1 block text-sm font-medium text-[var(--afc-text-soft)]">Email</label>
               <input type="email" {...register('email')} className="afc-login-input w-full text-sm" />
               {errors.email && <p className="mt-1 text-sm text-[var(--afc-badge-red-text)]">{errors.email.message}</p>}
@@ -312,18 +307,16 @@ function MemberDetailPageInner() {
       ) : (
         <div className="rounded-xl border border-[var(--afc-border)] bg-[var(--afc-card)] p-5">
           <div className="flex flex-col gap-6 sm:flex-row sm:items-start">
-            {member.profilePhotoUrl ? (
-              <img
-                src={member.profilePhotoUrl.startsWith('http') ? member.profilePhotoUrl : `${API_BASE}${member.profilePhotoUrl}`}
-                alt=""
-                className="h-24 w-24 rounded-full bg-[rgba(var(--afc-hl),0.04)] object-cover"
-              />
-            ) : (
-              <div className="flex h-24 w-24 items-center justify-center rounded-full bg-[var(--afc-avatar-bg)] text-2xl font-bold text-[var(--afc-avatar-text)]">
-                {member.firstName[0]}
-                {member.lastName[0]}
-              </div>
-            )}
+            <PhotoDeProfil
+              url={member.profilePhotoUrl}
+              nom={`${member.firstName} ${member.lastName}`}
+              modifiable={!!canViewBureau}
+              libelle="Remplacer la photo"
+              envoyer={async (image) => {
+                setMember(await membersApi.changerLaPhotoDe(member.id, image));
+                toast.success('Photo mise à jour.');
+              }}
+            />
             <div className="flex-1 space-y-2">
               <h1 className="font-serif text-[22px] text-[var(--afc-text)]">
                 {member.firstName} {member.lastName}

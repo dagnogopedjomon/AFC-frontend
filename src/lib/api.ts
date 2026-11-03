@@ -111,6 +111,18 @@ export const membersApi = {
       method: 'PATCH',
       body: JSON.stringify(data),
     }),
+  /** Changer sa propre photo depuis les paramètres. */
+  changerMaPhoto: (image: Blob) => {
+    const form = new FormData();
+    form.append('file', image, 'photo.jpg');
+    return api<Member>('/members/me/photo', { method: 'POST', body: form });
+  },
+  /** Le bureau dépose la photo d'un membre qui n'en a pas. */
+  changerLaPhotoDe: (id: string, image: Blob) => {
+    const form = new FormData();
+    form.append('file', image, 'photo.jpg');
+    return api<Member>(`/members/${id}/photo`, { method: 'POST', body: form });
+  },
   uploadAvatar: async (file: Blob | File): Promise<{ url: string }> => {
     const token = getToken();
     const formData = new FormData();

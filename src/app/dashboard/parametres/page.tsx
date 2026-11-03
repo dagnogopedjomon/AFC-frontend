@@ -1,13 +1,15 @@
 'use client';
 
 import { FormEvent, useEffect, useState } from 'react';
-import { KeyRound, Pencil, Plus, Trash2 } from 'lucide-react';
+import { KeyRound, Pencil, Plus, Trash2, UserRound } from 'lucide-react';
 import { toast } from 'sonner';
 import { administrationApi, authApi, type ExpenseCategory } from '@/lib/api';
 import { useAuth } from '@/lib/auth-context';
+import { membersApi } from '@/lib/api';
+import { PhotoDeProfil } from '@/components/PhotoDeProfil';
 
 export default function ParametresPage() {
-  const { user } = useAuth();
+  const { user, refreshUser } = useAuth();
   const isAdmin = user?.role === 'ADMIN';
   const [currentPassword, setCurrentPassword] = useState('');
   const [newPassword, setNewPassword] = useState('');
@@ -46,6 +48,28 @@ export default function ParametresPage() {
     <div className="space-y-5">
       <header className="border-b border-[var(--afc-border)] pb-5 pt-1">
       </header>
+
+      <div className="max-w-2xl rounded-xl border border-[var(--afc-border)] bg-[var(--afc-card)] p-5">
+        <div className="mb-6 flex items-start gap-3">
+          <div className="rounded-lg bg-[var(--primary)]/10 p-2 text-[var(--primary)]"><UserRound size={20}/></div>
+          <div>
+            <h2 className="font-semibold text-[var(--afc-text)]">Ma photo</h2>
+            <p className="text-sm text-[var(--afc-muted)]">
+              Elle vous identifie dans l’application, et sur le site du club si vous avez
+              accepté d’y paraître.
+            </p>
+          </div>
+        </div>
+        <PhotoDeProfil
+          url={user?.profilePhotoUrl}
+          nom={`${user?.firstName ?? ''} ${user?.lastName ?? ''}`.trim()}
+          envoyer={async (image) => {
+            await membersApi.changerMaPhoto(image);
+            await refreshUser();
+            toast.success('Photo mise à jour.');
+          }}
+        />
+      </div>
 
       <div className="max-w-2xl rounded-xl border border-[var(--afc-border)] bg-[var(--afc-card)] p-5">
         <div className="mb-6 flex items-start gap-3">
