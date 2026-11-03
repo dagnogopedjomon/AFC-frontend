@@ -33,6 +33,7 @@ import {
   Sparkles,
   Sun,
   UserRound,
+  UserCheck,
   UsersRound,
   X,
 } from 'lucide-react';
@@ -71,6 +72,7 @@ const GESTION_NAV: NavGroup[] = [
       { href: '/dashboard/activites', label: 'Activités', icon: Megaphone, badge: 'activites' },
       { href: '/dashboard/documents', label: 'Documents', icon: FileText },
       { href: '/dashboard/articles', label: 'Articles', icon: Newspaper },
+  { href: '/dashboard/effectif', label: 'Effectif du site', icon: UserCheck, roles: BUREAU_OR_ADMIN },
       { href: '/dashboard/amendes', label: 'Amendes', icon: Gavel, roles: FINES_ROLES },
     ],
   },
@@ -148,6 +150,7 @@ const PAGE_TITLES: { href: string; title: string; subtitle: string; exact?: bool
   { href: '/dashboard/documents', title: 'Documents', subtitle: 'Fichiers à télécharger sur le site du club' },
   { href: '/dashboard/articles/editeur', title: 'Article', subtitle: 'Rédaction, aperçu et parution' },
   { href: '/dashboard/articles', title: 'Articles', subtitle: 'Textes du club — ne paraissent plus sur le site' },
+  { href: '/dashboard/effectif', title: 'Effectif du site', subtitle: 'Qui paraît sur l’accueil du site public' },
   { href: '/dashboard/payment/success', title: 'Paiement', subtitle: 'Retour du paiement mobile' },
 ].sort((a, b) => b.href.length - a.href.length);
 

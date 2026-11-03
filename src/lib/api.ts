@@ -759,6 +759,29 @@ export type EtatReconstruction = {
   derniereRaison: string | null;
 };
 
+/** Une personne et son accord de paraître sur le site public. */
+export type FicheEffectif = {
+  id: string;
+  prenom: string;
+  nom: string;
+  poste: string;
+  groupe: 'bureau' | 'commissaire' | 'membre';
+  photo: string | null;
+  accord: boolean;
+  accordLe: string | null;
+  ordre: number | null;
+};
+
+export const effectifApi = {
+  liste: () => api<FicheEffectif[]>('/effectif'),
+  /** Donner ou retirer l'accord ; le site se refabrique dans la foulée. */
+  accord: (id: string, accord: boolean, ordre: number | null) =>
+    api<{ id: string; sitePublicConsent: boolean }>(`/effectif/${id}`, {
+      method: 'PATCH',
+      body: JSON.stringify({ accord, ordre }),
+    }),
+};
+
 export const siteApi = {
   etatReconstruction: () => api<EtatReconstruction>('/site/reconstruction'),
   /** « Mettre le site à jour maintenant » : déclenche le dépôt sans attendre. */
