@@ -595,30 +595,6 @@ h1, h2, h3 { margin: 0; text-wrap: balance; font-weight: 400; }
 .fade-in { animation: fadeUp .7s cubic-bezier(.2, .7, .2, 1) both; }
 .fade-in.delay-1 { animation-delay: .08s; } .fade-in.delay-2 { animation-delay: .16s; } .fade-in.delay-3 { animation-delay: .24s; }
 @keyframes fadeUp { from { opacity: .001; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
-
-/* ─── Écran d'ouverture conservé de la version précédente ─── */
-.hero { position: relative; isolation: isolate; overflow: hidden; background: var(--secondary); align-items: end; border-bottom: 1px solid var(--border); }
-.hero::before { content: ""; position: absolute; inset: 0; z-index: -3; pointer-events: none; background-image: linear-gradient(to right, var(--grid-line) 1px, transparent 1px), linear-gradient(to bottom, var(--grid-line) 1px, transparent 1px); background-size: 56px 56px; background-position: -1px -1px; -webkit-mask-image: radial-gradient(ellipse 80% 60% at 30% 40%, #000 30%, transparent 80%); mask-image: radial-gradient(ellipse 80% 60% at 30% 40%, #000 30%, transparent 80%); }
-.stadium { position: absolute; inset: 0; z-index: -2; pointer-events: none; }
-.tilt { position: absolute; left: 66%; top: 46%; width: min(1400px, 112vw); transform: translate(-50%, -50%) perspective(1500px) rotateX(54deg); }
-.tilt svg { display: block; width: 100%; height: auto; overflow: visible; }
-.hero::after { content: ""; position: absolute; inset: 0; z-index: -1; pointer-events: none; background: linear-gradient(to top, var(--secondary) 4%, color-mix(in srgb, var(--secondary) 75%, transparent) 30%, transparent 62%), linear-gradient(to right, color-mix(in srgb, var(--secondary) 96%, transparent) 10%, color-mix(in srgb, var(--secondary) 72%, transparent) 42%, transparent 68%); }
-.hero-in { padding-block: clamp(24px, 6svh, 72px) clamp(20px, 4svh, 48px); display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 32px; align-items: end; }
-.hero h1 { font-size: clamp(46px, min(7vw, 11svh), 104px); line-height: .96; letter-spacing: -.035em; margin-top: 18px; }
-.hero .sub { margin-top: 24px; max-width: 52ch; color: color-mix(in srgb, var(--foreground) 78%, transparent); font-size: 17px; line-height: 1.55; }
-.hero .actions { display: flex; gap: 12px; flex-wrap: wrap; margin-top: 30px; }
-.ticker { display: grid; grid-template-columns: minmax(0, 1fr); gap: 6px; min-width: 260px; max-width: 320px; background: var(--card); border: 1px solid var(--border); border-radius: calc(var(--radius) * 1.4); padding: 8px; box-shadow: var(--shadow); }
-.ticker .label { padding: 6px 8px 4px; display: flex; align-items: center; gap: 8px; }
-.ticker .label i { width: 6px; height: 6px; border-radius: 50%; background: var(--primary); box-shadow: 0 0 0 3px color-mix(in srgb, var(--primary) 25%, transparent); }
-.ticker div[data-p] { display: grid; grid-template-columns: 26px minmax(0, 1fr); gap: 10px; align-items: center; padding: 9px 10px; border-radius: 8px; color: var(--muted-foreground); font-size: 14px; transition: color .3s ease, background-color .3s ease; }
-.ticker b { font: 500 12px/1 var(--font-mono); color: var(--muted-foreground); }
-.ticker div.on { color: var(--foreground); background: color-mix(in srgb, var(--primary) 10%, transparent); }
-.ticker div.on b { color: var(--primary); }
-.goal { margin: 4px 8px 6px; justify-self: start; font: 500 10.5px/1 var(--font-mono); text-transform: uppercase; letter-spacing: .14em; background: var(--chart-4); color: hsl(214 15% 15%); padding: 7px 10px; border-radius: 4px; white-space: nowrap; opacity: 0; transform: translateY(4px); transition: opacity .25s ease, transform .35s var(--ease-out); }
-.goal.show { opacity: 1; transform: none; }
-.tilt { animation: settle 1.6s var(--ease-out) both; }
-@keyframes settle { from { opacity: .001; transform: translate(-50%, -42%) perspective(1500px) rotateX(64deg) scale(.95); } }
-@media (max-width: 860px) { .hero-in { grid-template-columns: minmax(0, 1fr); } .ticker { min-width: 0; max-width: none; } .tilt { width: 190vw; left: 50%; top: 20%; transform: translate(-50%, -50%) perspective(1100px) rotateX(50deg); } .stadium { opacity: .5; } }
 .chalk { stroke-dasharray: var(--len); stroke-dashoffset: var(--len); animation: chalk 1.4s var(--ease-out) forwards; }
 @keyframes chalk { to { stroke-dashoffset: 0; } }
 @keyframes fade { from { opacity: .001; } to { opacity: 1; } }
@@ -785,47 +761,66 @@ h1, h2, h3 { margin: 0; text-wrap: balance; font-weight: 400; }
   </nav>
 
   <section class="ecran alt hero" id="ouverture" data-ecran="accueil" aria-label="Accueil">
-    <!-- Écran d'ouverture conservé de la version précédente, à la demande du club. -->
-    <div class="stadium" aria-hidden="true">
-      <div class="tilt">
-        <svg id="play" viewBox="0 0 600 372">
-          <g fill="none" stroke="var(--primary)" stroke-width="1.6" opacity=".7" id="lines">
-            <rect class="chalk" x="20" y="26" width="560" height="320" rx="4"/>
-            <line class="chalk" x1="300" y1="26" x2="300" y2="346"/>
-            <circle class="chalk" cx="300" cy="186" r="38"/>
-            <rect class="chalk" x="20" y="111" width="74" height="150"/>
-            <rect class="chalk" x="506" y="111" width="74" height="150"/>
-            <line x1="94" y1="26" x2="94" y2="111" stroke-dasharray="5 6" opacity=".55"/>
-            <line x1="94" y1="261" x2="94" y2="346" stroke-dasharray="5 6" opacity=".55"/>
-            <line x1="506" y1="26" x2="506" y2="111" stroke-dasharray="5 6" opacity=".55"/>
-            <line x1="506" y1="261" x2="506" y2="346" stroke-dasharray="5 6" opacity=".55"/>
-          </g>
-          <rect x="20" y="10" width="560" height="8" rx="3" fill="var(--primary)" opacity=".18"/>
-          <rect x="20" y="354" width="560" height="8" rx="3" fill="var(--primary)" opacity=".18"/>
-          <rect x="580" y="160" width="12" height="52" rx="2" fill="none" stroke="var(--primary)" stroke-width="1.6" opacity=".8"/>
-          <rect x="8" y="160" width="12" height="52" rx="2" fill="none" stroke="var(--primary)" stroke-width="1.6" opacity=".8"/>
-          <g id="trail" fill="none" stroke-width="2.2" stroke-linecap="round"></g>
-          <g id="actors"></g>
-        </svg>
-      </div>
-    </div>
-    <div class="wrap hero-in">
-      <div>
-        <p class="label fade-in">— Club de football amateur · Abidjan</p>
-        <h1 class="display fade-in delay-1">Le foot entre amis, <em>deux soirs par semaine.</em></h1>
-        <p class="sub fade-in delay-2">L'Amicale Football Club réunit des passionnés qui jouent au Maracana sur terrain de five, dans un esprit convivial et fair-play.</p>
-        <div class="actions fade-in delay-2">
-          <a class="btn primary" href="#calendrier">Prochaines séances
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg></a>
-          <a class="btn" href="#club">Découvrir le club</a>
+    <div class="ec-body">
+      <div class="wrap hero-grid">
+        <div class="hero-copy">
+          <p class="label fade-in"><span class="n">01</span> — Club de football amateur · Abidjan, Cocody</p>
+          <h1 class="display fade-in delay-1">Le foot entre amis, <em>deux soirs par semaine.</em></h1>
+          <p class="sub fade-in delay-2">Le lundi et le jeudi soir, l'Amicale Football Club se retrouve pour jouer au Maracana, six contre six, dans un esprit convivial et fair-play.</p>
+          <div class="actions fade-in delay-2">
+            <a class="btn primary" href="#rejoindre">Rejoindre l'AFC
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg></a>
+            <a class="btn" href="#club">Découvrir le club</a>
+          </div>
         </div>
-      </div>
-      <div class="ticker fade-in delay-3" aria-label="L'action en cours sur le terrain">
-        <span class="label"><i></i>Une action AFC</span>
-        <div data-p="0"><b>01</b><span>Relance, seul dans sa surface</span></div>
-        <div data-p="1"><b>02</b><span>Passe vers un couloir</span></div>
-        <div data-p="2"><b>03</b><span>But marqué depuis la surface</span></div>
-        <span class="goal" id="goal">But valable</span>
+        <figure class="board fade-in delay-3" aria-label="L'écran du club">
+          <div class="board-top">
+            <div class="board-tabs" role="tablist" aria-label="Que montrer">
+              <button type="button" role="tab" id="tab-jeu" aria-selected="true" aria-controls="view-jeu" data-go="0"><span>Le jeu</span><i></i></button>
+              <button type="button" role="tab" id="tab-actions" aria-selected="false" aria-controls="view-actions" data-go="1" tabindex="-1"><span>Nos actions</span><i></i></button>
+            </div>
+            <span class="clock">Abidjan <b id="clock">--:--:--</b></span>
+          </div>
+          <div class="board-views">
+            <div class="view is-on" id="view-jeu" role="tabpanel" aria-labelledby="tab-jeu">
+              <div class="board-pitch">
+                <svg id="play" viewBox="0 0 600 372" aria-hidden="true">
+                  <g fill="none" stroke="var(--board-line)" stroke-width="1.6" id="lines">
+                    <rect class="chalk" x="20" y="26" width="560" height="320" rx="4"/>
+                    <line class="chalk" x1="300" y1="26" x2="300" y2="346"/>
+                    <circle class="chalk" cx="300" cy="186" r="38"/>
+                    <rect class="chalk" x="20" y="111" width="74" height="150"/>
+                    <rect class="chalk" x="506" y="111" width="74" height="150"/>
+                    <line x1="94" y1="26" x2="94" y2="111" stroke-dasharray="5 6" opacity=".5"/>
+                    <line x1="94" y1="261" x2="94" y2="346" stroke-dasharray="5 6" opacity=".5"/>
+                    <line x1="506" y1="26" x2="506" y2="111" stroke-dasharray="5 6" opacity=".5"/>
+                    <line x1="506" y1="261" x2="506" y2="346" stroke-dasharray="5 6" opacity=".5"/>
+                  </g>
+                  <rect x="20" y="10" width="560" height="8" rx="3" fill="var(--board-line)" opacity=".25"/>
+                  <rect x="20" y="354" width="560" height="8" rx="3" fill="var(--board-line)" opacity=".25"/>
+                  <rect x="580" y="160" width="12" height="52" rx="2" fill="none" stroke="var(--board-line)" stroke-width="1.6"/>
+                  <rect x="8" y="160" width="12" height="52" rx="2" fill="none" stroke="var(--board-line)" stroke-width="1.6"/>
+                  <g id="trail" fill="none" stroke-width="2.2" stroke-linecap="round"></g>
+                  <g id="actors"></g>
+                </svg>
+                <span class="goal" id="goal">But valable</span>
+              </div>
+              <ol class="ticker">
+                <li data-p="0"><b>01</b><span>Relance, seul dans sa surface</span></li>
+                <li data-p="1"><b>02</b><span>Passe vers un couloir</span></li>
+                <li data-p="2"><b>03</b><span>But depuis la surface</span></li>
+              </ol>
+            </div>
+            <div class="view" id="view-actions" role="tabpanel" aria-labelledby="tab-actions" aria-hidden="true">
+              <ul class="bstats">
+                <li style="--c: var(--board-blue)"><span class="big">2</span><span class="what"><small>Séances par semaine</small><b>Lundi et jeudi soir</b></span><span class="ref">R.I. art. 8</span></li>
+                <li style="--c: var(--board-red)"><span class="big">5</span><span class="what"><small>Occasions de solidarité</small><b>Mariage, naissance, deuils</b></span><span class="ref">R.I. art. 6</span></li>
+                <li style="--c: var(--chart-4)"><span class="big">3</span><span class="what"><small>Types d'activités</small><b>Matchs, rassemblements, actions caritatives</b></span><span class="ref">R.I. art. 16</span></li>
+              </ul>
+              <p class="board-foot"><span>Sur le terrain, <em>et en dehors.</em></span><a href="#evenements" tabindex="-1">Voir les événements <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg></a></p>
+            </div>
+          </div>
+        </figure>
       </div>
     </div>
     <div class="board-strip fade-in delay-3" id="calendrier">
@@ -1267,9 +1262,44 @@ h1, h2, h3 { margin: 0; text-wrap: balance; font-weight: 400; }
   });
   window.addEventListener("resize", syncRails);
 
-  /* ── L'action du terrain tourne en continu : l'écran d'ouverture n'a pas d'onglets ── */
-  boardOn = true;
-
+  /* ── L'écran du club : « Le jeu » (une action complète) puis « Nos actions » (7 s), en boucle ── */
+  var hero = document.querySelector(".hero"), views = hero.querySelectorAll(".view"), tabs = hero.querySelectorAll(".board-tabs [role=tab]");
+  var cur = 0, ACTIONS_MS = 7000, timer = 0, auto = !reduce;
+  function show(n, focus) {
+    cur = n; clearTimeout(timer);
+    views.forEach(function (v, i) {
+      var on = i === cur;
+      v.classList.toggle("is-on", on); v.setAttribute("aria-hidden", String(!on));
+      v.querySelectorAll("a").forEach(function (x) { x.tabIndex = on ? 0 : -1; });
+    });
+    tabs.forEach(function (t, i) { t.setAttribute("aria-selected", String(i === cur)); t.tabIndex = i === cur ? 0 : -1; });
+    if (focus) tabs[cur].focus();
+    var bar = tabs[cur].querySelector("i"); bar.style.animation = "none"; void bar.offsetWidth; bar.style.animation = "";
+    boardOn = cur === 0;
+    if (cur === 0) {
+      hero.style.setProperty("--view-ms", (LOOP + 0.6 - 0.4) * 1000 + "ms");
+      playFromStart(0.6);
+      onActionEnd = auto && !hero.classList.contains("paused") ? function () { show(1); } : null;
+    } else {
+      onActionEnd = null;
+      hero.style.setProperty("--view-ms", ACTIONS_MS + "ms");
+      if (auto && !hero.classList.contains("paused")) timer = setTimeout(function () { show(0); }, ACTIONS_MS);
+    }
+  }
+  tabs.forEach(function (t, i) {
+    t.addEventListener("click", function () { show(i); });
+    t.addEventListener("keydown", function (e) { if (e.key === "ArrowRight" || e.key === "ArrowLeft") { e.preventDefault(); show(1 - cur, true); } });
+  });
+  if (auto) {
+    hero.classList.add("auto");
+    var board = hero.querySelector(".board");
+    var pause = function (on) { hero.classList.toggle("paused", on); if (on) { clearTimeout(timer); onActionEnd = null; } else show(cur); };
+    board.addEventListener("mouseenter", function () { pause(true); });
+    board.addEventListener("mouseleave", function () { pause(false); });
+    board.addEventListener("focusin", function () { pause(true); });
+    board.addEventListener("focusout", function (e) { if (!board.contains(e.relatedTarget)) pause(false); });
+  }
+  show(0);
 
   /* ── Apparition des contenus quand un écran arrive ── */
   document.querySelectorAll("[data-reveal]").forEach(function (box) { [].forEach.call(box.children, function (c, i) { c.style.setProperty("--i", i); }); });
@@ -1278,6 +1308,9 @@ h1, h2, h3 { margin: 0; text-wrap: balance; font-weight: 400; }
     document.querySelectorAll("[data-reveal]").forEach(function (b) { rv.observe(b); });
   } else document.querySelectorAll("[data-reveal]").forEach(function (b) { b.classList.add("in"); });
 
+  /* ── Heure d'Abidjan (UTC, sans heure d'été) ── */
+  function horloge() { var d = new Date(); $("clock").textContent = [d.getUTCHours(), d.getUTCMinutes(), d.getUTCSeconds()].map(function (n) { return String(n).padStart(2, "0"); }).join(":"); }
+  horloge(); setInterval(horloge, 1000);
 
   /* ── Repère de position : le point de l'écran affiché ── */
   var dots = document.querySelectorAll(".dots a"), ecrans = document.querySelectorAll("[data-ecran]");
