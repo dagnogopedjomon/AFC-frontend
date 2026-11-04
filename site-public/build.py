@@ -54,11 +54,6 @@ HEAD = """<!doctype html>
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<!-- Hors des moteurs tant que le site vit sur l'adresse de test : Hostinger
-     sert son propre robots.txt et ignore le fichier _headers (c'est une
-     convention Netlify), donc la consigne doit voyager dans la page.
-     À retirer en même temps que les deux autres, le jour d'amicalefc.com. -->
-<meta name="robots" content="noindex, nofollow">
 <meta name="theme-color" media="(prefers-color-scheme: light)" content="#F9FAFB">
 <meta name="theme-color" media="(prefers-color-scheme: dark)" content="#14171A">
 <link rel="icon" type="image/png" href="/logo.png">
@@ -209,13 +204,14 @@ def main():
     copier_dossier(os.path.join(base, "images"), os.path.join(SITE, "images"))
     copier_dossier(os.path.join(base, "fichiers"), os.path.join(SITE, "fichiers"))
 
-    # Tant que le site vit sur l'adresse de test, il reste hors des moteurs de
-    # recherche : c'est elle qu'ils retiendraient, et elle survivrait au
-    # basculement. Ces deux consignes sont à retirer le jour où amicalefc.com
-    # prend la main.
-    ecrire(os.path.join(SITE, "robots.txt"), "User-agent: *\nDisallow: /\n")
+    # Le site tourne sur son vrai domaine : l'indexation est ouverte, comme le
+    # bureau l'a validé le 28/10/2026.
+    ecrire(os.path.join(SITE, "robots.txt"),
+           "User-agent: *\nAllow: /\n"
+           # L'espace membres n'a rien à faire dans les résultats de recherche.
+           "Disallow: /dashboard/\n")
     ecrire(os.path.join(SITE, "_headers"),
-           "/*\n  X-Robots-Tag: noindex, nofollow\n  X-Content-Type-Options: nosniff\n"
+           "/*\n  X-Content-Type-Options: nosniff\n"
            "  Referrer-Policy: strict-origin-when-cross-origin\n\n"
            "/regles/voix/*\n  Cache-Control: public, max-age=604800\n\n"
            "/images/*\n  Cache-Control: public, max-age=86400\n\n"
